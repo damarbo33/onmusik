@@ -23,7 +23,7 @@
 					<Add directory="../../ExternalLibs/zipUtils/zlib" />
 					<Add directory="../../ExternalLibs/sdl_ext/src" />
 					<Add directory="../httpCurl/httpcurl/src" />
-					<Add directory="../rijndael/rijndael" />
+					<Add directory="../rijndael" />
 					<Add directory="../httpCurl/httpcurl/src/jsoncpp-0.10.5/include" />
 					<Add directory="../MP3Play/src" />
 					<Add directory="../MP3Play" />
@@ -65,7 +65,7 @@
 					<Add directory="../../ExternalLibs/zipUtils/zlib" />
 					<Add directory="../../ExternalLibs/sdl_ext/src" />
 					<Add directory="../httpCurl/httpcurl/src" />
-					<Add directory="../rijndael/rijndael" />
+					<Add directory="../rijndael" />
 					<Add directory="../httpCurl/httpcurl/src/jsoncpp-0.10.5/include" />
 					<Add directory="../MP3Play/src" />
 					<Add directory="../MP3Play" />
