@@ -1,0 +1,50 @@
+## Descargar Onmusik
+
+La aplicación se puede descargar del siguiente enlace [https://dl.dropboxusercontent.com/u/27757291/OnMusik1.0.zip](Descargar Onmusik)
+
+## ¿Qué es Onmusik?
+
+Onmusik es una aplicación que permite hacer streaming de tu música subida a dropbox. De este modo puedes tener todas las canciones de forma online en cualquier sitio en el que estés
+
+## ¿Cómo es la aplicación?
+
+La interfaz de Onmusik es muy sencilla. Es un reproductor de música que muestra los álbums y las canciones de cada álbum subido. En la siguiente imagen se explica mejor: 
+
+![Explicación de la interfaz](https://dl.dropboxusercontent.com/u/27757291/06_Explaining.png)
+
+## Empezar a usar Onmusik
+
+### Dar permisos a la aplicación para usar Dropbox
+
+Al iniciar la aplicación por primera vez, la aplicación nos pedirá que nos loguemos en Dropbox para poder almacenar y acceder a las canciones a subir en la nube. 
+
+![Petición de permisos en dropbox](https://dl.dropboxusercontent.com/u/27757291/07_Permissions.png)
+
+Si aceptamos se nos abrirá una ventana del explorador web para logarnos. Una vez que accedamos a nuestra cuenta de dropbox, aparecerá la ventana siguiente:
+
+![Permitir que la aplicación pueda acceder a dropbox](https://dl.dropboxusercontent.com/u/27757291/08_Allow.png)
+
+Si pulsamos el botón **"Permitir"** se nos redirigirá a otra página. Se debe copiar el código (Ctrl+C)...
+
+![Copiando el código obtenido de dropbox](https://dl.dropboxusercontent.com/u/27757291/09_Code.png)
+
+... y pegarlo en el campo de texto de la aplicación Onmusik
+
+![Copiando el texto](https://dl.dropboxusercontent.com/u/27757291/10_CodeInOnmusik.png)
+
+**Por fin!** Ya podemos subir canciones!
+
+### Subiendo discos por primera vez
+
+La primera vez que accedamos al programa, se nos indicará cual es el botón para subir canciones. ¡Tan sencillo como eso!
+
+![Primer inicio](https://dl.dropboxusercontent.com/u/27757291/01_Welcome.png)
+
+Pulsando el botón, se muestra el explorador de archivos, en el que podemos seleccionar una canción (se subirán todas las del mismo directorio) o el directorio donde están todas las canciones de cada disco que queramos subir.
+
+![Seleccionando el disco a subir](https://dl.dropboxusercontent.com/u/27757291/02_DiscUpload.png)
+
+**Con un poco de paciencia**, se subirá el disco y al final se refrescará la lista de los álbumes. La aplicación muestra los discos de la siguiente forma
+
+![Reproduciendo una canción](https://dl.dropboxusercontent.com/u/27757291/05_Playing.png)
+

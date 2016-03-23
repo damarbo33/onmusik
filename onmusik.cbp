@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="onmusik" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Release">
+				<Option output="bin/Release/onmusik" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="../../ExternalLibs/sqllite/src" />
+					<Add directory="../../ExternalLibs/libjpeg/src/libjpeg" />
+					<Add directory="../../ExternalLibs/UIObjects/src" />
+					<Add directory="../../ExternalLibs/libvlc/sdk/include" />
+					<Add directory="../../ExternalLibs/gumbo-parser-master/src" />
+					<Add directory="../../ExternalLibs/curl-7.40.0-devel-mingw32/include" />
+					<Add directory="../../ExternalLibs/zipUtils/unzip" />
+					<Add directory="../../ExternalLibs/zipUtils/zlib" />
+					<Add directory="../../ExternalLibs/sdl_ext/src" />
+					<Add directory="../httpCurl/httpcurl/src" />
+					<Add directory="../rijndael/rijndael" />
+					<Add directory="../httpCurl/httpcurl/src/jsoncpp-0.10.5/include" />
+					<Add directory="../MP3Play/src" />
+					<Add directory="../MP3Play" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lsdlgfx" />
+					<Add option="-lmingw32" />
+					<Add option="-lSDLmain" />
+					<Add option="-lSDL" />
+					<Add option="-lSDL_image" />
+					<Add option="-lSDL_mixer" />
+					<Add option="-lSDL_ttf" />
+					<Add option="-lzipUtils" />
+					<Add option="-lsqllite" />
+					<Add library="../../ExternalLibs/libjpeg/bin/Release/libjpeg.a" />
+					<Add directory="../../ExternalLibs/UIObjects/bin/Release" />
+					<Add directory="../../ExternalLibs/zipUtils/bin/Release" />
+					<Add directory="../../ExternalLibs/sqllite/bin/Release" />
+					<Add directory="../../ExternalLibs/gumbo-parser-master/bin/Release" />
+					<Add directory="../httpCurl/httpcurl/bin/Release" />
+					<Add directory="../../ExternalLibs/curl-7.40.0-devel-mingw32/lib" />
+				</Linker>
+			</Target>
+			<Target title="Debug">
+				<Option output="bin/Debug/onmusik" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add directory="../../ExternalLibs/sqllite/src" />
+					<Add directory="../../ExternalLibs/libjpeg/src/libjpeg" />
+					<Add directory="../../ExternalLibs/UIObjects/src" />
+					<Add directory="../../ExternalLibs/libvlc/sdk/include" />
+					<Add directory="../../ExternalLibs/gumbo-parser-master/src" />
+					<Add directory="../../ExternalLibs/curl-7.40.0-devel-mingw32/include" />
+					<Add directory="../../ExternalLibs/zipUtils/unzip" />
+					<Add directory="../../ExternalLibs/zipUtils/zlib" />
+					<Add directory="../../ExternalLibs/sdl_ext/src" />
+					<Add directory="../httpCurl/httpcurl/src" />
+					<Add directory="../rijndael/rijndael" />
+					<Add directory="../httpCurl/httpcurl/src/jsoncpp-0.10.5/include" />
+					<Add directory="../MP3Play/src" />
+					<Add directory="../MP3Play" />
+				</Compiler>
+				<Linker>
+					<Add option="-lsdlgfx" />
+					<Add option="-lmingw32" />
+					<Add option="-lSDLmain" />
+					<Add option="-lSDL" />
+					<Add option="-lSDL_image" />
+					<Add option="-lSDL_mixer" />
+					<Add option="-lSDL_ttf" />
+					<Add option="-lzipUtils" />
+					<Add option="-lsqllite" />
+					<Add library="../../ExternalLibs/libjpeg/bin/Release/libjpeg.a" />
+					<Add directory="../../ExternalLibs/UIObjects/bin/Release" />
+					<Add directory="../../ExternalLibs/zipUtils/bin/Release" />
+					<Add directory="../../ExternalLibs/sqllite/bin/Release" />
+					<Add directory="../../ExternalLibs/gumbo-parser-master/bin/Release" />
+					<Add directory="../httpCurl/httpcurl/bin/Release" />
+					<Add directory="../../ExternalLibs/curl-7.40.0-devel-mingw32/lib" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Linker>
+			<Add option="-lUIObjects" />
+			<Add option="-lgumboParser" />
+			<Add option="-lhttpcurl" />
+			<Add option="-lcrypto" />
+			<Add option="-lcurl" />
+			<Add option="-lcurldll" />
+			<Add option="-lidn" />
+			<Add option="-lrtmp" />
+			<Add option="-lssh2" />
+			<Add option="-lssh2dll" />
+			<Add option="-lssl" />
+			<Add option="-lz" />
+			<Add option="-lzdll" />
+		</Linker>
+		<Unit filename="../MP3Play/audioplayer.cpp" />
+		<Unit filename="resource.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="src/Icogestor.cpp" />
+		<Unit filename="src/Iofrontend.cpp" />
+		<Unit filename="src/Ioutil.cpp" />
+		<Unit filename="src/jukebox.cpp" />
+		<Unit filename="src/main.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
