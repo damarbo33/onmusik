@@ -118,7 +118,6 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLABROWSER2]->add(BTNCANCELARBROWSER, GUIBUTTON, (BUTTONW/2 + 5), 0, BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
     ObjectsMenu[PANTALLABROWSER2]->add(ARTDIRBROWSER, GUIARTSURFACE, 0, 0, INPUTW, Constant::getINPUTH(), "Direccion Browser", false)->setEnabled(false);
     ObjectsMenu[PANTALLABROWSER2]->add("comboBrowser", GUICOMBOBOX, 0, 0, 0, 0, "", false);
-    loadComboUnidades();
 
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("panelMedia", GUIPANEL, 0,0,0,0, "", true)->setEnabled(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("progressBarMedia", GUIPROGRESSBAR, 20, 20, 200, 20, "", true)->setShadow(false);
@@ -893,6 +892,7 @@ string Iofrontend::showExplorador(tEvento *evento){
     Dirutil dir;
 
     try{
+        loadComboUnidades();
         obj = (UIList *)objMenu->getObjByName(OBJLISTABROWSER2);
         obj->setFocus(true);
         obj->setTag("");
@@ -1061,6 +1061,7 @@ int Iofrontend::accionesListaExplorador(tEvento *evento){
 */
 void Iofrontend::loadComboUnidades(){
     UIComboBox *combo = (UIComboBox *)ObjectsMenu[PANTALLABROWSER2]->getObjByName("comboBrowser");
+    combo->clearLista();
     combo->setPosActualLista(0);
     vector<string> drives;
 
@@ -1580,7 +1581,9 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
             if (threadPlayer->isRunning()){
                 Traza::print("Terminando Thread de reproduccion...", W_DEBUG);;
                 player->stop();
-                while(threadPlayer->isRunning()){};
+                while(threadPlayer->isRunning()){
+                    Constant::waitms(50);
+                }
                 Traza::print("Reproduccion terminada.", W_DEBUG);
             }
             delete threadPlayer;
@@ -1592,7 +1595,9 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
         if (threadDownloader != NULL){
             if (threadDownloader->isRunning()){
                 juke->abortDownload();
-                while(threadDownloader->isRunning()){};
+                while(threadDownloader->isRunning()){
+                    Constant::waitms(50);
+                }
             }
             delete threadDownloader;
             threadDownloader = NULL;
@@ -1685,7 +1690,7 @@ bool Iofrontend::bucleReproductor(){
     bool panelMediaVisible = true;
     finishedDownload = false;
 
-    try{
+    try {
         //Obtenemos de la lista de reproduccion, el tiempo, el nombre y la ruta de la cancion.
         UIListGroup *playList = ((UIListGroup *)obj->getObjByName("playLists"));
         string cancion = playList->getValue(playList->getLastSelectedPos());
@@ -1720,6 +1725,7 @@ bool Iofrontend::bucleReproductor(){
         player->setStatus(PLAYING);
         player->setAnalyzeSpectrum(ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum")->isEnabled());
         player->setSongDownloaded(false);
+        player->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
 
         if (threadPlayer != NULL){
             delete threadPlayer;
