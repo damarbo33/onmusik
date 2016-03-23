@@ -4,7 +4,7 @@
 #include "uilistcommon.h"
 
 //Estos son los campos necesarios para identificar la aplicacion
-//de dropbox que he dado de alta mediante oauth. 
+//de dropbox que he dado de alta mediante oauth.
 //No deben ser de dominio publico
 const string cliendid="";
 const string secret="";
@@ -1719,6 +1719,7 @@ bool Iofrontend::bucleReproductor(){
         player->setFilename(file);
         player->setStatus(PLAYING);
         player->setAnalyzeSpectrum(ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum")->isEnabled());
+        player->setSongDownloaded(false);
 
         if (threadPlayer != NULL){
             delete threadPlayer;
@@ -1793,6 +1794,8 @@ bool Iofrontend::bucleReproductor(){
                 if (!threadDownloader->isRunning() && !finishedDownload && player->getStatus() == PLAYING &&
                     posAlbumSelected == albumList->getLastSelectedPos()){
                     Traza::print("Descarga completada correctamente", W_DEBUG);
+                    //Indicamos que la cancion se ha terminado de descargar
+                    player->setSongDownloaded(true);
                     //Realizamos la peticion de stop y esperamos a que termine el thread
                     player->stop();
                     threadPlayer->join();
@@ -1814,6 +1817,7 @@ bool Iofrontend::bucleReproductor(){
                     playList->setLastSelectedPos(posSongSelected);
                     juke->refreshPlayListMetadata();
                 }
+
                 flipScr();
                 delay = before - SDL_GetTicks() + TIMETOLIMITFRAME;
                 if(delay > 0) SDL_Delay(delay);
