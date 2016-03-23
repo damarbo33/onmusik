@@ -1008,11 +1008,11 @@
 	"Ioutil.h"
 	"Iofrontend.h"
 
-1458723553 source:c:\github\proyectos\mp3play\audioplayer.cpp
+1458747228 source:c:\github\proyectos\mp3play\audioplayer.cpp
 	"audioplayer.h"
 	"Constant.h"
 
-1458723553 c:\github\proyectos\mp3play\audioplayer.h
+1458746331 c:\github\proyectos\mp3play\audioplayer.h
 	<iostream>
 	<fstream>
 	<stdio.h>
@@ -1026,6 +1026,8 @@
 	"math.h"
 	"Traza.h"
 	"gmutex.h"
+	"Dirutil.h"
+	"Menuobject.h"
 
 1458722604 c:\github\externallibs\uiobjects\src\constant.h
 	<fstream>
@@ -1490,7 +1492,7 @@
 	<iostream>
 	"Constant.h"
 
-1458649502 source:c:\github\proyectos\onmusik\src\ioutil.cpp
+1458728208 source:c:\github\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"
