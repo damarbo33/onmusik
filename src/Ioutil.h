@@ -74,7 +74,7 @@
             void drawUIInputWide(Object *obj);
             void drawUIArt(Object *obj);
             void drawUILabel(Object *obj);
-            void drawUIProgressBar(Object *obj);
+            void drawUIProgressBar(Object *obj, tEvento *evento);
             void drawUIPanel(Object *obj);
             void drawUILetraPopup(Object *obj);
             void drawUIPopupFondo(Object *obj, int);
@@ -88,7 +88,7 @@
             void drawUISpectrum(Object *obj);
             void drawIco(int , int , int , int , int );
             void drawIco(int numIco, int angle, int x, int y, int w, int h);
-            void pintarHint(int x1, int y1, int w1, int h1, t_color color);
+            void pintarHint(int x1, int y1, int w1, int h1, string text, t_color color);
             void pintarCirculo (int, int, int, t_color);
             void pintarSemiCirculo (int x, int y, int r, t_color color, int angle);
             void pintarFillCircle(SDL_Surface *surface, int cx, int cy, int radius, Uint32 pixel);

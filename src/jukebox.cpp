@@ -293,7 +293,7 @@ void Jukebox::uploadMusicToDropbox(string ruta, string accessToken){
     string nombreAlbum;
     string rutaUpload;
 
-    if (!accessToken.empty()){
+    if (!accessToken.empty() && filelist->getSize() > 0){
         for (int i=0; i < filelist->getSize(); i++){
             file = filelist->get(i);
             rutaLocal = file.dir + tempFileSep + file.filename;
@@ -314,19 +314,17 @@ void Jukebox::uploadMusicToDropbox(string ruta, string accessToken){
             }
         }
 
-        if (filelist->getSize() > 0){
-            ObjectsMenu->getObjByName("statusMessage")->setLabel("Subiendo " + fileMetadata);
-            Traza::print("Subiendo metadatos...", W_DEBUG);
-            upid = dropbox.chunckedUpload(rutaMetadata, accessToken);
-            rutaUpload = musicDir + "/" + nombreAlbum + "/" + fileMetadata;
-            Traza::print("Confirmando metadatos " + rutaUpload + "...", W_DEBUG);
-            dropbox.commitChunkedUpload(rutaUpload, accessToken, upid);
+        ObjectsMenu->getObjByName("statusMessage")->setLabel("Subiendo " + fileMetadata);
+        Traza::print("Subiendo metadatos...", W_DEBUG);
+        upid = dropbox.chunckedUpload(rutaMetadata, accessToken);
+        rutaUpload = musicDir + "/" + nombreAlbum + "/" + fileMetadata;
+        Traza::print("Confirmando metadatos " + rutaUpload + "...", W_DEBUG);
+        dropbox.commitChunkedUpload(rutaUpload, accessToken, upid);
 
-            UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
-            albumList->addElemLista(nombreAlbum, "/" + musicDir + "/" + nombreAlbum, music);
-            albumList->setImgDrawed(false);
-            ObjectsMenu->getObjByName("statusMessage")->setLabel("Album " + nombreAlbum + " subido");
-        }
+        UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
+        albumList->addElemLista(nombreAlbum, "/" + musicDir + "/" + nombreAlbum, music);
+        albumList->setImgDrawed(false);
+        ObjectsMenu->getObjByName("statusMessage")->setLabel("Album " + nombreAlbum + " subido");
     }
 
 }

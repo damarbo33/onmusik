@@ -139,6 +139,9 @@ class Iofrontend : public Ioutil{
         void refreshSpectrum(AudioPlayer *player);
         void bienvenida();
         void loadComboUnidades();
+        void reloadSong(int posAlbumSelected, int posSongSelected);
+        int posAlbumSelected;
+        int posSongSelected;
 
     public :
         Iofrontend();

@@ -1008,11 +1008,11 @@
 	"Ioutil.h"
 	"Iofrontend.h"
 
-1458747228 source:c:\github\proyectos\mp3play\audioplayer.cpp
+1459773570 source:c:\github\proyectos\mp3play\audioplayer.cpp
 	"audioplayer.h"
 	"Constant.h"
 
-1458746331 c:\github\proyectos\mp3play\audioplayer.h
+1458749931 c:\github\proyectos\mp3play\audioplayer.h
 	<iostream>
 	<fstream>
 	<stdio.h>
@@ -1029,7 +1029,7 @@
 	"Dirutil.h"
 	"Menuobject.h"
 
-1458722604 c:\github\externallibs\uiobjects\src\constant.h
+1458726204 c:\github\externallibs\uiobjects\src\constant.h
 	<fstream>
 	<sstream>
 	<string.h>
@@ -1046,7 +1046,7 @@
 	<stdint.h>
 	<windows.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\traza.h
+1458726204 c:\github\externallibs\uiobjects\src\traza.h
 	<stdio.h>
 	<time.h>
 	<string>
@@ -1055,16 +1055,16 @@
 	<fstream>
 	"Constant.h"
 
-1458722604 c:\github\externallibs\uiobjects\src\gmutex.h
+1458726204 c:\github\externallibs\uiobjects\src\gmutex.h
 	<pthread.h>
 	<pthread.h>
 
-1458248128 source:c:\github\proyectos\onmusik\resource.rc
+1458251728 source:c:\github\proyectos\onmusik\resource.rc
 
-1458641670 source:c:\github\proyectos\onmusik\src\icogestor.cpp
+1458645270 source:c:\github\proyectos\onmusik\src\icogestor.cpp
 	"Icogestor.h"
 
-1393496309 c:\github\proyectos\onmusik\src\icogestor.h
+1393499909 c:\github\proyectos\onmusik\src\icogestor.h
 	"Dirutil.h"
 	"Fileio.h"
 	"Constant.h"
@@ -1072,7 +1072,7 @@
 	"SDL/SDL_image.h"
 	"SDL/SDL_rotozoom.h"
 
-1458722604 c:\github\externallibs\uiobjects\src\dirutil.h
+1458726204 c:\github\externallibs\uiobjects\src\dirutil.h
 	"fileprops.h"
 	<dirent.h>
 	<sys/stat.h>
@@ -1083,10 +1083,10 @@
 	<stdio.h>
 	<windows.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\fileprops.h
+1458726204 c:\github\externallibs\uiobjects\src\fileprops.h
 	<string>
 
-1458722604 c:\github\externallibs\uiobjects\src\listasimple.h
+1458726204 c:\github\externallibs\uiobjects\src\listasimple.h
 	<string.h>
 	<stdio.h>
 	"Excepcion.h"
@@ -1095,13 +1095,13 @@
 	"Constant.h"
 	"fileprops.h"
 
-1458722604 c:\github\externallibs\uiobjects\src\excepcion.h
+1458726204 c:\github\externallibs\uiobjects\src\excepcion.h
 	<iostream>
 	<cmath>
 	"Traza.h"
 	"Constant.h"
 
-1458722604 c:\github\externallibs\uiobjects\src\fileio.h
+1458726204 c:\github\externallibs\uiobjects\src\fileio.h
 	<iostream>
 	<fstream>
 	<string>
@@ -1111,13 +1111,13 @@
 	"Excepcion.h"
 	"Traza.h"
 
-1458720615 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
+1459773991 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
 	"uilistcommon.h"
 
-1458660563 c:\github\proyectos\onmusik\src\iofrontend.h
+1459768134 c:\github\proyectos\onmusik\src\iofrontend.h
 	<string>
 	<vector>
 	"Ioutil.h"
@@ -1138,7 +1138,7 @@
 	"dropbox.h"
 	"AudioPlayer.h"
 
-1458639581 c:\github\proyectos\onmusik\src\ioutil.h
+1459753636 c:\github\proyectos\onmusik\src\ioutil.h
 	<iostream>
 	<map>
 	<cmath>
@@ -1163,7 +1163,7 @@
 	"listaIni.h"
 	"jukebox.h"
 
-1458722604 c:\github\externallibs\uiobjects\src\imagengestor.h
+1458726204 c:\github\externallibs\uiobjects\src\imagengestor.h
 	"Fileio.h"
 	"SHA1.h"
 	"ListaSimple.h"
@@ -1174,15 +1174,15 @@
 	"SDL/SDL_rotozoom.h"
 	"common.h"
 
-1458722604 c:\github\externallibs\uiobjects\src\sha1.h
+1458726204 c:\github\externallibs\uiobjects\src\sha1.h
 	<memory.h>
 	<stdio.h>
 	<string.h>
 	<stdlib.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\common.h
+1458726204 c:\github\externallibs\uiobjects\src\common.h
 
-1458722604 c:\github\externallibs\uiobjects\src\menuobject.h
+1458726204 c:\github\externallibs\uiobjects\src\menuobject.h
 	<sstream>
 	<string.h>
 	"Constant.h"
@@ -1207,11 +1207,11 @@
 	"uitextelementsarea.h"
 	"uispectrum.h"
 
-1458722604 c:\github\externallibs\uiobjects\src\joymapper.h
+1458726204 c:\github\externallibs\uiobjects\src\joymapper.h
 	"Constant.h"
 	"ListaSimple.h"
 
-1458722604 c:\github\externallibs\uiobjects\src\object.h
+1458726204 c:\github\externallibs\uiobjects\src\object.h
 	"common.h"
 	<stdlib.h>
 	<stdio.h>
@@ -1220,84 +1220,84 @@
 	"ImagenGestor.h"
 	"joymapper.h"
 
-1458722604 c:\github\externallibs\uiobjects\src\uilabel.h
+1458726204 c:\github\externallibs\uiobjects\src\uilabel.h
 	<object.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\uibutton.h
+1458726204 c:\github\externallibs\uiobjects\src\uibutton.h
 	<object.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\uilist.h
+1458726204 c:\github\externallibs\uiobjects\src\uilist.h
 	<uilistcommon.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\uilistcommon.h
+1458726204 c:\github\externallibs\uiobjects\src\uilistcommon.h
 	<object.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\uiprogressbar.h
+1459761074 c:\github\externallibs\uiobjects\src\uiprogressbar.h
 	<object.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\uiart.h
+1458726204 c:\github\externallibs\uiobjects\src\uiart.h
 	<object.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\uicheck.h
+1458726204 c:\github\externallibs\uiobjects\src\uicheck.h
 	<object.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\uipanel.h
+1458726204 c:\github\externallibs\uiobjects\src\uipanel.h
 	<object.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\uipanelborder.h
+1458726204 c:\github\externallibs\uiobjects\src\uipanelborder.h
 	<uipanel.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\uipicture.h
+1458726204 c:\github\externallibs\uiobjects\src\uipicture.h
 	<object.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\uiinput.h
+1458726204 c:\github\externallibs\uiobjects\src\uiinput.h
 	<object.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\uipopupmenu.h
+1458726204 c:\github\externallibs\uiobjects\src\uipopupmenu.h
 	<uilist.h>
 	<SDL/SDL_ttf.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\uicombobox.h
+1458726204 c:\github\externallibs\uiobjects\src\uicombobox.h
 	<uilist.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\uilistgroup.h
+1458726204 c:\github\externallibs\uiobjects\src\uilistgroup.h
 	"uilistcommon.h"
 	"beans/listgroupcol.h"
 	<algorithm>
 
-1458722604 c:\github\externallibs\uiobjects\src\beans\listgroupcol.h
+1458726204 c:\github\externallibs\uiobjects\src\beans\listgroupcol.h
 	<iostream>
 	<string>
 	<iostream>
 	<vector>
 
-1458722604 c:\github\externallibs\uiobjects\src\uitextelementsarea.h
+1458726204 c:\github\externallibs\uiobjects\src\uitextelementsarea.h
 	<object.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\uispectrum.h
+1458726204 c:\github\externallibs\uiobjects\src\uispectrum.h
 	<object.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\thread.h
+1458726204 c:\github\externallibs\uiobjects\src\thread.h
 	<Windows.h>
 	<pthread.h>
 	"Constant.h"
 	"gmutex.h"
 
-1458722604 c:\github\externallibs\uiobjects\src\cursor.h
+1458726204 c:\github\externallibs\uiobjects\src\cursor.h
 	"Constant.h"
 	"SDL/SDL.h"
 
-1458722604 c:\github\externallibs\uiobjects\src\listaini.h
+1458726204 c:\github\externallibs\uiobjects\src\listaini.h
 	"ListaSimple.h"
 
-1458206173 c:\github\proyectos\onmusik\src\jukebox.h
+1458209773 c:\github\proyectos\onmusik\src\jukebox.h
 	"Launcher.h"
 	"Menuobject.h"
 	"dropbox.h"
 	"listaIni.h"
 	"thread.h"
 
-1458722604 c:\github\externallibs\uiobjects\src\launcher.h
+1458726204 c:\github\externallibs\uiobjects\src\launcher.h
 	<string.h>
 	<unistd.h>
 	<sys/types.h>
@@ -1315,7 +1315,7 @@
 	<locale>
 	<fcntl.h>
 
-1458722604 c:\github\externallibs\uiobjects\src\unzip\unziptool.h
+1458726204 c:\github\externallibs\uiobjects\src\unzip\unziptool.h
 	<unistd.h>
 	"zlib.h"
 	"unzip.h"
@@ -1326,27 +1326,27 @@
 	"Fileio.h"
 	"Dirutil.h"
 
-1458722587 c:\github\externallibs\ziputils\zlib\zlib.h
+1458726187 c:\github\externallibs\ziputils\zlib\zlib.h
 	"zconf.h"
 
-1458722587 c:\github\externallibs\ziputils\zlib\zconf.h
+1458726187 c:\github\externallibs\ziputils\zlib\zconf.h
 	<windows.h>
 	<sys/types.h>
 	<unistd.h>
 	<unixio.h>
 
-1458722587 c:\github\externallibs\ziputils\unzip\unzip.h
+1458726187 c:\github\externallibs\ziputils\unzip\unzip.h
 	"../zlib/zlib.h"
 	"ioapi.h"
 
-1458722587 c:\github\externallibs\ziputils\unzip\ioapi.h
+1458726187 c:\github\externallibs\ziputils\unzip\ioapi.h
 
-1458722587 c:\github\externallibs\ziputils\unzip\crypt.h
+1458726187 c:\github\externallibs\ziputils\unzip\crypt.h
 
-1458722604 c:\github\externallibs\uiobjects\src\filelaunch.h
+1458726204 c:\github\externallibs\uiobjects\src\filelaunch.h
 	<string>
 
-1458722894 c:\github\proyectos\httpcurl\httpcurl\src\dropbox.h
+1458726494 c:\github\proyectos\httpcurl\httpcurl\src\dropbox.h
 	<iostream>
 	<windows.h>
 	"util/Constant.h"
@@ -1362,7 +1362,7 @@
 	"Dirutil.h"
 	"thread.h"
 
-1458722895 c:\github\proyectos\httpcurl\httpcurl\src\util\constant.h
+1458726495 c:\github\proyectos\httpcurl\httpcurl\src\util\constant.h
 	<sstream>
 	<string.h>
 	<vector>
@@ -1376,7 +1376,7 @@
 	<iomanip>
 	<windows.h>
 
-1458722894 c:\github\proyectos\httpcurl\httpcurl\src\httputil.h
+1458726494 c:\github\proyectos\httpcurl\httpcurl\src\httputil.h
 	<stdlib.h>
 	<string.h>
 	<stdio.h>
@@ -1390,7 +1390,7 @@
 	<curl/curl.h>
 	"Traza.h"
 
-1458722947 c:\github\proyectos\rijndael\filecipher.h
+1458726547 c:\github\proyectos\rijndael\filecipher.h
 	<iostream>
 	<fstream>
 	<stdio.h>
@@ -1402,13 +1402,13 @@
 	<cstdlib>
 	"Constant.h"
 
-1458722947 c:\github\proyectos\rijndael\rijndael.h
+1458726547 c:\github\proyectos\rijndael\rijndael.h
 	<iostream>
 
-1458722947 c:\github\proyectos\rijndael\sha256.h
+1458726547 c:\github\proyectos\rijndael\sha256.h
 	<string>
 
-1419773766 c:\github\externallibs\curl-7.40.0-devel-mingw32\include\curl\curl.h
+1419777366 c:\github\externallibs\curl-7.40.0-devel-mingw32\include\curl\curl.h
 	"curlver.h"
 	"curlbuild.h"
 	"curlrules.h"
@@ -1427,37 +1427,37 @@
 	"multi.h"
 	"typecheck-gcc.h"
 
-1420705098 c:\github\externallibs\curl-7.40.0-devel-mingw32\include\curl\curlver.h
+1420708698 c:\github\externallibs\curl-7.40.0-devel-mingw32\include\curl\curlver.h
 
-1420705098 c:\github\externallibs\curl-7.40.0-devel-mingw32\include\curl\curlbuild.h
+1420708698 c:\github\externallibs\curl-7.40.0-devel-mingw32\include\curl\curlbuild.h
 	<sys/types.h>
 	<sys/socket.h>
 
-1415105476 c:\github\externallibs\curl-7.40.0-devel-mingw32\include\curl\curlrules.h
+1415109076 c:\github\externallibs\curl-7.40.0-devel-mingw32\include\curl\curlrules.h
 
-1402509150 c:\github\externallibs\curl-7.40.0-devel-mingw32\include\curl\easy.h
+1402512750 c:\github\externallibs\curl-7.40.0-devel-mingw32\include\curl\easy.h
 
-1415105476 c:\github\externallibs\curl-7.40.0-devel-mingw32\include\curl\multi.h
+1415109076 c:\github\externallibs\curl-7.40.0-devel-mingw32\include\curl\multi.h
 	"curl.h"
 
-1415105476 c:\github\externallibs\curl-7.40.0-devel-mingw32\include\curl\typecheck-gcc.h
+1415109076 c:\github\externallibs\curl-7.40.0-devel-mingw32\include\curl\typecheck-gcc.h
 
-1458722894 c:\github\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\json.h
+1458726494 c:\github\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\json.h
 	"autolink.h"
 	"value.h"
 	"reader.h"
 	"writer.h"
 	"features.h"
 
-1458722894 c:\github\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\autolink.h
+1458726494 c:\github\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\autolink.h
 	"config.h"
 	<cpptl/cpptl_autolink.h>
 	"autolink.h"
 
-1458722894 c:\github\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\config.h
+1458726494 c:\github\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\config.h
 	<cpptl/config.h>
 
-1458722894 c:\github\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\value.h
+1458726494 c:\github\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\value.h
 	"forwards.h"
 	<string>
 	<vector>
@@ -1466,10 +1466,10 @@
 	<cpptl/smallmap.h>
 	<cpptl/forwards.h>
 
-1458722894 c:\github\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\forwards.h
+1458726494 c:\github\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\forwards.h
 	"config.h"
 
-1458722894 c:\github\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\reader.h
+1458726494 c:\github\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\reader.h
 	"features.h"
 	"value.h"
 	<deque>
@@ -1478,39 +1478,39 @@
 	<string>
 	<istream>
 
-1458722894 c:\github\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\features.h
+1458726494 c:\github\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\features.h
 	"forwards.h"
 
-1458722894 c:\github\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\writer.h
+1458726494 c:\github\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\writer.h
 	"value.h"
 	<vector>
 	<string>
 	<ostream>
 
-1458722604 c:\github\externallibs\uiobjects\src\colorutil.h
+1458726204 c:\github\externallibs\uiobjects\src\colorutil.h
 	<stdio.h>
 	<iostream>
 	"Constant.h"
 
-1458728208 source:c:\github\proyectos\onmusik\src\ioutil.cpp
+1459761973 source:c:\github\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"
 
-1458252432 c:\github\proyectos\onmusik\src\9001.png.h
+1458256032 c:\github\proyectos\onmusik\src\9001.png.h
 
-1458722604 c:\github\externallibs\uiobjects\src\font\arimo_regular.ttf.h
+1458726204 c:\github\externallibs\uiobjects\src\font\arimo_regular.ttf.h
 
-1458645110 source:c:\github\proyectos\onmusik\src\jukebox.cpp
+1459764263 source:c:\github\proyectos\onmusik\src\jukebox.cpp
 	"jukebox.h"
 
-1458573990 source:c:\github\proyectos\onmusik\src\main.cpp
+1458577590 source:c:\github\proyectos\onmusik\src\main.cpp
 	"main.h"
 	"Dirutil.h"
 	<iostream>
 	<fstream>
 
-1458246004 c:\github\proyectos\onmusik\src\main.h
+1458249604 c:\github\proyectos\onmusik\src\main.h
 	<stdio.h>
 	"Ioutil.h"
 	"Iofrontend.h"

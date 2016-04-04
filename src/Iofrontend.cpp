@@ -37,6 +37,9 @@ Iofrontend::Iofrontend(){
     //y cargar la playlist, lo que tarda un poco. Por eso refrescamos la pantalla sin nada
     //, refrescamos la pantalla para que se pinte todo vacio y finalmente volvemos a refrescar
     //para que se vea todo correctamente
+    posAlbumSelected = 0;
+    posSongSelected = 0;
+
     juke = new Jukebox();
     player = new AudioPlayer();
     finishedDownload = false;
@@ -120,13 +123,16 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLABROWSER2]->add("comboBrowser", GUICOMBOBOX, 0, 0, 0, 0, "", false);
 
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("panelMedia", GUIPANEL, 0,0,0,0, "", true)->setEnabled(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("progressBarMedia", GUIPROGRESSBAR, 20, 20, 200, 20, "", true)->setShadow(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("statusMessage",  GUILABEL,  0,0,0,0, "", false)->setEnabled(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("albumList", GUILISTBOX, 0,0,0,0, "", true)->setEnabled(true);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("playLists", GUILISTGROUPBOX, 0,0,0,0, "", true)->setEnabled(true);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("spectrum", GUISPECTRUM, 0,0,0,0, "", true)->setEnabled(true);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("progressBarVolumen", GUIPROGRESSBAR, 20, 20, 200, 20, "", true)->setShadow(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("labelVol",  GUILABEL,  0,0,0,0, "100%", false)->setEnabled(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnAddContent",  GUIBUTTON, 0,0,0,0, "Subir nuevo disco", true)->setIcon(add)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("mediaTimerTotal",  GUILABEL,  0,0,0,0, "0:00:00", false)->setEnabled(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("mediaTimer",  GUILABEL,  0,0,0,0, "0:00:00", false)->setEnabled(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("progressBarMedia", GUIPROGRESSBAR, 0,0,0,0, "", true)->setShadow(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("progressBarVolumen", GUIPROGRESSBAR, 0,0,0,0, "", true)->setShadow(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("ImgVol", GUIBUTTON, 0,0,0,0, "Ajustar volumen", true)->setIcon(sound)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnBackward", GUIBUTTON, 0,0,0,0, "Saltar a canción anterior", true)->setIcon(control_rewind)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnPlay",     GUIBUTTON, 0,0,0,0, "Reproducir", true)->setIcon(control_play)->setVerContenedor(false);
@@ -134,9 +140,6 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnForward",  GUIBUTTON, 0,0,0,0, "Saltar a canción siguiente", true)->setIcon(control_fastforward)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnRepeat", GUIBUTTON, 0,0,0,0, "Repetir disco", true)->setIcon(btn_repeat_off)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnRandom", GUIBUTTON, 0,0,0,0, "Aleatorio", true)->setIcon(btn_random_off)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnAddContent",  GUIBUTTON, 0,0,0,0, "Subir nuevo disco", true)->setIcon(add)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("mediaTimerTotal",  GUILABEL,  0,0,0,0, "0:00:00", false)->setEnabled(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("mediaTimer",  GUILABEL,  0,0,0,0, "0:00:00", false)->setEnabled(false);
 
 
     //ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("panelMedia")->setAlpha(150);
@@ -145,6 +148,7 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimerTotal")->setTextColor(cBlanco);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimer")->setTextColor(cBlanco);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("labelVol")->setTextColor(cBlanco);
+    ((UIProgressBar *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarMedia"))->setTypeHint(HINT_TIME);
     UISpectrum *objSpectrum = (UISpectrum *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum");
     objSpectrum->setColor(cGrisOscuro);
     objSpectrum->setColorFondo(cGrisClaro);
@@ -938,7 +942,7 @@ string Iofrontend::showExplorador(tEvento *evento){
                 objMenu->findNextFocus();
             }
 
-            fps();
+            //fps();
             flipScr();
             salir = (askEvento.isJoy && askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_B)) ||
             ( ((askEvento.isKey && askEvento.key == SDLK_ESCAPE) || !obj->getTag().empty())
@@ -1457,15 +1461,16 @@ int Iofrontend::uploadDiscToDropbox(tEvento *evento){
 */
 int Iofrontend::mediaClicked(tEvento *evento){
     Traza::print("Iofrontend::mediaClicked", W_DEBUG);
+    //Comprobamos si se ha terminado la descarga y recargamos en ese caso
+    reloadSong(posAlbumSelected, posSongSelected);
+
     UIProgressBar * objProg = (UIProgressBar *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarMedia");
     Traza::print("Pos pulsada barra de tiempo", objProg->getProgressPos(), W_DEBUG);
     float pos = 0;
     if (finishedDownload && objProg->getProgressMax() > 0 && player->getStatus() == PLAYING){
-        //pos = objProg->getProgressPos() / (float)objProg->getProgressMax();
         player->setPosicionCancion(objProg->getProgressPos() * 1000);
-        return 0;
     }
-    return 1;
+    return 0;
 }
 
 /**
@@ -1511,9 +1516,6 @@ int Iofrontend::accionRandom(tEvento *evento){
     }
     return 0;
 }
-
-
-
 
 /**
 *
@@ -1685,7 +1687,7 @@ bool Iofrontend::bucleReproductor(){
     unsigned long timerPanelMedia = 0;
     ignoreButtonRepeats = true;
     tEvento askEvento;
-    long max_ = 0;
+    long lenSongSec = 0;
     tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
     bool panelMediaVisible = true;
     finishedDownload = false;
@@ -1700,16 +1702,16 @@ bool Iofrontend::bucleReproductor(){
 
         //Obtenemos el codigo del album y la cancion que esta reproduciendose actualmente
         UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
-        int posAlbumSelected = albumList->getLastSelectedPos();
-        int posSongSelected = playList->getLastSelectedPos();
+        posAlbumSelected = albumList->getLastSelectedPos();
+        posSongSelected = playList->getLastSelectedPos();
 
         //Asignamos el tiempo total de la cancion
-        max_ = time.empty() ? 0 : ceil(Constant::strToTipo<double>(time));
+        lenSongSec = time.empty() ? 0 : ceil(Constant::strToTipo<double>(time));
         //Una vez sabemos el maximo de tiempo, damos valor a la barra de progreso con el maximo de segundos
         //y al label para mostrar el total de tiempo de la pelicula
         UIProgressBar *objProg = (UIProgressBar *)obj->getObjByName("progressBarMedia");
-        objProg->setProgressMax(max_);
-        obj->getObjByName("mediaTimerTotal")->setLabel(Constant::timeFormat(max_));
+        objProg->setProgressMax(lenSongSec);
+        obj->getObjByName("mediaTimerTotal")->setLabel(Constant::timeFormat(lenSongSec));
 
         clearEvento(&askEvento);
         timer1s = SDL_GetTicks();
@@ -1765,11 +1767,13 @@ bool Iofrontend::bucleReproductor(){
                     timerPanelMedia = SDL_GetTicks();
                 } else if ((askEvento.isKey && askEvento.key == SDLK_RIGHT) || askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_RIGHT)){
                     if (finishedDownload && objProg->getProgressPos() + 10 < objProg->getProgressMax()){
+                        reloadSong(posAlbumSelected, posSongSelected);
                         player->forward(10000);
                         timerPanelMedia = SDL_GetTicks();
                     }
                 } else if ((askEvento.isKey && askEvento.key == SDLK_LEFT) || askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_LEFT)){
                     if (finishedDownload){
+                        reloadSong(posAlbumSelected, posSongSelected);
                         player->rewind(10000);
                         timerPanelMedia = SDL_GetTicks();
                     }
@@ -1791,37 +1795,14 @@ bool Iofrontend::bucleReproductor(){
                     refreshSpectrum(player);
                 }
 
-
-                //Cuando detectamos que se ha descargado el fichero totalmente, recargamos
-                //el thread para que se pueda avanzar o retroceder. Esto es debido a limitaciones
-                //en la libreria de SDL para Mix_LoadMUS_RW con un fichero a medio descargar
-                //por streaming. Solo lo hacemos si se ha terminado el thread de descarga, se esta
-                //reproduciendo una cancion y no se ha seleccionado otro album que haya cambiado la lista
-                if (!threadDownloader->isRunning() && !finishedDownload && player->getStatus() == PLAYING &&
-                    posAlbumSelected == albumList->getLastSelectedPos()){
-                    Traza::print("Descarga completada correctamente", W_DEBUG);
-                    //Indicamos que la cancion se ha terminado de descargar
+                //Recargamos la cancion si se ha terminado la descarga de la misma
+                //y no se habia obtenido informacion del tiempo total de la cancion
+                if (lenSongSec == 0){
+                    reloadSong(posAlbumSelected, posSongSelected);
+                //Si no se ha descargado, comprobamos si se ha terminado la descarga
+                } else if (!threadDownloader->isRunning() && !finishedDownload && player->getStatus() == PLAYING &&
+                            posAlbumSelected == albumList->getLastSelectedPos() && !player->isSongDownloaded()){
                     player->setSongDownloaded(true);
-                    //Realizamos la peticion de stop y esperamos a que termine el thread
-                    player->stop();
-                    threadPlayer->join();
-                    //Obtenemos la posicion en la que terminamos la reproduccion. Debe ser justo en un segundo
-                    //especifico, no nos vale en milesimas puesto que no tenemos tanta precision con SDL_MUSIC.
-                    //Esto se controla en el propio bucle del AudioPlayer
-                    long posActual = player->getActualPlayTime();
-                    Traza::print("Thread detenido correctamente", W_DEBUG);
-                    player->setPosicionInicial(posActual);
-                    delete threadPlayer;
-                    threadPlayer = new Thread<AudioPlayer>(player, &AudioPlayer::loadFile);
-                    if (threadPlayer->start())
-                        Traza::print("Thread reproductor started with id: ", threadPlayer->getThreadID(), W_DEBUG);
-                    finishedDownload = true;
-
-                    //Una vez que el fichero esta descargado, ya podemos obtener los tags id3 que contienen
-                    //mayor informacion sobre la cancion que se esta reproduciendo
-                    //Nos aseguramos que modificamos la posicion correcta con el campo posSongSelected
-                    playList->setLastSelectedPos(posSongSelected);
-                    juke->refreshPlayListMetadata();
                 }
 
                 flipScr();
@@ -1834,12 +1815,56 @@ bool Iofrontend::bucleReproductor(){
             obj->getObjByName("mediaTimer")->setLabel(Constant::timeFormat(0));
             objProg->setProgressMax(0);
             objProg->setProgressPos(0);
+            player->setSongDownloaded(true);
             Traza::print("Fin del bucle de reproductor", W_DEBUG);
     } catch (Excepcion &e){
         Traza::print("Excepcion en bucle de reproductor: " + string(e.getMessage()), W_ERROR);
     }
 
     return true;
+}
+
+/**
+*
+*/
+void Iofrontend::reloadSong(int posAlbumSelected, int posSongSelected){
+    if (threadDownloader != NULL && player != NULL){
+        tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+        UIListGroup *playList = ((UIListGroup *)obj->getObjByName("playLists"));
+        UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
+
+        //Cuando detectamos que se ha descargado el fichero totalmente, recargamos
+        //el thread para que se pueda avanzar o retroceder. Esto es debido a limitaciones
+        //en la libreria de SDL para Mix_LoadMUS_RW con un fichero a medio descargar
+        //por streaming. Solo lo hacemos si se ha terminado el thread de descarga, se esta
+        //reproduciendo una cancion y no se ha seleccionado otro album que haya cambiado la lista
+        if (!threadDownloader->isRunning() && !finishedDownload && player->getStatus() == PLAYING &&
+            posAlbumSelected == albumList->getLastSelectedPos()){
+            Traza::print("Descarga completada correctamente", W_DEBUG);
+            //Indicamos que la cancion se ha terminado de descargar
+            player->setSongDownloaded(true);
+            //Realizamos la peticion de stop y esperamos a que termine el thread
+            player->stop();
+            threadPlayer->join();
+            //Obtenemos la posicion en la que terminamos la reproduccion. Debe ser justo en un segundo
+            //especifico, no nos vale en milesimas puesto que no tenemos tanta precision con SDL_MUSIC.
+            //Esto se controla en el propio bucle del AudioPlayer
+            long posActual = player->getActualPlayTime();
+            Traza::print("Thread detenido correctamente", W_DEBUG);
+            player->setPosicionInicial(posActual);
+            delete threadPlayer;
+            threadPlayer = new Thread<AudioPlayer>(player, &AudioPlayer::loadFile);
+            if (threadPlayer->start())
+                Traza::print("Thread reproductor started with id: ", threadPlayer->getThreadID(), W_DEBUG);
+            finishedDownload = true;
+
+            //Una vez que el fichero esta descargado, ya podemos obtener los tags id3 que contienen
+            //mayor informacion sobre la cancion que se esta reproduciendo
+            //Nos aseguramos que modificamos la posicion correcta con el campo posSongSelected
+            playList->setLastSelectedPos(posSongSelected);
+            juke->refreshPlayListMetadata();
+        }
+    }
 }
 
 /**
@@ -1855,8 +1880,8 @@ int Iofrontend::calculaPosPanelMedia(){
 */
 void Iofrontend::refreshAlbumAndPlaylist(){
     Traza::print("Iofrontend::refreshAlbumAndPlaylist", W_DEBUG);
-    string accessToken = autenticarDropbox();
 
+    string accessToken = autenticarDropbox();
     if (accessToken.empty()){
         showMessage("No se ha podido conectar a dropbox", 2000);
     } else {
@@ -1873,8 +1898,8 @@ void Iofrontend::refreshAlbumAndPlaylist(){
             procesarControles(obj, &evento, NULL);
             pintarIconoProcesando(false);
         }
-        procesarControles(obj, &evento, NULL);
-        flipScr();
+//        procesarControles(obj, &evento, NULL);
+//        flipScr();
         delete thread;
 
         ((UIListGroup *)obj->getObjByName("playLists"))->setImgDrawed(false);

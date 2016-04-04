@@ -240,6 +240,63 @@ void Ioutil::killSDL(){
 /**
 *
 */
+void Ioutil::drawObject(Object *obj, tEvento *evento){
+    switch(obj->getObjectType()){
+        case GUIPOPUPMENU:
+            drawUIPopupMenu(obj);
+            break;
+        case GUILABEL:
+            drawUILabel(obj);
+            break;
+        case GUIBUTTON:
+            drawUIButton(obj);
+            break;
+        case GUILISTBOX:
+            drawUIListBox(obj);
+            break;
+        case GUILISTGROUPBOX:
+            drawUIListGroupBox(obj);
+            break;
+        case GUICOMBOBOX:
+            drawUIComboBox(obj);
+            break;
+        case GUIPICTURE:
+            drawUIPicture(obj);
+            break;
+        case GUIARTSURFACE:
+            drawUIArt(obj);
+            break;
+        case GUIINPUTWIDE:
+            drawUIInputWide(obj);
+            break;
+        case GUITEXTELEMENTSAREA:
+            drawUITextElementsArea(obj);
+            break;
+        case GUICHECK:
+            showCheck(obj);
+            break;
+        case GUIPANELBORDER:
+            drawUITitleBorder(obj->getLabel().c_str());
+            break;
+        case GUIPANEL:
+            drawUIPanel(obj);
+            break;
+        case GUIPROGRESSBAR:
+            //Traza::print("evento.mouse_x: ",evento->mouse_x, W_DEBUG);
+            drawUIProgressBar(obj, evento);
+            break;
+        case GUISPECTRUM:
+            drawUISpectrum(obj);
+            break;
+        default:
+            break;
+    }
+}
+
+
+/**
+*
+*/
 void Ioutil::toggleFullScreen(){
     //SDL_WM_ToggleFullScreen(screen);
     Uint32 flags = SCREEN_MODE; /* Start with whatever flags you prefer */
@@ -863,9 +920,11 @@ void Ioutil::pintarContenedor(int x1, int y1, int w1, int h1, bool selected, Obj
 /**
 *
 */
-void Ioutil::pintarHint(int x1, int y1, int w1, int h1, t_color color){
+void Ioutil::pintarHint(int x1, int y1, int w1, int h1, string text, t_color color){
+    w1 += 4;
     drawRect(x1+INPUTBORDER,y1+INPUTBORDER,w1-INPUTBORDER,h1-INPUTBORDER, color); // Dibujo el contenedor
     drawRectLine(x1,y1,w1,h1,INPUTBORDER,cInputBorder);//Dibujo el borde
+    drawText(text.c_str(), x1 + 2, y1 + 2, cNegro);
 }
 
 
@@ -1989,7 +2048,7 @@ tInput Ioutil::calculaTextoInput(Object *obj){
 /**
 *
 */
-void Ioutil::drawUIProgressBar(Object *obj){
+void Ioutil::drawUIProgressBar(Object *obj, tEvento *evento){
 
     UIProgressBar *objProg = (UIProgressBar *)obj;
     if (obj->isVisible()){
@@ -2004,6 +2063,32 @@ void Ioutil::drawUIProgressBar(Object *obj){
             int wsel = (objProg->getProgressPos() / (float)objProg->getProgressMax()) * w;
             if (wsel > 0)
                 drawRect(x+INPUTBORDER,y+INPUTBORDER,wsel,h-INPUTBORDER,cAzul); // Dibujo el contenedor
+
+            //Calculamos el hint de la barra cuando pasamos el mouse por encima
+            if (evento->mouse_x > 0 && evento->mouse_y > 0){
+                //Indicamos que estamos sobre la barra
+                objProg->setMouseOverBar(evento->mouse_x > obj->getX() && evento->mouse_x < obj->getX() + obj->getW()
+                && evento->mouse_y > obj->getY() && evento->mouse_y < obj->getY() + obj->getH());
+                //Especificamos la posicion
+                if (objProg->getMouseOverBar()){
+                    objProg->setPosXNow(evento->mouse_x);
+                    int dif = evento->mouse_x > 0 ? evento->mouse_x - objProg->getX() : 0;
+                    float percent = objProg->getW() >= 1 ? dif/(float)objProg->getW() : 0;
+                    long tempPos = ceil(objProg->getProgressMax() * percent);
+
+                    objProg->setLastTimeTick(SDL_GetTicks());
+                    if (objProg->getTypeHint() == HINT_TIME){
+                        objProg->setLabel(Constant::timeFormat(tempPos));
+                    } else if (objProg->getTypeHint() == HINT_PERCENT){
+                        objProg->setLabel(Constant::TipoToStr(ceil(percent * 100)) + "%");
+                    }
+                }
+            }
+
+            if (objProg->getMouseOverBar()){
+                pintarHint(objProg->getPosXNow(), obj->getY() - fontHeight, fontStrLen(objProg->getLabel()),
+                           fontHeight, objProg->getLabel(), cGrisClaro);
+            }
         }
     }
 }
@@ -2075,10 +2160,7 @@ void Ioutil::drawUIButton(Object *obj){
                         posHintY = obj->getY() + obj->getH() + 4;
                         posHintX += obj->getW();
                     }
-
-
-                    pintarHint(posHintX, posHintY, fontStrLen(obj->getLabel()) + 4 ,fontHeight, cGrisClaro);
-                    drawText(obj->getLabel().c_str(), posHintX + 2, posHintY + 2, cNegro);
+                    pintarHint(posHintX, posHintY, fontStrLen(obj->getLabel()), fontHeight, obj->getLabel(), cGrisClaro);
                 }
             }
 
@@ -2822,62 +2904,6 @@ string Ioutil::configButtonsJOY(tEvento *evento){
     return salida;
 }
 
-/**
-*
-*/
-void Ioutil::drawObject(Object *obj, tEvento *evento){
-    switch(obj->getObjectType()){
-        case GUIPOPUPMENU:
-            drawUIPopupMenu(obj);
-            break;
-        case GUILABEL:
-            drawUILabel(obj);
-            break;
-        case GUIBUTTON:
-            drawUIButton(obj);
-            break;
-        case GUILISTBOX:
-            drawUIListBox(obj);
-            break;
-        case GUILISTGROUPBOX:
-            drawUIListGroupBox(obj);
-            break;
-        case GUICOMBOBOX:
-            drawUIComboBox(obj);
-            break;
-        case GUIPICTURE:
-            drawUIPicture(obj);
-            break;
-        case GUIARTSURFACE:
-            drawUIArt(obj);
-            break;
-        case GUIINPUTWIDE:
-            drawUIInputWide(obj);
-            break;
-        case GUITEXTELEMENTSAREA:
-            drawUITextElementsArea(obj);
-            break;
-        case GUICHECK:
-            showCheck(obj);
-            break;
-        case GUIPANELBORDER:
-            drawUITitleBorder(obj->getLabel().c_str());
-            break;
-        case GUIPANEL:
-            drawUIPanel(obj);
-            break;
-        case GUIPROGRESSBAR:
-            drawUIProgressBar(obj);
-            break;
-        case GUISPECTRUM:
-            drawUISpectrum(obj);
-            break;
-        default:
-            break;
-    }
-
-
-}
 
 /**
 *
