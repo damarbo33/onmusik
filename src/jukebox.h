@@ -37,6 +37,7 @@ class Jukebox
         void hashMapMetadatos(map<string, string> *metadatos, string ruta);
         Dropbox dropboxDownloader;
         string getMetadatos(map<string, string> *metadatos, string key);
+        listaSimple<string> *convertedFilesList;
 
     public:
         /** Default constructor */

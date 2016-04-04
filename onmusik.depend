@@ -1111,7 +1111,7 @@
 	"Excepcion.h"
 	"Traza.h"
 
-1459773991 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
+1459775489 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
@@ -1290,7 +1290,7 @@
 1458726204 c:\github\externallibs\uiobjects\src\listaini.h
 	"ListaSimple.h"
 
-1458209773 c:\github\proyectos\onmusik\src\jukebox.h
+1459776771 c:\github\proyectos\onmusik\src\jukebox.h
 	"Launcher.h"
 	"Menuobject.h"
 	"dropbox.h"
@@ -1501,7 +1501,7 @@
 
 1458726204 c:\github\externallibs\uiobjects\src\font\arimo_regular.ttf.h
 
-1459764263 source:c:\github\proyectos\onmusik\src\jukebox.cpp
+1459776976 source:c:\github\proyectos\onmusik\src\jukebox.cpp
 	"jukebox.h"
 
 1458577590 source:c:\github\proyectos\onmusik\src\main.cpp

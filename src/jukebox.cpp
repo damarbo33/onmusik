@@ -7,7 +7,7 @@ const string fileMetadata = "metadata.txt";
 
 Jukebox::Jukebox()
 {
-    //ctor
+    convertedFilesList = new listaSimple<string>();
 }
 
 Jukebox::~Jukebox()
@@ -18,6 +18,7 @@ Jukebox::~Jukebox()
     Dirutil dir;
     dir.borrarArchivo(rutaMetadata);
     dir.borrarArchivo(tempFileDir);
+
 }
 
 /**
@@ -141,6 +142,7 @@ TID3Tags Jukebox::getSongInfo(string filepath){
 DWORD Jukebox::convertir(){
     convertir(dirToUpload);
     uploadMusicToDropbox(dirToUpload, this->accessToken);
+
     return 0;
 }
 
@@ -190,7 +192,8 @@ void Jukebox::convertir(string ruta){
     Traza::print("Jukebox::convertir", W_DEBUG);
 
     try{
-
+        convertedFilesList->clear();
+        Traza::print("Jukebox::clear", W_DEBUG);
         dir.listarDir(ruta.c_str(), filelist, filtroFicheros);
         FileProps file;
         Launcher lanzador;
@@ -240,6 +243,7 @@ void Jukebox::convertir(string ruta){
                     emulInfo.nombrerom = file.filename;
                     //Como no es un fichero ogg, necesitamos recodificar
                     resultado = lanzador.lanzarProgramaUNIXFork(&emulInfo);
+                    convertedFilesList->add(rutaFicheroOgg);
                 } else {
                     //El fichero es ogg. No necesitamos recodificar y solo obtenemos info de la cancion
                     id3Tags = getSongInfo(rutaFicheroOgg);
@@ -268,6 +272,7 @@ void Jukebox::convertir(string ruta){
                 Traza::print("Tags anyadidos al fichero de metadatos", W_DEBUG);
             }
         }
+        convertedFilesList->sort();
         //Finalmente escribimos el fichero de metadata
         std::string outputConfig = Json::writeString(wbuilder, root);
         fichero.writeToFile(rutaMetadata.c_str(),(char *)outputConfig.c_str(),outputConfig.length(),true);
@@ -311,6 +316,10 @@ void Jukebox::uploadMusicToDropbox(string ruta, string accessToken){
                 upid = dropbox.chunckedUpload(rutaLocal, accessToken);
                 Traza::print("Confirmando subida del album " + rutaUpload + "...", W_DEBUG);
                 dropbox.commitChunkedUpload(rutaUpload, accessToken, upid);
+                //Si habiamos convertido el fichero, lo borramos
+                if (convertedFilesList->find(rutaLocal) != -1){
+                    dir.borrarArchivo(rutaLocal);
+                }
             }
         }
 
@@ -320,6 +329,7 @@ void Jukebox::uploadMusicToDropbox(string ruta, string accessToken){
         rutaUpload = musicDir + "/" + nombreAlbum + "/" + fileMetadata;
         Traza::print("Confirmando metadatos " + rutaUpload + "...", W_DEBUG);
         dropbox.commitChunkedUpload(rutaUpload, accessToken, upid);
+        dir.borrarArchivo(rutaMetadata);
 
         UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
         albumList->addElemLista(nombreAlbum, "/" + musicDir + "/" + nombreAlbum, music);
