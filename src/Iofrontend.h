@@ -107,6 +107,8 @@ class Iofrontend : public Ioutil{
         int accionRepeat(tEvento *evento);
         int accionRandom(tEvento *evento);
         int accionCombo(tEvento *evento);
+        int accionesEqualizer(tEvento *evento);
+        int accionesFiltroGraves(tEvento *evento);
         string showExplorador(tEvento *);
         void cargaMenuFromLista(UIListCommon *, tEvento *);
         void cargaMenu(int, string, tEvento *);

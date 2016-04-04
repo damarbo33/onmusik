@@ -1515,3 +1515,517 @@
 	"Ioutil.h"
 	"Iofrontend.h"
 
+1459814154 source:d:\github\codeblocks\proyectos\mp3play\audioplayer.cpp
+	"audioplayer.h"
+	"Constant.h"
+
+1459814141 d:\github\codeblocks\proyectos\mp3play\audioplayer.h
+	<iostream>
+	<fstream>
+	<stdio.h>
+	<string.h>
+	<sstream>
+	<cstdlib>
+	<SDL/SDL.h>
+	<SDL/SDL_mixer.h>
+	"SDL/SDL_ttf.h"
+	"Constant.h"
+	"math.h"
+	"Traza.h"
+	"gmutex.h"
+	"Dirutil.h"
+	"Menuobject.h"
+	"biquad.h"
+
+1459812686 d:\github\codeblocks\externallibs\uiobjects\src\constant.h
+	<fstream>
+	<sstream>
+	<string.h>
+	<vector>
+	<typeinfo>
+	<ctime>
+	<dirent.h>
+	<stdio.h>
+	<limits.h>
+	<algorithm>
+	<cctype>
+	<iomanip>
+	<cstddef>
+	<stdint.h>
+	<windows.h>
+
+1398701244 d:\github\codeblocks\externallibs\uiobjects\src\traza.h
+	<stdio.h>
+	<time.h>
+	<string>
+	<limits.h>
+	<iostream>
+	<fstream>
+	"Constant.h"
+
+1458558744 d:\github\codeblocks\externallibs\uiobjects\src\gmutex.h
+	<pthread.h>
+	<pthread.h>
+
+1458654032 d:\github\codeblocks\externallibs\uiobjects\src\dirutil.h
+	"fileprops.h"
+	<dirent.h>
+	<sys/stat.h>
+	<sys/types.h>
+	<unistd.h>
+	"Traza.h"
+	"ListaSimple.h"
+	<stdio.h>
+	<windows.h>
+
+1401212224 d:\github\codeblocks\externallibs\uiobjects\src\fileprops.h
+	<string>
+
+1453463013 d:\github\codeblocks\externallibs\uiobjects\src\listasimple.h
+	<string.h>
+	<stdio.h>
+	"Excepcion.h"
+	"Fileio.h"
+	<typeinfo>
+	"Constant.h"
+	"fileprops.h"
+
+1445250684 d:\github\codeblocks\externallibs\uiobjects\src\excepcion.h
+	<iostream>
+	<cmath>
+	"Traza.h"
+	"Constant.h"
+
+1433750323 d:\github\codeblocks\externallibs\uiobjects\src\fileio.h
+	<iostream>
+	<fstream>
+	<string>
+	<algorithm>
+	<vector>
+	<iterator>
+	"Excepcion.h"
+	"Traza.h"
+
+1457696741 d:\github\codeblocks\externallibs\uiobjects\src\menuobject.h
+	<sstream>
+	<string.h>
+	"Constant.h"
+	"Excepcion.h"
+	"ListaSimple.h"
+	"ImagenGestor.h"
+	"joymapper.h"
+	"object.h"
+	"uilabel.h"
+	"uibutton.h"
+	"uilist.h"
+	"uiprogressbar.h"
+	"uiart.h"
+	"uicheck.h"
+	"uipanel.h"
+	"uipanelborder.h"
+	"uipicture.h"
+	"uiinput.h"
+	"uipopupmenu.h"
+	"uicombobox.h"
+	"uilistgroup.h"
+	"uitextelementsarea.h"
+	"uispectrum.h"
+
+1434557280 d:\github\codeblocks\externallibs\uiobjects\src\imagengestor.h
+	"Fileio.h"
+	"SHA1.h"
+	"ListaSimple.h"
+	"Excepcion.h"
+	"Dirutil.h"
+	"SDL/SDL.h"
+	"SDL/SDL_image.h"
+	"SDL/SDL_rotozoom.h"
+	"common.h"
+
+1386695698 d:\github\codeblocks\externallibs\uiobjects\src\sha1.h
+	<memory.h>
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+
+1457695815 d:\github\codeblocks\externallibs\uiobjects\src\common.h
+
+1391555033 d:\github\codeblocks\externallibs\uiobjects\src\joymapper.h
+	"Constant.h"
+	"ListaSimple.h"
+
+1456833628 d:\github\codeblocks\externallibs\uiobjects\src\object.h
+	"common.h"
+	<stdlib.h>
+	<stdio.h>
+	<iostream>
+	<string>
+	"ImagenGestor.h"
+	"joymapper.h"
+
+1398688984 d:\github\codeblocks\externallibs\uiobjects\src\uilabel.h
+	<object.h>
+
+1432659969 d:\github\codeblocks\externallibs\uiobjects\src\uibutton.h
+	<object.h>
+
+1431681614 d:\github\codeblocks\externallibs\uiobjects\src\uilist.h
+	<uilistcommon.h>
+
+1458148481 d:\github\codeblocks\externallibs\uiobjects\src\uilistcommon.h
+	<object.h>
+
+1459806391 d:\github\codeblocks\externallibs\uiobjects\src\uiprogressbar.h
+	<object.h>
+
+1398887065 d:\github\codeblocks\externallibs\uiobjects\src\uiart.h
+	<object.h>
+
+1398762162 d:\github\codeblocks\externallibs\uiobjects\src\uicheck.h
+	<object.h>
+
+1456832654 d:\github\codeblocks\externallibs\uiobjects\src\uipanel.h
+	<object.h>
+
+1398772972 d:\github\codeblocks\externallibs\uiobjects\src\uipanelborder.h
+	<uipanel.h>
+
+1433103728 d:\github\codeblocks\externallibs\uiobjects\src\uipicture.h
+	<object.h>
+
+1458639939 d:\github\codeblocks\externallibs\uiobjects\src\uiinput.h
+	<object.h>
+
+1401379950 d:\github\codeblocks\externallibs\uiobjects\src\uipopupmenu.h
+	<uilist.h>
+	<SDL/SDL_ttf.h>
+
+1458661342 d:\github\codeblocks\externallibs\uiobjects\src\uicombobox.h
+	<uilist.h>
+
+1432041057 d:\github\codeblocks\externallibs\uiobjects\src\uilistgroup.h
+	"uilistcommon.h"
+	"beans/listgroupcol.h"
+	<algorithm>
+
+1431933673 d:\github\codeblocks\externallibs\uiobjects\src\beans\listgroupcol.h
+	<iostream>
+	<string>
+	<iostream>
+	<vector>
+
+1434116679 d:\github\codeblocks\externallibs\uiobjects\src\uitextelementsarea.h
+	<object.h>
+
+1458145588 d:\github\codeblocks\externallibs\uiobjects\src\uispectrum.h
+	<object.h>
+
+1459806328 d:\github\codeblocks\proyectos\mp3play\biquad.h
+
+1458251728 source:d:\github\codeblocks\proyectos\onmusik\resource.rc
+
+1459812740 source:d:\github\codeblocks\proyectos\onmusik\src\icogestor.cpp
+	"Icogestor.h"
+
+1393499909 d:\github\codeblocks\proyectos\onmusik\src\icogestor.h
+	"Dirutil.h"
+	"Fileio.h"
+	"Constant.h"
+	"SDL/SDL.h"
+	"SDL/SDL_image.h"
+	"SDL/SDL_rotozoom.h"
+
+1459814358 source:d:\github\codeblocks\proyectos\onmusik\src\iofrontend.cpp
+	"Iofrontend.h"
+	"uilistgroup.h"
+	"beans/listgroupcol.h"
+	"uilistcommon.h"
+
+1459813936 d:\github\codeblocks\proyectos\onmusik\src\iofrontend.h
+	<string>
+	<vector>
+	"Ioutil.h"
+	"Colorutil.h"
+	"Menuobject.h"
+	"ImagenGestor.h"
+	"Icogestor.h"
+	"Launcher.h"
+	"thread.h"
+	"uipicture.h"
+	"uiinput.h"
+	"uipicture.h"
+	"uiart.h"
+	"uibutton.h"
+	"uiprogressbar.h"
+	"uipopupmenu.h"
+	"jukebox.h"
+	"dropbox.h"
+	"AudioPlayer.h"
+
+1459806428 d:\github\codeblocks\proyectos\onmusik\src\ioutil.h
+	<iostream>
+	<map>
+	<cmath>
+	<sstream>
+	"SDL/SDL.h"
+	"SDL/SDL_ttf.h"
+	"SDL/SDL_image.h"
+	"SDL/SDL_rotozoom.h"
+	<SDL/SDL_mixer.h>
+	"Fileio.h"
+	"Constant.h"
+	"ImagenGestor.h"
+	"Traza.h"
+	"Menuobject.h"
+	"Icogestor.h"
+	"joymapper.h"
+	"thread.h"
+	"uiinput.h"
+	"uiprogressbar.h"
+	"uicombobox.h"
+	"cursor.h"
+	"listaIni.h"
+	"jukebox.h"
+
+1458551372 d:\github\codeblocks\externallibs\uiobjects\src\thread.h
+	<Windows.h>
+	<pthread.h>
+	"Constant.h"
+	"gmutex.h"
+
+1432731272 d:\github\codeblocks\externallibs\uiobjects\src\cursor.h
+	"Constant.h"
+	"SDL/SDL.h"
+
+1453468016 d:\github\codeblocks\externallibs\uiobjects\src\listaini.h
+	"ListaSimple.h"
+
+1459806428 d:\github\codeblocks\proyectos\onmusik\src\jukebox.h
+	"Launcher.h"
+	"Menuobject.h"
+	"dropbox.h"
+	"listaIni.h"
+	"thread.h"
+
+1457027851 d:\github\codeblocks\externallibs\uiobjects\src\launcher.h
+	<string.h>
+	<unistd.h>
+	<sys/types.h>
+	<errno.h>
+	<stdio.h>
+	<sys/wait.h>
+	<stdlib.h>
+	<vector>
+	"unzip/unziptool.h"
+	"Dirutil.h"
+	"filelaunch.h"
+	<algorithm>
+	<functional>
+	<cctype>
+	<locale>
+	<fcntl.h>
+
+1456750350 d:\github\codeblocks\externallibs\uiobjects\src\unzip\unziptool.h
+	<unistd.h>
+	"zlib.h"
+	"unzip.h"
+	"crypt.h"
+	<stdio.h>
+	<iostream>
+	<fstream>
+	"Fileio.h"
+	"Dirutil.h"
+
+1459806701 d:\github\codeblocks\externallibs\ziputils\zlib\zlib.h
+	"zconf.h"
+
+1459806701 d:\github\codeblocks\externallibs\ziputils\zlib\zconf.h
+	<windows.h>
+	<sys/types.h>
+	<unistd.h>
+	<unixio.h>
+
+1459806700 d:\github\codeblocks\externallibs\ziputils\unzip\unzip.h
+	"../zlib/zlib.h"
+	"ioapi.h"
+
+1459806700 d:\github\codeblocks\externallibs\ziputils\unzip\ioapi.h
+
+1459806700 d:\github\codeblocks\externallibs\ziputils\unzip\crypt.h
+
+1433844504 d:\github\codeblocks\externallibs\uiobjects\src\filelaunch.h
+	<string>
+
+1458642083 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\dropbox.h
+	<iostream>
+	<windows.h>
+	"util/Constant.h"
+	<vector>
+	<map>
+	"httputil.h"
+	<iostream>
+	<fstream>
+	<sys/stat.h>
+	<Constant.h>
+	"json/json.h"
+	<vector>
+	"Dirutil.h"
+	"thread.h"
+
+1458242238 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\util\constant.h
+	<sstream>
+	<string.h>
+	<vector>
+	<typeinfo>
+	<ctime>
+	<dirent.h>
+	<stdio.h>
+	<limits.h>
+	<algorithm>
+	<cctype>
+	<iomanip>
+	<windows.h>
+
+1457629889 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\httputil.h
+	<stdlib.h>
+	<string.h>
+	<stdio.h>
+	<unistd.h>
+	<fcntl.h>
+	<iostream>
+	<string>
+	<fstream>
+	<map>
+	"filecipher.h"
+	<curl/curl.h>
+	"Traza.h"
+
+1459806812 d:\github\codeblocks\proyectos\rijndael\filecipher.h
+	<iostream>
+	<fstream>
+	<stdio.h>
+	<string.h>
+	"rijndael.h"
+	"sha256.h"
+	<sstream>
+	<iostream>
+	<cstdlib>
+	"Constant.h"
+
+1459806812 d:\github\codeblocks\proyectos\rijndael\rijndael.h
+	<iostream>
+
+1459806812 d:\github\codeblocks\proyectos\rijndael\sha256.h
+	<string>
+
+1419777366 d:\github\codeblocks\externallibs\curl-7.40.0-devel-mingw32\include\curl\curl.h
+	"curlver.h"
+	"curlbuild.h"
+	"curlrules.h"
+	<stdio.h>
+	<limits.h>
+	<osreldate.h>
+	<sys/types.h>
+	<time.h>
+	<winsock2.h>
+	<ws2tcpip.h>
+	<sys/select.h>
+	<sys/socket.h>
+	<sys/time.h>
+	<support/SupportDefs.h>
+	"easy.h"
+	"multi.h"
+	"typecheck-gcc.h"
+
+1420708698 d:\github\codeblocks\externallibs\curl-7.40.0-devel-mingw32\include\curl\curlver.h
+
+1420708698 d:\github\codeblocks\externallibs\curl-7.40.0-devel-mingw32\include\curl\curlbuild.h
+	<sys/types.h>
+	<sys/socket.h>
+
+1415109076 d:\github\codeblocks\externallibs\curl-7.40.0-devel-mingw32\include\curl\curlrules.h
+
+1402516350 d:\github\codeblocks\externallibs\curl-7.40.0-devel-mingw32\include\curl\easy.h
+
+1415109076 d:\github\codeblocks\externallibs\curl-7.40.0-devel-mingw32\include\curl\multi.h
+	"curl.h"
+
+1415109076 d:\github\codeblocks\externallibs\curl-7.40.0-devel-mingw32\include\curl\typecheck-gcc.h
+
+1437604366 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\json.h
+	"autolink.h"
+	"value.h"
+	"reader.h"
+	"writer.h"
+	"features.h"
+
+1437604366 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\autolink.h
+	"config.h"
+	<cpptl/cpptl_autolink.h>
+	"autolink.h"
+
+1437604366 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\config.h
+	<cpptl/config.h>
+
+1437604366 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\value.h
+	"forwards.h"
+	<string>
+	<vector>
+	<exception>
+	<map>
+	<cpptl/smallmap.h>
+	<cpptl/forwards.h>
+
+1437604366 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\forwards.h
+	"config.h"
+
+1437604366 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\reader.h
+	"features.h"
+	"value.h"
+	<deque>
+	<iosfwd>
+	<stack>
+	<string>
+	<istream>
+
+1437604366 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\features.h
+	"forwards.h"
+
+1437604366 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\jsoncpp-0.10.5\include\json\writer.h
+	"value.h"
+	<vector>
+	<string>
+	<ostream>
+
+1390934229 d:\github\codeblocks\externallibs\uiobjects\src\colorutil.h
+	<stdio.h>
+	<iostream>
+	"Constant.h"
+
+1459806428 source:d:\github\codeblocks\proyectos\onmusik\src\ioutil.cpp
+	"Ioutil.h"
+	"9001.png.h"
+	"font/Arimo_Regular.ttf.h"
+
+1458256032 d:\github\codeblocks\proyectos\onmusik\src\9001.png.h
+
+1455209140 d:\github\codeblocks\externallibs\uiobjects\src\font\arimo_regular.ttf.h
+
+1459806428 source:d:\github\codeblocks\proyectos\onmusik\src\jukebox.cpp
+	"jukebox.h"
+
+1458577590 source:d:\github\codeblocks\proyectos\onmusik\src\main.cpp
+	"main.h"
+	"Dirutil.h"
+	<iostream>
+	<fstream>
+
+1458249604 d:\github\codeblocks\proyectos\onmusik\src\main.h
+	<stdio.h>
+	"Ioutil.h"
+	"Iofrontend.h"
+
+1459806328 source:d:\github\codeblocks\proyectos\mp3play\biquad.cpp
+	<math.h>
+	"Biquad.h"
+

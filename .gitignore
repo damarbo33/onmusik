@@ -5,3 +5,4 @@ googleOauth.txt
 *.json
 onmusik.depend
 *.layout
+gmon.out

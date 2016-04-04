@@ -140,7 +140,13 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnForward",  GUIBUTTON, 0,0,0,0, "Saltar a canción siguiente", true)->setIcon(control_fastforward)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnRepeat", GUIBUTTON, 0,0,0,0, "Repetir disco", true)->setIcon(btn_repeat_off)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnRandom", GUIBUTTON, 0,0,0,0, "Aleatorio", true)->setIcon(btn_random_off)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnEqualizer", GUIBUTTON, 0,0,0,0, "Equalizador on/off", true)->setIcon(control_equalizer)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("filtroGraves", GUIPROGRESSBAR, 0,0,0,0, "", true)->setShadow(false);
 
+    UIProgressBar *objfilterGraves = (UIProgressBar *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroGraves");
+    objfilterGraves->setVisible(false);
+    objfilterGraves->setProgressMax(20000);
+    objfilterGraves->setProgressPos(20000);
 
     //ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("panelMedia")->setAlpha(150);
     ((UIPanel *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("panelMedia"))->setColor(cGrisOscuro);
@@ -211,7 +217,9 @@ void Iofrontend::initUIObjs(){
     addEvent("ImgVol", &Iofrontend::accionVolumenMute);
     addEvent("btnRepeat", &Iofrontend::accionRepeat);
     addEvent("btnRandom", &Iofrontend::accionRandom);
-    addEvent("comboBrowser",&Iofrontend::accionCombo);
+    addEvent("comboBrowser", &Iofrontend::accionCombo);
+    addEvent("btnEqualizer", &Iofrontend::accionesEqualizer);
+    addEvent("filtroGraves", &Iofrontend::accionesFiltroGraves);
 }
 
 /**
@@ -677,6 +685,7 @@ void Iofrontend::setDinamicSizeObjects(){
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarVolumen")->setTam(TIMEW + SEPTIMER, bottom + 2, TIMEW, PROGRESSHEIGHT);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("labelVol")->setTam(2*(TIMEW + SEPTIMER), bottom +1 , TIMEW, PROGRESSHEIGHT);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnAddContent")->setTam(2, 2, FAMFAMICONW, FAMFAMICONH);
+        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnEqualizer")->setTam(FAMFAMICONW + 4, 2, FAMFAMICONW, FAMFAMICONH);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarMedia")->setTam( TIMEW + SEPTIMER, bottom - PROGRESSSEPBOTTOM, this->getWidth() - TIMEW*2 - SEPTIMER*2, PROGRESSHEIGHT);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimer")->setTam(SEPTIMER, bottom - PROGRESSSEPBOTTOM, TIMEW, FAMFAMICONH);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimerTotal")->setTam(this->getWidth() - TIMEW, bottom - PROGRESSSEPBOTTOM, TIMEW, FAMFAMICONH);
@@ -684,6 +693,10 @@ void Iofrontend::setDinamicSizeObjects(){
         int albumWith = 200;
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList")->setTam(0, FAMFAMICONH + 2, albumWith, calculaPosPanelMedia() - FAMFAMICONH - 2 - albumWith);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum")->setTam(0, FAMFAMICONH + 2 + calculaPosPanelMedia() - FAMFAMICONH - 2 - albumWith, albumWith, albumWith);
+
+        int yFiltros = FAMFAMICONH + 2 + calculaPosPanelMedia() - FAMFAMICONH - 2 - albumWith;
+        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroGraves")->setTam((albumWith - 100) / 2, yFiltros + 50, 100, PROGRESSHEIGHT);
+
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists")->setTam(albumWith, 0, this->getWidth() - albumWith, calculaPosPanelMedia());
     } catch (Excepcion &e){
         Traza::print("setDinamicSizeObjects: " + string(e.getMessage()), W_ERROR);
@@ -1378,6 +1391,40 @@ int Iofrontend::accionesMediaPause(tEvento *evento){
     return 0;
 }
 
+/**
+*
+*/
+int Iofrontend::accionesFiltroGraves(tEvento *evento){
+    UIProgressBar *objfilterGraves = (UIProgressBar *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroGraves");
+    player->setFilterLowPass(objfilterGraves->getProgressPos());
+    return 0;
+}
+
+/**
+*
+*/
+int Iofrontend::accionesEqualizer(tEvento *evento){
+    player->setEqualizerOn(!player->isEqualizerOn());
+    UISpectrum *objSpectrum = (UISpectrum *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum");
+
+    Object *btnEq = ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnEqualizer");
+
+
+    if (!player->isEqualizerOn()){
+        btnEq->setIcon(control_equalizer);
+        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroGraves")->setVisible(false);
+        objSpectrum->setEnabled(true);
+    } else {
+        //Debemos dibujar el equalizador
+        objSpectrum->setEnabled(false);
+        objSpectrum->setImgDrawed(false);
+        objSpectrum->buf = NULL;
+        btnEq->setIcon(control_equalizer_blue);
+        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroGraves")->setVisible(true);
+    }
+
+    return 0;
+}
 /**
 *
 */
