@@ -97,6 +97,10 @@ void IcoGestor::cargarIconos(){
     cargarIcono("FlechaEsquinaSupIzq.png");
     cargarIcono("control_equalizer.png");
     cargarIcono("control_equalizer_blue.png");
+    cargarIcono("btnSliderEQ.png");
+    cargarIcono("btn_off.png");
+    cargarIcono("btn_on.png");
+    cargarIcono("btn_reset_eq.png");
 
 }
 

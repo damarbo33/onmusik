@@ -27,6 +27,8 @@
 					<Add directory="../httpCurl/httpcurl/src/jsoncpp-0.10.5/include" />
 					<Add directory="../MP3Play/src" />
 					<Add directory="../MP3Play" />
+					<Add directory="MP3Play" />
+					<Add directory="ExternalLibs/UIObjects/src" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -69,6 +71,8 @@
 					<Add directory="../httpCurl/httpcurl/src/jsoncpp-0.10.5/include" />
 					<Add directory="../MP3Play/src" />
 					<Add directory="../MP3Play" />
+					<Add directory="MP3Play" />
+					<Add directory="ExternalLibs/UIObjects/src" />
 				</Compiler>
 				<Linker>
 					<Add option="-lsdlgfx" />
@@ -109,6 +113,8 @@
 			<Add option="-lzdll" />
 		</Linker>
 		<Unit filename="../MP3Play/audioplayer.cpp" />
+		<Unit filename="../MP3Play/biquad.cpp" />
+		<Unit filename="../MP3Play/biquad.h" />
 		<Unit filename="resource.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>

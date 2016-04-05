@@ -1008,11 +1008,11 @@
 	"Ioutil.h"
 	"Iofrontend.h"
 
-1459773570 source:c:\github\proyectos\mp3play\audioplayer.cpp
+1459871113 source:c:\github\proyectos\mp3play\audioplayer.cpp
 	"audioplayer.h"
 	"Constant.h"
 
-1458749931 c:\github\proyectos\mp3play\audioplayer.h
+1459871139 c:\github\proyectos\mp3play\audioplayer.h
 	<iostream>
 	<fstream>
 	<stdio.h>
@@ -1028,8 +1028,10 @@
 	"gmutex.h"
 	"Dirutil.h"
 	"Menuobject.h"
+	"biquad.h"
+	"statevar.h"
 
-1458726204 c:\github\externallibs\uiobjects\src\constant.h
+1459870180 c:\github\externallibs\uiobjects\src\constant.h
 	<fstream>
 	<sstream>
 	<string.h>
@@ -1061,7 +1063,7 @@
 
 1458251728 source:c:\github\proyectos\onmusik\resource.rc
 
-1458645270 source:c:\github\proyectos\onmusik\src\icogestor.cpp
+1459870173 source:c:\github\proyectos\onmusik\src\icogestor.cpp
 	"Icogestor.h"
 
 1393499909 c:\github\proyectos\onmusik\src\icogestor.h
@@ -1111,13 +1113,13 @@
 	"Excepcion.h"
 	"Traza.h"
 
-1459775489 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
+1459871564 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
 	"uilistcommon.h"
 
-1459768134 c:\github\proyectos\onmusik\src\iofrontend.h
+1459871319 c:\github\proyectos\onmusik\src\iofrontend.h
 	<string>
 	<vector>
 	"Ioutil.h"
@@ -1138,7 +1140,7 @@
 	"dropbox.h"
 	"AudioPlayer.h"
 
-1459753636 c:\github\proyectos\onmusik\src\ioutil.h
+1459840151 c:\github\proyectos\onmusik\src\ioutil.h
 	<iostream>
 	<map>
 	<cmath>
@@ -1180,9 +1182,9 @@
 	<string.h>
 	<stdlib.h>
 
-1458726204 c:\github\externallibs\uiobjects\src\common.h
+1459839354 c:\github\externallibs\uiobjects\src\common.h
 
-1458726204 c:\github\externallibs\uiobjects\src\menuobject.h
+1459840333 c:\github\externallibs\uiobjects\src\menuobject.h
 	<sstream>
 	<string.h>
 	"Constant.h"
@@ -1206,6 +1208,7 @@
 	"uilistgroup.h"
 	"uitextelementsarea.h"
 	"uispectrum.h"
+	"uislider.h"
 
 1458726204 c:\github\externallibs\uiobjects\src\joymapper.h
 	"Constant.h"
@@ -1232,7 +1235,7 @@
 1458726204 c:\github\externallibs\uiobjects\src\uilistcommon.h
 	<object.h>
 
-1459761074 c:\github\externallibs\uiobjects\src\uiprogressbar.h
+1459846416 c:\github\externallibs\uiobjects\src\uiprogressbar.h
 	<object.h>
 
 1458726204 c:\github\externallibs\uiobjects\src\uiart.h
@@ -1492,7 +1495,7 @@
 	<iostream>
 	"Constant.h"
 
-1459761973 source:c:\github\proyectos\onmusik\src\ioutil.cpp
+1459871662 source:c:\github\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"
@@ -1501,7 +1504,7 @@
 
 1458726204 c:\github\externallibs\uiobjects\src\font\arimo_regular.ttf.h
 
-1459776976 source:c:\github\proyectos\onmusik\src\jukebox.cpp
+1459779380 source:c:\github\proyectos\onmusik\src\jukebox.cpp
 	"jukebox.h"
 
 1458577590 source:c:\github\proyectos\onmusik\src\main.cpp
@@ -2028,4 +2031,30 @@
 1459806328 source:d:\github\codeblocks\proyectos\mp3play\biquad.cpp
 	<math.h>
 	"Biquad.h"
+
+1459864699 c:\github\proyectos\mp3play\biquad.h
+
+1459782819 source:c:\github\proyectos\mp3play\biquad.cpp
+	<math.h>
+	"Biquad.h"
+
+1459846448 c:\github\externallibs\uiobjects\src\uislider.h
+	"uiprogressbar.h"
+
+1459852762 source:c:\github\proyectos\mp3play\firstorder.cpp
+	"firstorder.h"
+
+1459852569 c:\github\proyectos\mp3play\firstorder.h
+	<math.h>
+
+1459862240 source:c:\github\proyectos\mp3play\statevar.cpp
+	"statevar.h"
+
+1459853029 c:\github\proyectos\mp3play\statevar.h
+	<math.h>
+
+1459863939 source:c:\github\proyectos\mp3play\statevar2.cpp
+	"statevar2.h"
+
+1459863939 c:\github\proyectos\mp3play\statevar2.h
 

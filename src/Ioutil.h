@@ -86,6 +86,7 @@
             void drawScrollBar(UIListCommon *obj);
             void drawUITextElementsArea(Object *obj);
             void drawUISpectrum(Object *obj);
+            void drawUISlider(Object *obj, tEvento *evento);
             void drawIco(int , int , int , int , int );
             void drawIco(int numIco, int angle, int x, int y, int w, int h);
             void pintarHint(int x1, int y1, int w1, int h1, string text, t_color color);

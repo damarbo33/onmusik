@@ -288,6 +288,10 @@ void Ioutil::drawObject(Object *obj, tEvento *evento){
         case GUISPECTRUM:
             drawUISpectrum(obj);
             break;
+        case GUISLIDER:
+            //Traza::print("evento.mouse_x: ",evento->mouse_x, W_DEBUG);
+            drawUISlider(obj, evento);
+            break;
         default:
             break;
     }
@@ -327,9 +331,6 @@ void Ioutil::toggleFullScreen(){
     if(screen == NULL) screen = SDL_SetVideoMode(Constant::getWINDOW_WIDTH(), Constant::getWINDOW_HEIGHT(), SCREEN_BITS, flags); /* If toggle FullScreen failed, then switch back */
     if(screen == NULL) exit(1); /* If you can't switch back for some reason, then epic fail */
 }
-
-
-
 
 /**
 * Mostramos un cursor vacio para poder ocultar el cursor y evitar el problema de
@@ -2093,7 +2094,58 @@ void Ioutil::drawUIProgressBar(Object *obj, tEvento *evento){
     }
 }
 
+/**
+*
+*/
+void Ioutil::drawUISlider(Object *obj, tEvento *evento){
 
+    UISlider *objProg = (UISlider *)obj;
+    if (obj->isVisible()){
+        int x = obj->getX();
+        int y = obj->getY();
+        int w = obj->getW();
+        int h = obj->getH();
+
+        pintarContenedor(x,y,w,h,objProg->isFocus() && objProg->isEnabled(), obj, objProg->isEnabled() ? cAzul : cGrisClaro);
+
+        if (w > 0 && h > 0){
+            int hsel = (1.0 - objProg->getProgressPos() / (float)objProg->getProgressMax()) * h;
+            if (hsel > 0){
+                drawRect(x+INPUTBORDER,y+INPUTBORDER,w-INPUTBORDER,hsel,cGris); // Dibujo el contenedor
+            }
+            drawIco(btnSliderEQ, x + w/2 - FAMFAMICONW / 2, y+INPUTBORDER + hsel - FAMFAMICONH / 2, 17,17);
+
+
+
+            //Calculamos el hint de la barra cuando pasamos el mouse por encima
+            if (evento->mouse_x > 0 && evento->mouse_y > 0){
+                //Indicamos que estamos sobre la barra
+                objProg->setMouseOverBar(evento->mouse_x > obj->getX() && evento->mouse_x < obj->getX() + obj->getW()
+                && evento->mouse_y > obj->getY() && evento->mouse_y < obj->getY() + obj->getH());
+                //Especificamos la posicion
+                if (objProg->getMouseOverBar()){
+                    objProg->setPosYNow(evento->mouse_y);
+                    int dif = evento->mouse_y > 0 ? evento->mouse_y - objProg->getY() : 0;
+                    float percent = objProg->getH() >= 1 ? dif/(float)objProg->getH() : 0;
+                    percent = 1.0 - percent;
+                    long tempPos = ceil(objProg->getProgressMax() * percent);
+
+                    objProg->setLastTimeTick(SDL_GetTicks());
+                    if (objProg->getTypeHint() == HINT_TIME){
+                        objProg->setLabel(Constant::timeFormat(tempPos));
+                    } else if (objProg->getTypeHint() == HINT_PERCENT){
+                        objProg->setLabel(Constant::TipoToStr(ceil(percent * 100)) + "%");
+                    }
+                }
+            }
+
+            if (objProg->getMouseOverBar()){
+                pintarHint(x + w + 3, objProg->getPosYNow(), fontStrLen(objProg->getLabel()),
+                           fontHeight, objProg->getLabel(), cGrisClaro);
+            }
+        }
+    }
+}
 /**
 *
 */

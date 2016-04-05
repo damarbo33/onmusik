@@ -108,7 +108,14 @@ class Iofrontend : public Ioutil{
         int accionRandom(tEvento *evento);
         int accionCombo(tEvento *evento);
         int accionesEqualizer(tEvento *evento);
-        int accionesFiltroGraves(tEvento *evento);
+        int accionesfiltroAudio0(tEvento *evento);
+        int accionesfiltroAudio1(tEvento *evento);
+        int accionesfiltroAudio2(tEvento *evento);
+        int accionesfiltroAudio3(tEvento *evento);
+        int accionesfiltroAudio4(tEvento *evento);
+        int accionesResetFiltros(tEvento *evento);
+        int accionesSwitchFiltros(tEvento *evento);
+
         string showExplorador(tEvento *);
         void cargaMenuFromLista(UIListCommon *, tEvento *);
         void cargaMenu(int, string, tEvento *);
