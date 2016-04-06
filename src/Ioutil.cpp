@@ -2734,7 +2734,8 @@ void Ioutil::pintarIconoProcesando(Thread<Jukebox> *thread){
         printScreenShot(&mySurface, iconRectFondo);
         drawIco(reloj_de_arena, grados, iconRect.x, iconRect.y, iconRect.w, iconRect.h);
         grados = (grados + 5);
-        flipScr();
+        t_region region = {iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h};
+        updateScr(&region);
         delay = before - SDL_GetTicks() + limite;
         if(delay > 0) SDL_Delay(delay);
     }
@@ -2753,16 +2754,19 @@ void Ioutil::pintarIconoProcesando(bool refreshBackground){
     SDL_Rect iconRect = {(short int)x, (short int)y, 50, 50};
     SDL_Rect iconRectFondo = {(short int)x, (short int)y, 100, 100};
     static SDL_Surface *mySurface = NULL;
+
     if (refreshBackground){
         takeScreenShot(&mySurface, iconRectFondo);
         grados = 0;
     }
+
     int limite = FRAMEPERIOD/25;
     before = SDL_GetTicks();
     printScreenShot(&mySurface, iconRectFondo);
     drawIco(reloj_de_arena, grados, iconRect.x, iconRect.y, iconRect.w, iconRect.h);
     grados += 5;
-    flipScr();
+    t_region region = {iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h};
+    updateScr(&region);
     delay = before - SDL_GetTicks() + limite;
     if(delay > 0) SDL_Delay(delay);
 }

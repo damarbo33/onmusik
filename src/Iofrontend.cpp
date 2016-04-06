@@ -2098,8 +2098,6 @@ void Iofrontend::refreshAlbumAndPlaylist(){
             procesarControles(obj, &evento, NULL);
             pintarIconoProcesando(false);
         }
-//        procesarControles(obj, &evento, NULL);
-//        flipScr();
         delete thread;
 
         ((UIListGroup *)obj->getObjByName("playLists"))->setImgDrawed(false);
@@ -2205,7 +2203,6 @@ string Iofrontend::autenticarDropbox(){
             pintarIconoProcesando(false);
         }
         procesarControles(obj, &evento, NULL);
-        flipScr();
 
         string mensaje = "Para usar la aplicación debes dar permisos desde tu cuenta de dropbox. ";
         mensaje.append("A continuación se abrirá un explorador. Debes logarte en Dropbox y pulsar el botón de \"PERMITIR\".");
