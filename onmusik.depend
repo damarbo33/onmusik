@@ -1031,7 +1031,7 @@
 	"biquad.h"
 	"statevar.h"
 
-1459870180 c:\github\externallibs\uiobjects\src\constant.h
+1459956337 c:\github\externallibs\uiobjects\src\constant.h
 	<fstream>
 	<sstream>
 	<string.h>
@@ -1113,7 +1113,7 @@
 	"Excepcion.h"
 	"Traza.h"
 
-1459941571 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
+1459949925 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
@@ -1140,7 +1140,7 @@
 	"dropbox.h"
 	"AudioPlayer.h"
 
-1459840151 c:\github\proyectos\onmusik\src\ioutil.h
+1459954827 c:\github\proyectos\onmusik\src\ioutil.h
 	<iostream>
 	<map>
 	<cmath>
@@ -1164,6 +1164,7 @@
 	"cursor.h"
 	"listaIni.h"
 	"jukebox.h"
+	"Colorutil.h"
 
 1458726204 c:\github\externallibs\uiobjects\src\imagengestor.h
 	"Fileio.h"
@@ -1214,7 +1215,7 @@
 	"Constant.h"
 	"ListaSimple.h"
 
-1458726204 c:\github\externallibs\uiobjects\src\object.h
+1459950741 c:\github\externallibs\uiobjects\src\object.h
 	"common.h"
 	<stdlib.h>
 	<stdio.h>
@@ -1235,7 +1236,7 @@
 1458726204 c:\github\externallibs\uiobjects\src\uilistcommon.h
 	<object.h>
 
-1459924500 c:\github\externallibs\uiobjects\src\uiprogressbar.h
+1459944200 c:\github\externallibs\uiobjects\src\uiprogressbar.h
 	<object.h>
 
 1458726204 c:\github\externallibs\uiobjects\src\uiart.h
@@ -1490,12 +1491,12 @@
 	<string>
 	<ostream>
 
-1458726204 c:\github\externallibs\uiobjects\src\colorutil.h
+1459954596 c:\github\externallibs\uiobjects\src\colorutil.h
 	<stdio.h>
 	<iostream>
 	"Constant.h"
 
-1459943662 source:c:\github\proyectos\onmusik\src\ioutil.cpp
+1459956730 source:c:\github\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"

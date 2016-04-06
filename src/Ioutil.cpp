@@ -1349,6 +1349,25 @@ void Ioutil::drawUISpectrum(Object *obj){
         }
     }
 }
+
+/**
+*
+*/
+void Ioutil::cachearPosicion(Object *obj, SDL_Rect *imgLocation){
+    if (obj->isVisible()){
+        if (!obj->isOtherDrawed()){
+            //Reseteamos el surface
+            obj->getOtherCache()->setSurface(NULL);
+            //Guardamos la imagen en el objeto
+            takeScreenShot(&obj->getOtherCache()->surface, *imgLocation);
+            //Indicamos que ya hemos pintado la imagen
+            obj->setOtherDrawed(true);
+        } else {
+            printScreenShot(&obj->getOtherCache()->surface, *imgLocation);
+        }
+    }
+}
+
 /**
 *
 */
@@ -2113,18 +2132,52 @@ void Ioutil::drawUISlider(Object *obj, tEvento *evento){
         int hsel = objProg->getProgressMax() > 0 ? (1.0 - objProg->getProgressPos() / (float)objProg->getProgressMax()) * h : h/2;
         //Se pinta la barra de desplazamiento
         if (!obj->getImgDrawed()){
-            pintarContenedor(x,y,w,h,objProg->isFocus() && objProg->isEnabled(), obj, objProg->isEnabled() ? cAzul : cGrisClaro);
+            Colorutil colorUtil;
+            t_color degradedColor;
+
+            int corte = ceil(objProg->getProgressMax()/(float)3);
+            int corte2 = ceil(objProg->getProgressMax()/(float)3 * 2);
+
+            if (objProg->getProgressPos() < corte ){
+                colorUtil.calcDegradation(cAzulTotal, cVerde, corte);
+                colorUtil.getDegradedColor(objProg->getProgressPos(), &degradedColor);
+            } else if (objProg->getProgressPos() < corte2 ){
+                colorUtil.calcDegradation(cVerde, cAmarillo, corte);
+                colorUtil.getDegradedColor(objProg->getProgressPos() - corte, &degradedColor);
+            } else {
+                colorUtil.calcDegradation(cAmarillo, cRojo , corte);
+                colorUtil.getDegradedColor(objProg->getProgressPos() - corte2, &degradedColor);
+            }
+
+            pintarContenedor(x,y,w,h,objProg->isFocus() && objProg->isEnabled(), obj, objProg->isEnabled() ? degradedColor : cGrisClaro);
             if (w > 0 && h > 0){
                 if (hsel > 0){
                     drawRect(x+INPUTBORDER,y+INPUTBORDER,w-INPUTBORDER,hsel,cGris); // Dibujo la parte gris
                 }
             }
+            Traza::print("drawUISlider", W_DEBUG);
             cachearObjeto(obj);
         } else {
             cachearObjeto(obj);
         }
         //Se pinta el icono del desplazador de la barra
         drawIco(btnSliderEQ, x + w/2 - FAMFAMICONW / 2, y+INPUTBORDER + hsel - FAMFAMICONH / 2, 17,17);
+
+        SDL_Rect labelLocation = { x + w/2 - fontStrLen(obj->getLabel()) / 2 + 2,
+                                   y + h + 10,
+                                   0, 0};
+
+        if (!obj->isOtherDrawed()){
+            int tmpFontSize = FONTSIZE;
+            loadFont(9);
+            drawText(obj->getLabel().c_str(), labelLocation.x, labelLocation.y, obj->getTextColor());
+            labelLocation.w = fontStrLen(obj->getLabel());
+            labelLocation.h = fontHeight;
+            loadFont(tmpFontSize);
+            cachearPosicion(obj,&labelLocation);
+        } else {
+            cachearPosicion(obj,&labelLocation);
+        }
 
         //Calculamos el hint de la barra cuando pasamos el mouse por encima
         if (evento->mouse_x > 0 && evento->mouse_y > 0 && objProg->isShowHint()){

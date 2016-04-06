@@ -24,6 +24,7 @@
     #include "cursor.h"
     #include "listaIni.h"
     #include "jukebox.h"
+    #include "Colorutil.h"
 
     struct tInput{
         int cursorX;
@@ -174,6 +175,7 @@
             tEvento evento;
             tEvento lastEvento;
             void cachearObjeto(Object *obj);
+            void cachearPosicion(Object *obj, SDL_Rect *imgLocation);
             void ResizeSurface(float , SDL_Surface *, SDL_Surface **);
             void loadFont(unsigned char); //Carga la fuente de determinado tamanyo
             void loadFontFromFile(const char *);
