@@ -115,6 +115,12 @@
 		<Unit filename="../MP3Play/audioplayer.cpp" />
 		<Unit filename="../MP3Play/biquad.cpp" />
 		<Unit filename="../MP3Play/biquad.h" />
+		<Unit filename="../MP3Play/firstorder.cpp" />
+		<Unit filename="../MP3Play/firstorder.h" />
+		<Unit filename="../MP3Play/statevar.cpp" />
+		<Unit filename="../MP3Play/statevar.h" />
+		<Unit filename="../MP3Play/statevar2.cpp" />
+		<Unit filename="../MP3Play/statevar2.h" />
 		<Unit filename="resource.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>

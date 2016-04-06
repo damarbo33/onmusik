@@ -2111,11 +2111,9 @@ void Ioutil::drawUISlider(Object *obj, tEvento *evento){
         if (w > 0 && h > 0){
             int hsel = (1.0 - objProg->getProgressPos() / (float)objProg->getProgressMax()) * h;
             if (hsel > 0){
-                drawRect(x+INPUTBORDER,y+INPUTBORDER,w-INPUTBORDER,hsel,cGris); // Dibujo el contenedor
+                drawRect(x+INPUTBORDER,y+INPUTBORDER,w-INPUTBORDER,hsel,cGris); // Dibujo la parte gris
             }
             drawIco(btnSliderEQ, x + w/2 - FAMFAMICONW / 2, y+INPUTBORDER + hsel - FAMFAMICONH / 2, 17,17);
-
-
 
             //Calculamos el hint de la barra cuando pasamos el mouse por encima
             if (evento->mouse_x > 0 && evento->mouse_y > 0){
@@ -2123,7 +2121,7 @@ void Ioutil::drawUISlider(Object *obj, tEvento *evento){
                 objProg->setMouseOverBar(evento->mouse_x > obj->getX() && evento->mouse_x < obj->getX() + obj->getW()
                 && evento->mouse_y > obj->getY() && evento->mouse_y < obj->getY() + obj->getH());
                 //Especificamos la posicion
-                if (objProg->getMouseOverBar()){
+                if (objProg->getMouseOverBar() && objProg->isShowHint()){
                     objProg->setPosYNow(evento->mouse_y);
                     int dif = evento->mouse_y > 0 ? evento->mouse_y - objProg->getY() : 0;
                     float percent = objProg->getH() >= 1 ? dif/(float)objProg->getH() : 0;

@@ -155,6 +155,7 @@ void Iofrontend::initUIObjs(){
         objfilterGraves->setVisible(false);
         objfilterGraves->setProgressMax(MAXDBGAIN);
         objfilterGraves->setProgressPos(MAXDBGAIN/2);
+        objfilterGraves->setShowHint(false);
 
         //Se anyade el texto de cada frecuencia
         ObjectsMenu[PANTALLAREPRODUCTOR]->add("labelfiltroAudio" + Constant::TipoToStr(i),
@@ -1529,8 +1530,10 @@ int Iofrontend::accionesEqualizer(tEvento *evento){
             ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("labelfiltroAudio" + Constant::TipoToStr(i))->setVisible(false);
         }
         objSpectrum->setEnabled(true);
+        player->setAnalyzeSpectrum(true);
     } else {
         //Debemos dibujar el equalizador
+        player->setAnalyzeSpectrum(true);
         objSpectrum->setEnabled(false);
         objSpectrum->setImgDrawed(false);
         objSpectrum->buf = NULL;
