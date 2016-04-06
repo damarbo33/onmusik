@@ -1535,7 +1535,7 @@ int Iofrontend::accionesSwitchFiltros(tEvento *evento){
     }
 
     UISlider *objfilterGraves;
-    for(int i=0; i < 5; i++){
+    for(int i=0; i < NBIQUADFILTERS; i++){
         objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio" + Constant::TipoToStr(i));
         objfilterGraves->setEnabled(player->isEqualizerOn());
     }
