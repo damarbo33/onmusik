@@ -1356,19 +1356,22 @@ void Ioutil::cachearObjeto(Object *obj){
     if (obj->isVisible()){
         int borde = 0;
 
+
         if (obj->showShadow() && obj->isVerContenedor()){
             borde += BORDERSELECTION;
+        } else if (obj->isVerContenedor()){
+            borde += INPUTBORDER;
         }
 
-        SDL_Rect imgLocation = { (short int)obj->getX() , (short int)obj->getY(),
-            (short unsigned int)(obj->getW() + borde), (short unsigned int)(obj->getH() + borde) };
+        SDL_Rect imgLocation = { (short int)obj->getX() - borde, (short int)obj->getY() - borde,
+            (short unsigned int)(obj->getW() + borde*2), (short unsigned int)(obj->getH() + borde*2) };
 
         if (obj->getObjectType() == GUICOMBOBOX){
             if (obj->isChecked()){
                 //Si se ha pulsado el combo, tenemos que cachear el alto de la lista desplegada tambien
-                imgLocation.h = COMBOHEIGHT + Constant::getCOMBOLISTHEIGHT() + borde;
+                imgLocation.h = COMBOHEIGHT + Constant::getCOMBOLISTHEIGHT() + borde*2;
             } else {
-                imgLocation.h = COMBOHEIGHT + borde;
+                imgLocation.h = COMBOHEIGHT + borde*2;
             }
         }
 
@@ -2106,41 +2109,49 @@ void Ioutil::drawUISlider(Object *obj, tEvento *evento){
         int w = obj->getW();
         int h = obj->getH();
 
-        pintarContenedor(x,y,w,h,objProg->isFocus() && objProg->isEnabled(), obj, objProg->isEnabled() ? cAzul : cGrisClaro);
-
-        if (w > 0 && h > 0){
-            int hsel = (1.0 - objProg->getProgressPos() / (float)objProg->getProgressMax()) * h;
-            if (hsel > 0){
-                drawRect(x+INPUTBORDER,y+INPUTBORDER,w-INPUTBORDER,hsel,cGris); // Dibujo la parte gris
-            }
-            drawIco(btnSliderEQ, x + w/2 - FAMFAMICONW / 2, y+INPUTBORDER + hsel - FAMFAMICONH / 2, 17,17);
-
-            //Calculamos el hint de la barra cuando pasamos el mouse por encima
-            if (evento->mouse_x > 0 && evento->mouse_y > 0){
-                //Indicamos que estamos sobre la barra
-                objProg->setMouseOverBar(evento->mouse_x > obj->getX() && evento->mouse_x < obj->getX() + obj->getW()
-                && evento->mouse_y > obj->getY() && evento->mouse_y < obj->getY() + obj->getH());
-                //Especificamos la posicion
-                if (objProg->getMouseOverBar() && objProg->isShowHint()){
-                    objProg->setPosYNow(evento->mouse_y);
-                    int dif = evento->mouse_y > 0 ? evento->mouse_y - objProg->getY() : 0;
-                    float percent = objProg->getH() >= 1 ? dif/(float)objProg->getH() : 0;
-                    percent = 1.0 - percent;
-                    long tempPos = ceil(objProg->getProgressMax() * percent);
-
-                    objProg->setLastTimeTick(SDL_GetTicks());
-                    if (objProg->getTypeHint() == HINT_TIME){
-                        objProg->setLabel(Constant::timeFormat(tempPos));
-                    } else if (objProg->getTypeHint() == HINT_PERCENT){
-                        objProg->setLabel(Constant::TipoToStr(ceil(percent * 100)) + "%");
-                    }
+        //Se calcula la altura del boton
+        int hsel = objProg->getProgressMax() > 0 ? (1.0 - objProg->getProgressPos() / (float)objProg->getProgressMax()) * h : h/2;
+        //Se pinta la barra de desplazamiento
+        if (!obj->getImgDrawed()){
+            pintarContenedor(x,y,w,h,objProg->isFocus() && objProg->isEnabled(), obj, objProg->isEnabled() ? cAzul : cGrisClaro);
+            if (w > 0 && h > 0){
+                if (hsel > 0){
+                    drawRect(x+INPUTBORDER,y+INPUTBORDER,w-INPUTBORDER,hsel,cGris); // Dibujo la parte gris
                 }
             }
+            cachearObjeto(obj);
+        } else {
+            cachearObjeto(obj);
+        }
+        //Se pinta el icono del desplazador de la barra
+        drawIco(btnSliderEQ, x + w/2 - FAMFAMICONW / 2, y+INPUTBORDER + hsel - FAMFAMICONH / 2, 17,17);
 
-            if (objProg->getMouseOverBar()){
-                pintarHint(x + w + 3, objProg->getPosYNow(), fontStrLen(objProg->getLabel()),
-                           fontHeight, objProg->getLabel(), cGrisClaro);
+        //Calculamos el hint de la barra cuando pasamos el mouse por encima
+        if (evento->mouse_x > 0 && evento->mouse_y > 0 && objProg->isShowHint()){
+            //Indicamos que estamos sobre la barra
+            objProg->setMouseOverBar(evento->mouse_x > obj->getX() && evento->mouse_x < obj->getX() + obj->getW()
+            && evento->mouse_y > obj->getY() && evento->mouse_y < obj->getY() + obj->getH());
+            //Especificamos la posicion
+            if (objProg->getMouseOverBar() ){
+                objProg->setPosYNow(evento->mouse_y);
+                int dif = evento->mouse_y > 0 ? evento->mouse_y - objProg->getY() : 0;
+                float percent = objProg->getH() >= 1 ? dif/(float)objProg->getH() : 0;
+                percent = 1.0 - percent;
+                long tempPos = ceil(objProg->getProgressMax() * percent);
+
+                objProg->setLastTimeTick(SDL_GetTicks());
+                if (objProg->getTypeHint() == HINT_TIME){
+                    objProg->setLabel(Constant::timeFormat(tempPos));
+                } else if (objProg->getTypeHint() == HINT_PERCENT){
+                    objProg->setLabel(Constant::TipoToStr(ceil(percent * 100)) + "%");
+                }
             }
+        }
+
+        //Si debemos hacerlo, pintamos el hint
+        if (objProg->getMouseOverBar() && objProg->isShowHint()){
+            pintarHint(x + w + 3, objProg->getPosYNow(), fontStrLen(objProg->getLabel()),
+                       fontHeight, objProg->getLabel(), cGrisClaro);
         }
     }
 }

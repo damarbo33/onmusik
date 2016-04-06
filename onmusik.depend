@@ -1008,11 +1008,11 @@
 	"Ioutil.h"
 	"Iofrontend.h"
 
-1459927695 source:c:\github\proyectos\mp3play\audioplayer.cpp
+1459940921 source:c:\github\proyectos\mp3play\audioplayer.cpp
 	"audioplayer.h"
 	"Constant.h"
 
-1459927707 c:\github\proyectos\mp3play\audioplayer.h
+1459941484 c:\github\proyectos\mp3play\audioplayer.h
 	<iostream>
 	<fstream>
 	<stdio.h>
@@ -1113,13 +1113,13 @@
 	"Excepcion.h"
 	"Traza.h"
 
-1459927755 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
+1459941571 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
 	"uilistcommon.h"
 
-1459871319 c:\github\proyectos\onmusik\src\iofrontend.h
+1459943923 c:\github\proyectos\onmusik\src\iofrontend.h
 	<string>
 	<vector>
 	"Ioutil.h"
@@ -1495,7 +1495,7 @@
 	<iostream>
 	"Constant.h"
 
-1459924973 source:c:\github\proyectos\onmusik\src\ioutil.cpp
+1459943662 source:c:\github\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"
@@ -2032,9 +2032,9 @@
 	<math.h>
 	"Biquad.h"
 
-1459864699 c:\github\proyectos\mp3play\biquad.h
+1459939233 c:\github\proyectos\mp3play\biquad.h
 
-1459782819 source:c:\github\proyectos\mp3play\biquad.cpp
+1459934241 source:c:\github\proyectos\mp3play\biquad.cpp
 	<math.h>
 	"Biquad.h"
 

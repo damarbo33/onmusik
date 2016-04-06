@@ -148,7 +148,7 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnResetEq")->setVisible(false);
 
 
-    for(int i=4; i >= 0; i--){
+    for(int i=NBIQUADFILTERS - 1; i >= 0; i--){
         //Se anyade el slider
         ObjectsMenu[PANTALLAREPRODUCTOR]->add("filtroAudio" + Constant::TipoToStr(i), GUISLIDER, 0,0,0,0, "", true)->setShadow(false);
         UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio" + Constant::TipoToStr(i));
@@ -241,6 +241,11 @@ void Iofrontend::initUIObjs(){
     addEvent("filtroAudio2", &Iofrontend::accionesfiltroAudio2);
     addEvent("filtroAudio3", &Iofrontend::accionesfiltroAudio3);
     addEvent("filtroAudio4", &Iofrontend::accionesfiltroAudio4);
+    addEvent("filtroAudio5", &Iofrontend::accionesfiltroAudio5);
+    addEvent("filtroAudio6", &Iofrontend::accionesfiltroAudio6);
+    addEvent("filtroAudio7", &Iofrontend::accionesfiltroAudio7);
+    addEvent("filtroAudio8", &Iofrontend::accionesfiltroAudio8);
+
     addEvent("btnResetEq", &Iofrontend::accionesResetFiltros);
     addEvent("btnSwitchEq", &Iofrontend::accionesSwitchFiltros);
 }
@@ -724,9 +729,9 @@ void Iofrontend::setDinamicSizeObjects(){
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnResetEq")->setTam(4 + FAMFAMICONW, yFiltros + 2, FAMFAMICONW, FAMFAMICONH);
 
         int xFilter = 0;
-        for(int i=0; i < 5; i++){
+        for(int i=0; i < NBIQUADFILTERS; i++){
             UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio" + Constant::TipoToStr(i));
-            xFilter = (albumWith - 10) / 2 + (i - 2) * 35;
+            xFilter = (albumWith - 10) / 2 + (i - 4) * 21;
             objfilterGraves->setTam(xFilter, yFiltros + 25, 10, albumWith - 50);
 
             ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("labelfiltroAudio" + Constant::TipoToStr(i))
@@ -1475,8 +1480,43 @@ int Iofrontend::accionesfiltroAudio4(tEvento *evento){
 /**
 *
 */
+int Iofrontend::accionesfiltroAudio5(tEvento *evento){
+    UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio5");
+    player->setFilter(5, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
+    return 0;
+}
+
+/**
+*
+*/
+int Iofrontend::accionesfiltroAudio6(tEvento *evento){
+    UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio6");
+    player->setFilter(6, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
+    return 0;
+}
+
+/**
+*
+*/
+int Iofrontend::accionesfiltroAudio7(tEvento *evento){
+    UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio7");
+    player->setFilter(7, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
+    return 0;
+}
+
+/**
+*
+*/
+int Iofrontend::accionesfiltroAudio8(tEvento *evento){
+    UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio8");
+    player->setFilter(8, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
+    return 0;
+}
+/**
+*
+*/
 int Iofrontend::accionesResetFiltros(tEvento *evento){
-    for(int i=0; i < 5; i++){
+    for(int i=0; i < NBIQUADFILTERS; i++){
         UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio" + Constant::TipoToStr(i));
         objfilterGraves->setProgressPos(MAXDBGAIN/2);
     }
@@ -1486,6 +1526,10 @@ int Iofrontend::accionesResetFiltros(tEvento *evento){
     accionesfiltroAudio2(evento);
     accionesfiltroAudio3(evento);
     accionesfiltroAudio4(evento);
+    accionesfiltroAudio5(evento);
+    accionesfiltroAudio6(evento);
+    accionesfiltroAudio7(evento);
+    accionesfiltroAudio8(evento);
 
 
     return 0;
@@ -1525,7 +1569,7 @@ int Iofrontend::accionesEqualizer(tEvento *evento){
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setVisible(false);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnResetEq")->setVisible(false);
 
-        for(int i=0; i < 5; i++){
+        for(int i=0; i < NBIQUADFILTERS; i++){
             ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio" + Constant::TipoToStr(i))->setVisible(false);
             ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("labelfiltroAudio" + Constant::TipoToStr(i))->setVisible(false);
         }
@@ -1540,7 +1584,7 @@ int Iofrontend::accionesEqualizer(tEvento *evento){
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setVisible(true);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnResetEq")->setVisible(true);
 
-        for(int i=0; i < 5; i++){
+        for(int i=0; i < NBIQUADFILTERS; i++){
             ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio" + Constant::TipoToStr(i))->setVisible(true);
             ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("labelfiltroAudio" + Constant::TipoToStr(i))->setVisible(true);
         }

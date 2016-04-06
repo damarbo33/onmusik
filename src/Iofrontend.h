@@ -113,6 +113,10 @@ class Iofrontend : public Ioutil{
         int accionesfiltroAudio2(tEvento *evento);
         int accionesfiltroAudio3(tEvento *evento);
         int accionesfiltroAudio4(tEvento *evento);
+        int accionesfiltroAudio5(tEvento *evento);
+        int accionesfiltroAudio6(tEvento *evento);
+        int accionesfiltroAudio7(tEvento *evento);
+        int accionesfiltroAudio8(tEvento *evento);
         int accionesResetFiltros(tEvento *evento);
         int accionesSwitchFiltros(tEvento *evento);
 
