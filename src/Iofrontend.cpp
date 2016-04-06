@@ -1432,7 +1432,7 @@ int Iofrontend::accionesMediaPause(tEvento *evento){
 */
 int Iofrontend::accionesfiltroAudio0(tEvento *evento){
     UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio0");
-    player->setFilter1(objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
+    player->setFilter(0, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
     return 0;
 }
 
@@ -1441,7 +1441,7 @@ int Iofrontend::accionesfiltroAudio0(tEvento *evento){
 */
 int Iofrontend::accionesfiltroAudio1(tEvento *evento){
     UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio1");
-    player->setFilter2(objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
+    player->setFilter(1, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
     return 0;
 }
 
@@ -1450,7 +1450,7 @@ int Iofrontend::accionesfiltroAudio1(tEvento *evento){
 */
 int Iofrontend::accionesfiltroAudio2(tEvento *evento){
     UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio2");
-    player->setFilter3(objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
+    player->setFilter(2, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
     return 0;
 }
 
@@ -1459,7 +1459,7 @@ int Iofrontend::accionesfiltroAudio2(tEvento *evento){
 */
 int Iofrontend::accionesfiltroAudio3(tEvento *evento){
     UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio3");
-    player->setFilter4(objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
+    player->setFilter(3, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
     return 0;
 }
 
@@ -1468,7 +1468,7 @@ int Iofrontend::accionesfiltroAudio3(tEvento *evento){
 */
 int Iofrontend::accionesfiltroAudio4(tEvento *evento){
     UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio4");
-    player->setFilter5(objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
+    player->setFilter(4, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
     return 0;
 }
 
@@ -1530,13 +1530,12 @@ int Iofrontend::accionesEqualizer(tEvento *evento){
             ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("labelfiltroAudio" + Constant::TipoToStr(i))->setVisible(false);
         }
         objSpectrum->setEnabled(true);
-        player->setAnalyzeSpectrum(true);
+        player->setViewSpectrum(true);
     } else {
         //Debemos dibujar el equalizador
-        player->setAnalyzeSpectrum(true);
+        player->setViewSpectrum(false);
         objSpectrum->setEnabled(false);
         objSpectrum->setImgDrawed(false);
-        objSpectrum->buf = NULL;
         btnEq->setIcon(control_equalizer_blue);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setVisible(true);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnResetEq")->setVisible(true);
@@ -1896,7 +1895,7 @@ bool Iofrontend::bucleReproductor(){
         player->initAudio();
         player->setFilename(file);
         player->setStatus(PLAYING);
-        player->setAnalyzeSpectrum(ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum")->isEnabled());
+        player->setViewSpectrum(ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum")->isEnabled());
         player->setSongDownloaded(false);
         player->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
 
