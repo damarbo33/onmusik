@@ -3195,7 +3195,7 @@ void Ioutil::drawTextInsideArea( string dato, int x, int y, Object *obj, SDL_Rec
                 SDL_Rect screenLocation = { (short int)textLocation->x + x + acumLinePx,
                                             (short int)textLocation->y + y + offsetY, 0, 0 };
 
-                if (screenLocation.y < obj->getH()){
+                if (screenLocation.y < obj->getY() + obj->getH() - Constant::getMENUSPACE()){
                     SDL_Surface* textSurface =  TTF_RenderText_Blended(font, tmpStr.c_str(), foregroundColor);
                     SDL_BlitSurface(textSurface, NULL, screen, &screenLocation);
                     SDL_FreeSurface(textSurface);
