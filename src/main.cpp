@@ -36,6 +36,7 @@ int main(int argc, char *argv[]){
             appDir.substr(0, appDir.rfind(Constant::getFileSep()));
         }
         Constant::setAppDir(appDir);
+        cout << appDir << endl;
     #endif // WIN
 
     #ifdef UNIX

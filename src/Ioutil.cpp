@@ -46,6 +46,12 @@ Ioutil::Ioutil(){
     lastEvento.keyjoydown = false;
     initSDL(true);
     dirInicial = Constant::getAppDir();
+
+    int corte = ceil((ALBUMWIDTH/4)/(float)3);
+    color1Spectrum.calcDegradation(cAzulTotal, cVerde, corte);
+    color2Spectrum.calcDegradation(cVerde, cAmarillo, corte);
+    color3Spectrum.calcDegradation(cAmarillo, cRojo , corte);
+
     Traza::print("Dir Inicial: " + dirInicial, W_DEBUG);
 }
 
@@ -738,49 +744,6 @@ void Ioutil::drawTextInArea( const char* dato, int x, int y, t_color color, SDL_
     }
 }
 
-/**
-*
-*/
-void Ioutil::drawTextInsideArea( string dato, int x, int y, t_color color, SDL_Rect *textLocation){
-    if (font != NULL){
-        SDL_Color foregroundColor = { (unsigned char)color.r, (unsigned char)color.g, (unsigned char)color.b };
-
-        dato = Constant::replaceAll(dato, "\n", " \n ");
-        vector<string> vtexto = Constant::split(dato, " ");
-        string tmpStr = "";
-        short int acumLinePx = 0;
-        short int tamPalabra = 0;
-        const short int maxLineaPx = textLocation->w - ( x - textLocation->x );
-        short int offsetY = 0;
-        bool retorno = false;
-
-        for (int i = 0; i < vtexto.size(); i++){
-            tmpStr = vtexto.at(i);
-            retorno = tmpStr.compare("\n") == 0;
-            //cout << "," + tmpStr + ",";
-            tamPalabra = fontStrLen(tmpStr + " ");
-
-            if (acumLinePx + tamPalabra >= maxLineaPx || retorno){
-                offsetY += Constant::getMENUSPACE();
-                acumLinePx = 0;
-            }
-
-            //Traza::print(tmpStr, W_DEBUG);
-            if (!retorno){
-                SDL_Surface* textSurface =  TTF_RenderText_Blended(font, tmpStr.c_str(), foregroundColor);
-                SDL_Rect screenLocation = { (short int)x + acumLinePx, (short int)y + offsetY, 0, 0 };
-                SDL_BlitSurface(textSurface, NULL, screen, &screenLocation);
-                SDL_FreeSurface(textSurface);
-            }
-
-            if (acumLinePx + tamPalabra < maxLineaPx && !retorno){
-                acumLinePx += tamPalabra;
-            }
-        }
-    } else {
-        Traza::print("Fallo en drawTextInArea: La fuente es NULL", W_ERROR);
-    }
-}
 
 /**
 */
@@ -926,6 +889,37 @@ void Ioutil::pintarHint(int x1, int y1, int w1, int h1, string text, t_color col
     drawRect(x1+INPUTBORDER,y1+INPUTBORDER,w1-INPUTBORDER,h1-INPUTBORDER, color); // Dibujo el contenedor
     drawRectLine(x1,y1,w1,h1,INPUTBORDER,cInputBorder);//Dibujo el borde
     drawText(text.c_str(), x1 + 2, y1 + 2, cNegro);
+}
+
+/**
+*
+*/
+void Ioutil::pintarLineaV (int x1, int y1, int h, t_color color){
+    int dif = abs(h);
+    for (int i=0; i < dif; i++){
+        putpixelSafe(screen, x1, h > 0 ? y1 + i : y1 - i, SDL_MapRGB(screen->format, color.r, color.g, color.b));
+    }
+}
+
+void Ioutil::pintarLineaSpectrum (int x1, int y1, int h, int maxh, t_color color){
+    int dif = abs(h);
+    int corte = ceil(maxh/(float)3);
+
+    for (int i=0; i < dif; i++){
+        if (dif < corte){
+//            color1Spectrum.getDegradedColor(dif, &degColorSpectrum);
+            degColorSpectrum = cVerde;
+        } else if (dif < corte*2){
+//            color2Spectrum.getDegradedColor(dif, &degColorSpectrum);
+            degColorSpectrum = cAmarillo;
+        } else {
+//            color3Spectrum.getDegradedColor(dif, &degColorSpectrum);
+            degColorSpectrum = cRojo;
+        }
+
+        putpixelSafe(screen, x1, h > 0 ? y1 + i : y1 - i,
+            SDL_MapRGB(screen->format, degColorSpectrum.r, degColorSpectrum.g, degColorSpectrum.b));
+    }
 }
 
 
@@ -1321,24 +1315,9 @@ void Ioutil::drawUISpectrum(Object *obj){
                             y1=t;
                             h1=Y(objspectrum->buf[x]);
                         }
-                        {
-                            SDL_Rect r={X,H2*b,1};
-                            r.h=y1-r.y;
-                            r.x+=x_;
-                            r.y+=y_;
-                            SDL_FillRect(screen,&r,colorFondo);
-                        }
-                        {
-                            SDL_Rect r={X + x_,y1 + y_,1,h1};
-                            SDL_FillRect(screen,&r,colorSpectrum);
-                        }
-                        {
-                            SDL_Rect r={X,y1+h1,1};
-                            r.h=H2+H2*b-r.y;
-                            r.x+=x_;
-                            r.y+=y_;
-                            SDL_FillRect(screen,&r,colorFondo);
-                        }
+
+                        pintarLineaV(X + x_, y1 + y_, h1, cBlanco);
+                        //pintarLineaSpectrum(X + x_, y1 + y_, h1, ALBUMWIDTH/4, cBlanco);
                     }
                 }
             }
@@ -1926,6 +1905,9 @@ void Ioutil::drawListContent(Object *obj, int x, int y, int w, int h){
         for (unsigned int i=listObj->getPosIniLista(); i <= listObj->getPosFinLista(); i++ ){
             Traza::print("pintando: " + listObj->getListNames()->get(i), W_PARANOIC);
             icono = listObj->getListIcons()->get(i);
+
+            textArea.w = w - INPUTCONTENT - (icono >= 0 ? ICOSPACE : 0);
+
             if (i == listObj->getPosActualLista()){
                 drawRectAlpha(x - INPUTCONTENT, y + cont*Constant::getMENUSPACE(), listObj->getW(),
                                Constant::getMENUSPACE(), cAzul, listObj->isFocus() ? 255 : 128);
@@ -2136,7 +2118,7 @@ void Ioutil::drawUISlider(Object *obj, tEvento *evento){
             t_color degradedColor;
 
             int corte = ceil(objProg->getProgressMax()/(float)3);
-            int corte2 = ceil(objProg->getProgressMax()/(float)3 * 2);
+            int corte2 = corte * 2;
 
             if (objProg->getProgressPos() < corte ){
                 colorUtil.calcDegradation(cAzulTotal, cVerde, corte);
@@ -3109,8 +3091,14 @@ void Ioutil::drawUITextElementsArea(Object *obj){
         int h = obj->getH();
 
         if (!obj->getImgDrawed()){
-            SDL_Rect areaLocation = { (short int)x, (short int)y, (short int)w, (short int)h };
-            drawRectLine(x+1,y+1,w-1,h-1,1,cNegro);
+
+            UITextElementsArea *objTextElement = (UITextElementsArea *)obj;
+            SDL_Rect areaLocation = { (short int)x, (short int)y + objTextElement->getOffsetDesplazamiento(), (short int)w, (short int)h };
+
+            //drawRectLine(x, y, w, h, 1, cVerde);
+            if (obj->isVerContenedor()){
+                pintarContenedor(x,y,w,h,obj->isFocus() && obj->isEnabled(), obj, obj->getColor());
+            }
 
             if (obj->getObjectType() == GUITEXTELEMENTSAREA){
                 UITextElementsArea *objText = (UITextElementsArea *)obj;
@@ -3118,6 +3106,19 @@ void Ioutil::drawUITextElementsArea(Object *obj){
                 TextElement *elem;
                 int maxPxLabel = 0;
                 int tmpPX = 0;
+
+//                if (obj->isVerContenedor()){
+//                    pintarDegradado(x + 1,
+//                                y,
+//                                x + w,
+//                                y,
+//                                Constant::getMENUSPACE() + INPUTCONTENT , 180, 255);
+//                    pintarDegradado(x + 1,
+//                                y,
+//                                x + w,
+//                                y,
+//                                5, 128, 180);
+//                }
 
                 //Calculamos el elemento con el label mas grande
                 for (int i=0; i < len; i++){
@@ -3128,45 +3129,33 @@ void Ioutil::drawUITextElementsArea(Object *obj){
 
                 for (int i=0; i < len; i++){
                     elem = objText->getTextVector()->at(i);
-
-//                    cout << "drawTextInsideArea: " << x + elem->getPos()->x + (elem->isUseMaxLabelMargin() ?  maxPxLabel : 0) + TEXLABELTEXTSPACE << ","
-//                                << y + elem->getPos()->y << endl;
-
                     //Se dibuja el label
                     drawText(elem->getLabel().c_str(),
                              x + elem->getPos()->x,
                              y + elem->getPos()->y, obj->getTextColor());
 
-//                    cout << "area location: " << areaLocation.x << "," << areaLocation.y << "," << areaLocation.w << "," << areaLocation.h << endl;
+                    int tmpFontSize = FONTSIZE;
+                    loadFont(elem->getStyle()->fontSize);
+
+                    int fontStyle = TTF_GetFontStyle(font);
+                    if (elem->getStyle()->bold){
+                        if (!(fontStyle & TTF_STYLE_BOLD)) {
+                            TTF_SetFontStyle(font, fontStyle | TTF_STYLE_BOLD);
+                        }
+                    }
+
                     //Se dibuja el texto
-                    areaLocation.x = 0;
-                    areaLocation.y = 0;
                     drawTextInsideArea(elem->getText().c_str(),
-                             x + elem->getPos()->x + (elem->isUseMaxLabelMargin() ?  maxPxLabel : 0) + TEXLABELTEXTSPACE,
-                             y + elem->getPos()->y, obj->getTextColor(), &areaLocation);
+                             elem->getPos()->x + (elem->isUseMaxLabelMargin() ?  maxPxLabel : 0) + TEXLABELTEXTSPACE,
+                             elem->getPos()->y, obj, &areaLocation);
 
-//                    drawTextInsideAreaScroll(elem,
-//                                             objText,
-//                                             maxPxLabel,
-//                                             cNegro, &areaLocation);
+                    loadFont(tmpFontSize);
+                    if (elem->getStyle()->bold){
+                        TTF_SetFontStyle(font, fontStyle);
+                    }
+
                 }
-
-                if (obj->isVerContenedor()){
-                    pintarDegradado(x + 1,
-                                y,
-                                x + w,
-                                y,
-                                Constant::getMENUSPACE() + INPUTCONTENT , 180, 255);
-                    pintarDegradado(x + 1,
-                                y,
-                                x + w,
-                                y,
-                                5, 128, 180);
-                }
-
-
             }
-
             cachearObjeto(obj);
         } else {
             cachearObjeto(obj);
@@ -3178,33 +3167,23 @@ void Ioutil::drawUITextElementsArea(Object *obj){
 /**
 *
 */
-void Ioutil::drawTextInsideAreaScroll( TextElement *elem, UITextElementsArea *objText, int maxPxLabel, t_color color, SDL_Rect *textLocation){
+void Ioutil::drawTextInsideArea( string dato, int x, int y, Object *obj, SDL_Rect *textLocation){
     if (font != NULL){
-        SDL_Color foregroundColor = { (unsigned char)color.r, (unsigned char)color.g, (unsigned char)color.b };
+        SDL_Color foregroundColor = { (unsigned char)obj->getTextColor().r,
+        (unsigned char)obj->getTextColor().g, (unsigned char)obj->getTextColor().b };
 
-        int x = objText->getX() + elem->getPos()->x + (elem->isUseMaxLabelMargin() ?  maxPxLabel : 0) + TEXLABELTEXTSPACE;
-        int y = objText->getY() + elem->getPos()->y;
-
-        string dato = Constant::replaceAll(elem->getText(), "\n", " \n ");
+        dato = Constant::replaceAll(dato, "\n", " \n ");
         vector<string> vtexto = Constant::split(dato, " ");
         string tmpStr = "";
         short int acumLinePx = 0;
         short int tamPalabra = 0;
-        const short int maxLineaPx = textLocation->w - ( x - textLocation->x );
+        const short int maxLineaPx = textLocation->w - ( x );
         short int offsetY = 0;
         bool retorno = false;
-
-//        SDL_Surface *textAreaSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, objText->getW() - x, objText->getH() - y,
-//                                                            screen->format->BitsPerPixel, rmask , gmask , bmask , amask);
-        SDL_Surface *textAreaSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, objText->getW() - x, objText->getH() - y,
-                                                            screen->format->BitsPerPixel, 0 , 0 , 0 , 0);
-
-        SDL_FillRect(textAreaSurface, NULL, SDL_MapRGB(screen->format, cNaranja.r,cNaranja.g,cNaranja.b));
 
         for (int i = 0; i < vtexto.size(); i++){
             tmpStr = vtexto.at(i);
             retorno = tmpStr.compare("\n") == 0;
-            //cout << "," + tmpStr + ",";
             tamPalabra = fontStrLen(tmpStr + " ");
 
             if (acumLinePx + tamPalabra >= maxLineaPx || retorno){
@@ -3212,39 +3191,24 @@ void Ioutil::drawTextInsideAreaScroll( TextElement *elem, UITextElementsArea *ob
                 acumLinePx = 0;
             }
 
-            //Traza::print(tmpStr, W_DEBUG);
             if (!retorno){
-                SDL_Surface* textSurface =  TTF_RenderText_Blended(font, tmpStr.c_str(), foregroundColor);
-                //SDL_Rect screenLocation = { (short int)x + acumLinePx, (short int)y + offsetY, 0, 0 };
-                SDL_Rect textLocation2 = { acumLinePx, offsetY, 0, 0 };
-                SDL_BlitSurface(textSurface, NULL, textAreaSurface, &textLocation2);
-                SDL_FreeSurface(textSurface);
+                SDL_Rect screenLocation = { (short int)textLocation->x + x + acumLinePx,
+                                            (short int)textLocation->y + y + offsetY, 0, 0 };
+
+                if (screenLocation.y < obj->getH()){
+                    SDL_Surface* textSurface =  TTF_RenderText_Blended(font, tmpStr.c_str(), foregroundColor);
+                    SDL_BlitSurface(textSurface, NULL, screen, &screenLocation);
+                    SDL_FreeSurface(textSurface);
+                }
             }
 
             if (acumLinePx + tamPalabra < maxLineaPx && !retorno){
                 acumLinePx += tamPalabra;
             }
         }
-
-        static int desfase = 0;
-        if (offsetY > textAreaSurface->h) {
-            if (desfase < (int)offsetY - (int)textAreaSurface->h){
-                desfase+=1;
-            } else {
-                desfase = 0;
-            }
-        } else {
-            desfase = 0;
-        }
-
-        SDL_Rect screenLocation = { (short int)x, (short int)y, 0, 0 };
-        SDL_Rect scrollLocation = { 0, desfase, textAreaSurface->w, textAreaSurface->h };
-        SDL_BlitSurface(textAreaSurface, &scrollLocation, screen, &screenLocation);
-        SDL_FreeSurface(textAreaSurface);
-
-
-
     } else {
         Traza::print("Fallo en drawTextInArea: La fuente es NULL", W_ERROR);
     }
 }
+
+

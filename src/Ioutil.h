@@ -60,7 +60,7 @@
             void drawTextInt(int , int , int ,  t_color ); // Escribe un entero en la pantalla
             void drawTextCent( const char* , int , int , bool , bool , t_color );
             void drawTextInArea( const char*, int, int, t_color, SDL_Rect *);
-            void drawTextInsideArea( string dato, int x, int y, t_color color, SDL_Rect *textLocation);
+            void drawTextInsideArea( string dato, int x, int y, Object *obj, SDL_Rect *textLocation);
             void drawRect(int, int, int, int, t_color); //Dibuja un rectangulo rellenado
             void drawRectAlpha(int, int, int, int, t_color, int); //Dibuja un rectangulo rellenado con valor alpha de transparencia
             void drawRectLine(int , int , int , int , int , t_color);//Dibuja un rectangulo sin relleno del ancho especificado
@@ -95,6 +95,8 @@
             void pintarSemiCirculo (int x, int y, int r, t_color color, int angle);
             void pintarFillCircle(SDL_Surface *surface, int cx, int cy, int radius, Uint32 pixel);
             void pintarLinea (int , int , int , int  , t_color );
+            void pintarLineaV (int x1, int y1, int h, t_color color);
+            void pintarLineaSpectrum (int x1, int y1, int h, int maxh, t_color color);
             void pintarTriangulo (int , int , int , int , bool , t_color);
             void pintarContenedor(int x1, int y1, int w1, int h1, bool selected, Object *obj, t_color color);
             void pintarDegradado(int x1, int y1, int x2, int y2, int lineas, int grayIni, int grayFin);
@@ -189,5 +191,9 @@
             SDL_Surface *screenShotThumbSurface;
             //Cursores
             int actualCursor;
+            Colorutil color1Spectrum;
+            Colorutil color2Spectrum;
+            Colorutil color3Spectrum;
+            t_color degColorSpectrum;
     };
 #endif //Ioutil_H

@@ -26,6 +26,7 @@
 #include "jukebox.h"
 #include "dropbox.h"
 #include "AudioPlayer.h"
+#include "lyricswikia.h"
 
 const unsigned int MAXSONG_REPEAT_AVOID = 20;
 
@@ -50,20 +51,20 @@ class SongsReproduced{
 class Iofrontend : public Ioutil{
 
      private :
-
+        string accessToken;
+        Thread<AudioPlayer> *threadPlayer;
+        Thread<Jukebox> *threadDownloader;
+        Thread<LyricsWikia> *threadLyrics;
+        int posAlbumSelected;
+        int posSongSelected;
+        AudioPlayer *player;
+        Jukebox *juke;
+        LyricsWikia *lyricWikia;
+        vector <TrackInfo *> info;
+        static bool finishedDownload;
         SongsReproduced mySongsReproduced;
-        void playMedia(tEvento *evento);
         Colorutil *convColor;
-        void obtenerImgCateg(tEvento *);
-        void setDinamicSizeObjects();
-        void mensajeCompilando(tEvento, string, bool);
-        bool procesarBoton(Object *, tmenu_gestor_objects *);
-        string casoJOYBUTTONS(tEvento *evento);
-        long waitMedia();
-        void setPanelMediaVisible(bool );
-        bool bucleReproductor();
-        int calculaPosPanelMedia();
-
+        int selMenu;
         //Funciones para anyadir punteros a funciones
         typedef int (Iofrontend::*typept2Func)(tEvento *); //Se declara el puntero a funcion
         typept2Func pt2Func[MAXMENU*MAXOBJECTS]; //Se declara un array de punteros a funcion
@@ -79,12 +80,22 @@ class Iofrontend : public Ioutil{
             bool execFunctions;
         };
 
+
+        void playMedia(tEvento *evento);
+        void obtenerImgCateg(tEvento *);
+        void setDinamicSizeObjects();
+        void mensajeCompilando(tEvento, string, bool);
+        bool procesarBoton(Object *, tmenu_gestor_objects *);
+        string casoJOYBUTTONS(tEvento *evento);
+        long waitMedia();
+        void setPanelMediaVisible(bool );
+        bool bucleReproductor();
+        int calculaPosPanelMedia();
         void addEvent(string, typept2Func);
         void addEvent(string, typept2Func, int);
         int findEventPos(string);
         void setEvent(string, typept2Func);
         void setEvent(string nombre, typept2Func funcion, int parms);
-        int selMenu;
         //Eventos asignados a los botones
         int simularEscape(tEvento *);
         int simularIntro(tEvento *);
@@ -119,12 +130,12 @@ class Iofrontend : public Ioutil{
         int accionesfiltroAudio8(tEvento *evento);
         int accionesResetFiltros(tEvento *evento);
         int accionesSwitchFiltros(tEvento *evento);
+        int accionesLetras(tEvento *evento);
 
         string showExplorador(tEvento *);
         void cargaMenuFromLista(UIListCommon *, tEvento *);
         void cargaMenu(int, string, tEvento *);
         bool cargarDatosEmulador(string );
-
         bool lanzarPrograma(string);
         bool browser(int, string, int, string, string);
         void comprobarUnicode(int);
@@ -141,20 +152,12 @@ class Iofrontend : public Ioutil{
         int uploadDiscToDropbox(tEvento *evento);
         int startSongPlaylist(tEvento *evento);
         int selectAlbum(tEvento *evento);
-        Jukebox *juke;
-        string accessToken;
-        Thread<AudioPlayer> *threadPlayer;
-        Thread<Jukebox> *threadDownloader;
-        AudioPlayer *player;
-        static bool finishedDownload;
         int accionAlbumPopup(tEvento *evento);
-        //void refreshAlbum();
         void refreshSpectrum(AudioPlayer *player);
         void bienvenida();
         void loadComboUnidades();
         void reloadSong(int posAlbumSelected, int posSongSelected);
-        int posAlbumSelected;
-        int posSongSelected;
+        void getLyricsFromActualSong();
 
     public :
         Iofrontend();

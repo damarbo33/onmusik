@@ -42,9 +42,12 @@ Iofrontend::Iofrontend(){
 
     juke = new Jukebox();
     player = new AudioPlayer();
+    lyricWikia = new LyricsWikia();
+
     finishedDownload = false;
     threadPlayer = NULL;
     threadDownloader = NULL;
+    threadLyrics = NULL;
     setSelMenu(PANTALLAREPRODUCTOR);
     tEvento evento;
     drawMenu(evento);
@@ -143,6 +146,8 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnEqualizer", GUIBUTTON, 0,0,0,0, "Mostrar Ecualizador", true)->setIcon(control_equalizer)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnSwitchEq", GUIBUTTON, 0,0,0,0, "Ecualizador On/Off", true)->setIcon(btn_on)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnResetEq", GUIBUTTON, 0,0,0,0, "Resetear Ecualizador", true)->setIcon(btn_reset_eq)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnLetras",  GUIBUTTON, 0,0,0,0, "Letra de la canción", true)->setIcon(fontIco)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("LetrasBox", GUITEXTELEMENTSAREA, 0,0,0,0, "Letras", true)->setVerContenedor(true);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setVisible(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnResetEq")->setVisible(false);
 
@@ -158,13 +163,29 @@ void Iofrontend::initUIObjs(){
         objfilterGraves->setTextColor(cBlanco);
     }
 
-
     //ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("panelMedia")->setAlpha(150);
     ((UIPanel *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("panelMedia"))->setColor(cGrisOscuro);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("statusMessage")->setTextColor(cBlanco);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimerTotal")->setTextColor(cBlanco);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimer")->setTextColor(cBlanco);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("labelVol")->setTextColor(cBlanco);
+
+    UITextElementsArea *LetrasLabel = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
+    t_element_style style;
+    t_posicion posLetras = {10,10,0,0};
+    style.pos = posLetras;
+    style.bold = true;
+    style.fontSize = 28;
+    LetrasLabel->addField("TituloLetraCancion","","",style, true);
+    style.pos.y += 50;
+    style.bold = false;
+    style.fontSize = 24;
+    LetrasLabel->addField("LetraCancion","","",style, true);
+    LetrasLabel->setTextColor(cBlanco);
+    LetrasLabel->setVisible(false);
+    LetrasLabel->setColor(cNegroClaro);
+
+
     ((UIProgressBar *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarMedia"))->setTypeHint(HINT_TIME);
     UISpectrum *objSpectrum = (UISpectrum *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum");
     objSpectrum->setColor(cGrisOscuro);
@@ -239,9 +260,9 @@ void Iofrontend::initUIObjs(){
     addEvent("filtroAudio6", &Iofrontend::accionesfiltroAudio6);
     addEvent("filtroAudio7", &Iofrontend::accionesfiltroAudio7);
     addEvent("filtroAudio8", &Iofrontend::accionesfiltroAudio8);
-
     addEvent("btnResetEq", &Iofrontend::accionesResetFiltros);
     addEvent("btnSwitchEq", &Iofrontend::accionesSwitchFiltros);
+    addEvent("btnLetras", &Iofrontend::accionesLetras);
 }
 
 /**
@@ -709,15 +730,15 @@ void Iofrontend::setDinamicSizeObjects(){
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("labelVol")->setTam(2*(TIMEW + SEPTIMER), bottom +1 , TIMEW, PROGRESSHEIGHT);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnAddContent")->setTam(2, 2, FAMFAMICONW, FAMFAMICONH);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnEqualizer")->setTam(FAMFAMICONW + 4, 2, FAMFAMICONW, FAMFAMICONH);
+        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnLetras")->setTam(FAMFAMICONW * 2 + 4, 2, FAMFAMICONW, FAMFAMICONH);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarMedia")->setTam( TIMEW + SEPTIMER, bottom - PROGRESSSEPBOTTOM, this->getWidth() - TIMEW*2 - SEPTIMER*2, PROGRESSHEIGHT);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimer")->setTam(SEPTIMER, bottom - PROGRESSSEPBOTTOM, TIMEW, FAMFAMICONH);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimerTotal")->setTam(this->getWidth() - TIMEW, bottom - PROGRESSSEPBOTTOM, TIMEW, FAMFAMICONH);
 
-        int albumWith = 200;
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList")->setTam(0, FAMFAMICONH + 2, albumWith, calculaPosPanelMedia() - FAMFAMICONH - 2 - albumWith);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum")->setTam(0, FAMFAMICONH + 2 + calculaPosPanelMedia() - FAMFAMICONH - 2 - albumWith, albumWith, albumWith);
+        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList")->setTam(0, FAMFAMICONH + 2, ALBUMWIDTH, calculaPosPanelMedia() - FAMFAMICONH - 2 - ALBUMWIDTH);
+        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum")->setTam(0, FAMFAMICONH + 2 + calculaPosPanelMedia() - FAMFAMICONH - 2 - ALBUMWIDTH, ALBUMWIDTH, ALBUMWIDTH);
 
-        int yFiltros = FAMFAMICONH + 2 + calculaPosPanelMedia() - FAMFAMICONH - 2 - albumWith;
+        int yFiltros = FAMFAMICONH + 2 + calculaPosPanelMedia() - FAMFAMICONH - 2 - ALBUMWIDTH;
 
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setTam(2, yFiltros + 2, FAMFAMICONW, FAMFAMICONH);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnResetEq")->setTam(4 + FAMFAMICONW, yFiltros + 2, FAMFAMICONW, FAMFAMICONH);
@@ -725,11 +746,12 @@ void Iofrontend::setDinamicSizeObjects(){
         int xFilter = 0;
         for(int i=0; i < NBIQUADFILTERS; i++){
             UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio" + Constant::TipoToStr(i));
-            xFilter = (albumWith - 10) / 2 + (i - 4) * 21;
-            objfilterGraves->setTam(xFilter, yFiltros + 25, 10, albumWith - 50);
+            xFilter = (ALBUMWIDTH - 10) / 2 + (i - 4) * 21;
+            objfilterGraves->setTam(xFilter, yFiltros + 25, 10, ALBUMWIDTH - 50);
         }
 
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists")->setTam(albumWith, 0, this->getWidth() - albumWith, calculaPosPanelMedia());
+        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists")->setTam(ALBUMWIDTH, 0, this->getWidth() - ALBUMWIDTH, calculaPosPanelMedia());
+        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox")->setTam(ALBUMWIDTH, 0, this->getWidth() - ALBUMWIDTH, calculaPosPanelMedia());
     } catch (Excepcion &e){
         Traza::print("setDinamicSizeObjects: " + string(e.getMessage()), W_ERROR);
     }
@@ -1545,6 +1567,47 @@ int Iofrontend::accionesSwitchFiltros(tEvento *evento){
 /**
 *
 */
+int Iofrontend::accionesLetras(tEvento *evento){
+    UIListGroup *objPlayList = (UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists");
+    UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
+
+    objPlayList->setVisible(!objPlayList->isVisible());
+    textElems->setVisible(!objPlayList->isVisible());
+
+    if (textElems->isVisible()){
+        getLyricsFromActualSong();
+        ObjectsMenu[PANTALLAREPRODUCTOR]->setFocus("LetrasBox");
+    } else {
+        ObjectsMenu[PANTALLAREPRODUCTOR]->setFocus("playLists");
+    }
+    return 0;
+}
+
+/**
+*
+*/
+void Iofrontend::getLyricsFromActualSong(){
+    UIListGroup *objPlayList = (UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists");
+    UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
+    if (textElems->isVisible()){
+        string cancion = objPlayList->getCol(objPlayList->getLastSelectedPos(), 0)->getTexto();
+        string Artist = objPlayList->getCol(objPlayList->getLastSelectedPos(), 1)->getValor();
+        if (threadLyrics != NULL){
+            delete threadLyrics;
+            threadLyrics = NULL;
+        }
+        //Lanzamos el thread para obtener las letras
+        lyricWikia->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
+        lyricWikia->setArtist(Artist);
+        lyricWikia->setTrack(cancion);
+        threadLyrics = new Thread<LyricsWikia>(lyricWikia, &LyricsWikia::getLyrics);
+        threadLyrics->start();
+    }
+}
+
+/**
+*
+*/
 int Iofrontend::accionesEqualizer(tEvento *evento){
     player->setEqualizerVisible(!player->isEqualizerVisible());
     UISpectrum *objSpectrum = (UISpectrum *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum");
@@ -1939,6 +2002,8 @@ bool Iofrontend::bucleReproductor(){
         threadPlayer = new Thread<AudioPlayer>(player, &AudioPlayer::loadFile);
         if (threadPlayer->start())
             Traza::print("Thread reproductor started with id: ", threadPlayer->getThreadID(), W_DEBUG);
+        //Obtiene las letras de la cancion actual
+        getLyricsFromActualSong();
 
         do{
                 clearScr(cGrisOscuro);
@@ -2173,6 +2238,13 @@ int Iofrontend::selectAlbum(tEvento *evento){
         }
 
         UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
+        UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
+
+        if (textElems->isVisible() && !playList->isVisible()){
+            playList->setVisible(true);
+            textElems->setVisible(false);
+        }
+
         playList->setPosActualLista(0);
         playList->refreshLastSelectedPos();
         procesarControles(obj, &evento, NULL);

@@ -29,6 +29,7 @@
 					<Add directory="../MP3Play" />
 					<Add directory="MP3Play" />
 					<Add directory="ExternalLibs/UIObjects/src" />
+					<Add directory="../../ExternalLibs/tidy/include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -48,6 +49,7 @@
 					<Add directory="../../ExternalLibs/gumbo-parser-master/bin/Release" />
 					<Add directory="../httpCurl/httpcurl/bin/Release" />
 					<Add directory="../../ExternalLibs/curl-7.40.0-devel-mingw32/lib" />
+					<Add directory="../../ExternalLibs/tidy/bin/Release" />
 				</Linker>
 			</Target>
 			<Target title="Debug">
@@ -73,6 +75,7 @@
 					<Add directory="../MP3Play" />
 					<Add directory="MP3Play" />
 					<Add directory="ExternalLibs/UIObjects/src" />
+					<Add directory="../../ExternalLibs/tidy/include" />
 				</Compiler>
 				<Linker>
 					<Add option="-lsdlgfx" />
@@ -91,6 +94,7 @@
 					<Add directory="../../ExternalLibs/gumbo-parser-master/bin/Release" />
 					<Add directory="../httpCurl/httpcurl/bin/Release" />
 					<Add directory="../../ExternalLibs/curl-7.40.0-devel-mingw32/lib" />
+					<Add directory="../../ExternalLibs/tidy/bin/Release" />
 				</Linker>
 			</Target>
 		</Build>
@@ -99,8 +103,9 @@
 		</Compiler>
 		<Linker>
 			<Add option="-lUIObjects" />
-			<Add option="-lgumboParser" />
 			<Add option="-lhttpcurl" />
+			<Add option="-lgumboParser" />
+			<Add option="-ltidy" />
 			<Add option="-lcrypto" />
 			<Add option="-lcurl" />
 			<Add option="-lcurldll" />
