@@ -848,10 +848,6 @@ string Iofrontend::casoPANTALLAPREGUNTA(string titulo, string label){
         before = SDL_GetTicks();
         askEvento = WaitForKey();
         clearScr(cBgScreen);
-        if (askEvento.isKey){
-            Traza::print("letra", askEvento.key, W_DEBUG);
-        }
-
         procesarControles(objMenu, &askEvento, NULL);
 
         flipScr();

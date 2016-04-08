@@ -1031,7 +1031,7 @@
 	"biquad.h"
 	"statevar.h"
 
-1459956337 c:\github\externallibs\uiobjects\src\constant.h
+1460102169 c:\github\externallibs\uiobjects\src\constant.h
 	<fstream>
 	<sstream>
 	<string.h>
@@ -1113,13 +1113,13 @@
 	"Excepcion.h"
 	"Traza.h"
 
-1459949925 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
+1460114685 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
 	"uilistcommon.h"
 
-1459943923 c:\github\proyectos\onmusik\src\iofrontend.h
+1460095429 c:\github\proyectos\onmusik\src\iofrontend.h
 	<string>
 	<vector>
 	"Ioutil.h"
@@ -1139,8 +1139,9 @@
 	"jukebox.h"
 	"dropbox.h"
 	"AudioPlayer.h"
+	"lyricswikia.h"
 
-1459954827 c:\github\proyectos\onmusik\src\ioutil.h
+1460111533 c:\github\proyectos\onmusik\src\ioutil.h
 	<iostream>
 	<map>
 	<cmath>
@@ -1254,7 +1255,7 @@
 1458726204 c:\github\externallibs\uiobjects\src\uipicture.h
 	<object.h>
 
-1458726204 c:\github\externallibs\uiobjects\src\uiinput.h
+1460111321 c:\github\externallibs\uiobjects\src\uiinput.h
 	<object.h>
 
 1458726204 c:\github\externallibs\uiobjects\src\uipopupmenu.h
@@ -1275,7 +1276,7 @@
 	<iostream>
 	<vector>
 
-1458726204 c:\github\externallibs\uiobjects\src\uitextelementsarea.h
+1460095404 c:\github\externallibs\uiobjects\src\uitextelementsarea.h
 	<object.h>
 
 1458726204 c:\github\externallibs\uiobjects\src\uispectrum.h
@@ -1350,7 +1351,7 @@
 1458726204 c:\github\externallibs\uiobjects\src\filelaunch.h
 	<string>
 
-1458726494 c:\github\proyectos\httpcurl\httpcurl\src\dropbox.h
+1460095469 c:\github\proyectos\httpcurl\httpcurl\src\dropbox.h
 	<iostream>
 	<windows.h>
 	"util/Constant.h"
@@ -1366,7 +1367,7 @@
 	"Dirutil.h"
 	"thread.h"
 
-1458726495 c:\github\proyectos\httpcurl\httpcurl\src\util\constant.h
+1460095469 c:\github\proyectos\httpcurl\httpcurl\src\util\constant.h
 	<sstream>
 	<string.h>
 	<vector>
@@ -1496,7 +1497,7 @@
 	<iostream>
 	"Constant.h"
 
-1459956730 source:c:\github\proyectos\onmusik\src\ioutil.cpp
+1460117475 source:c:\github\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"
@@ -1508,7 +1509,7 @@
 1459779380 source:c:\github\proyectos\onmusik\src\jukebox.cpp
 	"jukebox.h"
 
-1458577590 source:c:\github\proyectos\onmusik\src\main.cpp
+1460095429 source:c:\github\proyectos\onmusik\src\main.cpp
 	"main.h"
 	"Dirutil.h"
 	<iostream>
@@ -2136,4 +2137,58 @@
 	"tidyenum.h"
 
 1213823934 d:\github\codeblocks\externallibs\tidy\include\tidyenum.h
+
+1460095469 c:\github\proyectos\httpcurl\httpcurl\src\lyricswikia.h
+	"httputil.h"
+	"htmlparser.h"
+	"json/json.h"
+	"util/Constant.h"
+	"thread.h"
+	<Constant.h>
+	"Menuobject.h"
+
+1460095469 c:\github\proyectos\httpcurl\httpcurl\src\htmlparser.h
+	<buffio.h>
+	<iostream>
+	<string>
+	<stdlib.h>
+	<fstream>
+	<map>
+	<vector>
+	<tidy.h>
+	<gumbo.h>
+	"Constant.h"
+
+1169554666 c:\github\externallibs\tidy\include\buffio.h
+	"platform.h"
+	"tidy.h"
+
+1392310800 c:\github\externallibs\tidy\include\platform.h
+	<ctype.h>
+	<stdio.h>
+	<setjmp.h>
+	<stdlib.h>
+	<stdarg.h>
+	<string.h>
+	<assert.h>
+	<malloc.h>
+	<pwd.h>
+	<unistd.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<stat.h>
+	<sys/utime.h>
+	<utime.h>
+	<sys/types.h>
+	"dmalloc.h"
+
+1208862042 c:\github\externallibs\tidy\include\tidy.h
+	"platform.h"
+	"tidyenum.h"
+
+1213820334 c:\github\externallibs\tidy\include\tidyenum.h
+
+1386174180 c:\github\externallibs\gumbo-parser-master\src\gumbo.h
+	<stdbool.h>
+	<stddef.h>
 

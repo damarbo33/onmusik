@@ -1957,6 +1957,8 @@ void Ioutil::drawUIInputWide(Object *obj){
         int w = obj->getW();
         int h = obj->getH();
 
+        UIInput *objInput = (UIInput *)obj;
+
         //Dibujando el inputText
         pintarContenedor(x,y,w,h,obj->isFocus() && obj->isEnabled(), obj, cInputContent);
         //Dibujando el label del input
@@ -1983,10 +1985,49 @@ void Ioutil::drawUIInputWide(Object *obj){
 
         t_color colorText = obj->isEnabled() ? obj->getTextColor() : cGris;
         tInput myInput = calculaTextoInput(obj);
-        drawTextInArea(myInput.texto.c_str(), x, y, colorText, NULL);
 
+
+
+        if (objInput->getSelectionIni() > -1 && objInput->getSelectionFin() > -1){
+
+            int nSel = abs(objInput->getSelectionFin() - objInput->getSelectionIni());
+
+            int iniSel = objInput->getSelectionIni();
+            if (objInput->getSelectionIni() != objInput->getPosChar()){
+                iniSel = objInput->getSelectionIni() > 0 ? objInput->getSelectionIni() - 1 : 0;
+            }
+
+            string textoSeleccionado = objInput->getText().substr(iniSel, nSel);
+            Traza::print("textoSeleccionado: " + textoSeleccionado, W_DEBUG);
+            int txtLen = fontStrLen(textoSeleccionado);
+            int maxW = txtLen < objInput->getW() - 2*INPUTCONTENT ? txtLen : objInput->getW() - 2*INPUTCONTENT;
+            SDL_Rect selTextLocation = {0, 0,w,h};
+
+            if (objInput->getSelectionIni() == objInput->getPosChar()){
+                //Seleccionando texto a la izquierda del cursor
+                if (maxW + myInput.cursorX > obj->getX() + obj->getW()){
+                    maxW = obj->getX() + obj->getW() - myInput.cursorX - INPUTCONTENT;
+                }
+                drawRect(myInput.cursorX, myInput.cursorY, maxW,FONTSIZE, cAzul);
+//                drawTextInArea(textoSeleccionado.c_str(), myInput.cursorX, myInput.cursorY, cBlanco, &selTextLocation);
+            } else {
+                //Seleccionando texto a la derecha del cursor
+                if (objInput->getSelectionFin() > objInput->getSelectionIni()){
+                    string charAnt = objInput->getText().substr(objInput->getSelectionIni(), objInput->getSelectionFin() - objInput->getSelectionIni());
+                    int posX = myInput.cursorX - fontStrLen(charAnt);
+
+                    if (posX < obj->getX())
+                        posX = obj->getX() + INPUTCONTENT;
+
+                    drawRect(posX, myInput.cursorY, maxW,FONTSIZE, cAzul);
+//                    drawTextInArea(textoSeleccionado.c_str(), posX, myInput.cursorY, cBlanco, &selTextLocation);
+                }
+            }
+        }
+
+        drawTextInArea(myInput.texto.c_str(), x, y, colorText, NULL);
         if (activo && obj->isEnabled())
-            drawText("|", myInput.cursorX, myInput.cursorY, colorText);
+            drawText("|", myInput.cursorX, myInput.cursorY + fontDescent, colorText);
 
     }
 }

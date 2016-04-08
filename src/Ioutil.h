@@ -29,6 +29,8 @@
     struct tInput{
         int cursorX;
         int cursorY;
+        int selCursorX1;
+        int selCursorX2;
         string texto;
     };
 
