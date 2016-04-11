@@ -42,7 +42,7 @@ Iofrontend::Iofrontend(){
 
     juke = new Jukebox();
     player = new AudioPlayer();
-    lyricWikia = new LyricsWikia();
+    scrapper = new Scrapper();
 
     finishedDownload = false;
     threadPlayer = NULL;
@@ -130,6 +130,7 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("statusMessage",  GUILABEL,  0,0,0,0, "", false)->setEnabled(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("albumList", GUILISTBOX, 0,0,0,0, "", true)->setEnabled(true);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("playLists", GUILISTGROUPBOX, 0,0,0,0, "", true)->setEnabled(true);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("LetrasBox", GUITEXTELEMENTSAREA, 0,0,0,0, "Letras", true)->setVerContenedor(true);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("spectrum", GUISPECTRUM, 0,0,0,0, "", true)->setEnabled(true);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("labelVol",  GUILABEL,  0,0,0,0, "100%", false)->setEnabled(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnAddContent",  GUIBUTTON, 0,0,0,0, "Subir nuevo disco", true)->setIcon(add)->setVerContenedor(false);
@@ -148,7 +149,6 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnSwitchEq", GUIBUTTON, 0,0,0,0, "Ecualizador On/Off", true)->setIcon(btn_on)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnResetEq", GUIBUTTON, 0,0,0,0, "Resetear Ecualizador", true)->setIcon(btn_reset_eq)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnLetras",  GUIBUTTON, 0,0,0,0, "Letra de la canción", true)->setIcon(fontIco)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("LetrasBox", GUITEXTELEMENTSAREA, 0,0,0,0, "Letras", true)->setVerContenedor(true);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setVisible(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnResetEq")->setVisible(false);
 
@@ -1594,10 +1594,10 @@ void Iofrontend::getLyricsFromActualSong(){
             threadLyrics = NULL;
         }
         //Lanzamos el thread para obtener las letras
-        lyricWikia->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
-        lyricWikia->setArtist(Artist);
-        lyricWikia->setTrack(cancion);
-        threadLyrics = new Thread<LyricsWikia>(lyricWikia, &LyricsWikia::getLyrics);
+        scrapper->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
+        scrapper->setArtist(Artist);
+        scrapper->setTrack(cancion);
+        threadLyrics = new Thread<Scrapper>(scrapper, &Scrapper::getLyrics);
         threadLyrics->start();
     }
 }
@@ -2217,17 +2217,14 @@ int Iofrontend::selectAlbum(tEvento *evento){
         tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
         juke->setObjectsMenu(obj);
         juke->setAccessToken(accessToken);
-//        Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlaylist);
-//        if (thread->start())
-//            Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
-//        pintarIconoProcesando(thread);
-//        clearScr();
-
         Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlaylist);
-        tEvento evento;
-        procesarControles(obj, &evento, NULL);
+
+        if (thread->start())
+            Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
         pintarIconoProcesando(true);
-        thread->start();
+
+
+        tEvento evento;
         while (thread->isRunning()){
             evento = WaitForKey();
             procesarControles(obj, &evento, NULL);

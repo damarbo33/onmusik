@@ -26,7 +26,8 @@
 #include "jukebox.h"
 #include "dropbox.h"
 #include "AudioPlayer.h"
-#include "lyricswikia.h"
+//#include "lyricswikia.h"
+#include "scrapper/scrapper.h"
 
 const unsigned int MAXSONG_REPEAT_AVOID = 20;
 
@@ -54,12 +55,12 @@ class Iofrontend : public Ioutil{
         string accessToken;
         Thread<AudioPlayer> *threadPlayer;
         Thread<Jukebox> *threadDownloader;
-        Thread<LyricsWikia> *threadLyrics;
+        Thread<Scrapper> *threadLyrics;
         int posAlbumSelected;
         int posSongSelected;
         AudioPlayer *player;
         Jukebox *juke;
-        LyricsWikia *lyricWikia;
+        Scrapper *scrapper;
         vector <TrackInfo *> info;
         static bool finishedDownload;
         SongsReproduced mySongsReproduced;
