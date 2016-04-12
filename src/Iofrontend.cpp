@@ -34,21 +34,12 @@ Iofrontend::Iofrontend(){
     juke = new Jukebox();
     player = new AudioPlayer();
     scrapper = new Scrapper();
-
     juke->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
     Constant::setExecMethod(launch_create_process);
-
     Traza::print("Asignando elementos y acciones", W_PARANOIC);
     initUIObjs();
-
-    //Despues de inicializar todos los objetos, debemos mostrar la pantalla del reproductor
-    //y cargar la playlist, lo que tarda un poco. Por eso refrescamos la pantalla sin nada
-    //, refrescamos la pantalla para que se pinte todo vacio y finalmente volvemos a refrescar
-    //para que se vea todo correctamente
     posAlbumSelected = 0;
     posSongSelected = 0;
-
-
     finishedDownload = false;
     threadPlayer = NULL;
     threadDownloader = NULL;
@@ -56,7 +47,6 @@ Iofrontend::Iofrontend(){
     setSelMenu(PANTALLAREPRODUCTOR);
     tEvento evento;
     drawMenu(evento);
-
     Traza::print("Fin Constructor de IoFrontend", W_PARANOIC);
 }
 
@@ -968,6 +958,7 @@ string Iofrontend::showExplorador(tEvento *evento){
     string fileUri = "";
     string fileTempSelec = "";
     Dirutil dir;
+    static string lastDirOpened;
 
     try{
         loadComboUnidades();
@@ -978,8 +969,12 @@ string Iofrontend::showExplorador(tEvento *evento){
         //Forzamos a que se actualicen todos los elementos
         objMenu->resetElements();
         //Seleccionamos a la lista que esta en primer lugar
-        objMenu->findNextFocus();
+        //objMenu->findNextFocus();
+        ObjectsMenu[PANTALLABROWSER2]->setFocus(OBJLISTABROWSER2);
 
+        if (!lastDirOpened.empty()){
+            dir.changeDirAbsolute(dir.getFolder(lastDirOpened).c_str());
+        }
 
         long delay = 0;
         unsigned long before = 0;
@@ -1062,8 +1057,7 @@ string Iofrontend::showExplorador(tEvento *evento){
 //        fileUri = showExplorador(evento);
         fileUri = fileUri.substr(0, fileUri.find_last_of(tempFileSep));
     }
-
-
+    lastDirOpened = fileUri;
     return fileUri;
 }
 
@@ -1130,7 +1124,7 @@ int Iofrontend::accionesListaExplorador(tEvento *evento){
         Traza::print("accionesListaExplorador: " + string (e.getMessage()), W_ERROR);
     }
 
-
+    ObjectsMenu[PANTALLABROWSER2]->setFocus(OBJLISTABROWSER2);
     return true;
 }
 
@@ -1177,6 +1171,7 @@ int Iofrontend::accionCombo(tEvento *evento){
 
     clearEvento(evento);
     this->accionesListaExplorador(NULL);
+    ObjectsMenu[PANTALLABROWSER2]->setFocus(OBJLISTABROWSER2);
     return 0;
 }
 
@@ -2234,7 +2229,14 @@ void Iofrontend::refreshAlbumAndPlaylist(){
 
         Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshAlbumAndPlaylist);
         tEvento evento;
+
+        clearScr();
+        procesarControles(obj, &evento, NULL);
+        drawTextCent("Obteniendo álbums. Espere...",0,-70,true,true, cBlanco);
+        flipScr();
+
         pintarIconoProcesando(true);
+
         thread->start();
         while (thread->isRunning()){
             evento = WaitForKey();
@@ -2324,7 +2326,14 @@ string Iofrontend::autenticarDropbox(){
         tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
         Thread<Dropbox> *thread = new Thread<Dropbox>(dropbox, &Dropbox::authenticate);
         tEvento evento;
+
+        clearScr();
+        procesarControles(obj, &evento, NULL);
+        drawTextCent("Conectando a dropbox. Espere...",0,-70,true,true, cBlanco);
+        flipScr();
+
         pintarIconoProcesando(true);
+
         thread->start();
         while (thread->isRunning()){
             evento = WaitForKey();
@@ -2421,9 +2430,38 @@ void Iofrontend::refreshSpectrum(AudioPlayer *player){
     }
 }
 
+/**
+*
+*/
+void Iofrontend::actualizaciones(){
+    Updater *updater = new Updater();
+    string ruta = Constant::getAppDir() + Constant::getFileSep() + "rsc";
+    if (updater->needUpdate(ruta)){
+        updater->setRuta(ruta);
+        Thread<Updater> *threadUpdate = new Thread<Updater>(updater, &Updater::updates);
+        pintarIconoProcesando(true);
+        drawTextCent("Actualizando. Espere...",0,-70,true,true, cBlanco);
+        flipScr();
+        threadUpdate->start();
+
+        tEvento evento;
+        while (threadUpdate->isRunning()){
+            WaitForKey();
+            procesarControles(ObjectsMenu[PANTALLAREPRODUCTOR], &evento, NULL);
+            pintarIconoProcesando(false);
+        }
+        delete threadUpdate;
+        clearScr();
+        procesarControles(ObjectsMenu[PANTALLAREPRODUCTOR], &evento, NULL);
+        flipScr();
+    }
+    delete updater;
+}
+
 void Iofrontend::bienvenida(){
     Traza::print("bienvenida: Inicio", W_PARANOIC);
     UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
+
     if (!this->accessToken.empty() && albumList->getSize() == 0){
         ignoreButtonRepeats = true;
         bool salir = false;
@@ -2461,9 +2499,7 @@ void Iofrontend::bienvenida(){
             before = SDL_GetTicks();
             askEvento = WaitForKey();
             printScreenShot(&mySurface, iconRectFondo);
-
             procesarControles(objMenu, &askEvento, NULL);
-
             flipScr();
             salir = (askEvento.isJoy && askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_B)) ||
             (askEvento.isKey && askEvento.key == SDLK_ESCAPE);

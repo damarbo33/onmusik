@@ -26,8 +26,8 @@
 #include "jukebox.h"
 #include "dropbox.h"
 #include "AudioPlayer.h"
-//#include "lyricswikia.h"
 #include "scrapper/scrapper.h"
+#include "updater/updater.h"
 
 const unsigned int MAXSONG_REPEAT_AVOID = 20;
 
@@ -184,6 +184,7 @@ class Iofrontend : public Ioutil{
         string autenticarDropbox();
         int fillAlbumLocal(string ruta, bool updateId3tags);
         void bienvenida();
+        void actualizaciones();
         Jukebox * getJuke(){return juke;}
         void addLocalAlbum(string ruta);
 

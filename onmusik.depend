@@ -1520,11 +1520,11 @@
 	"Ioutil.h"
 	"Iofrontend.h"
 
-1459976227 source:d:\github\codeblocks\proyectos\mp3play\audioplayer.cpp
+1460481502 source:d:\github\codeblocks\proyectos\mp3play\audioplayer.cpp
 	"audioplayer.h"
 	"Constant.h"
 
-1459976185 d:\github\codeblocks\proyectos\mp3play\audioplayer.h
+1460481502 d:\github\codeblocks\proyectos\mp3play\audioplayer.h
 	<iostream>
 	<fstream>
 	<stdio.h>
@@ -1543,7 +1543,7 @@
 	"biquad.h"
 	"statevar.h"
 
-1460136105 d:\github\codeblocks\externallibs\uiobjects\src\constant.h
+1460481729 d:\github\codeblocks\externallibs\uiobjects\src\constant.h
 	<fstream>
 	<sstream>
 	<string.h>
@@ -1721,7 +1721,7 @@
 	<iostream>
 	<vector>
 
-1460036324 d:\github\codeblocks\externallibs\uiobjects\src\uitextelementsarea.h
+1460481729 d:\github\codeblocks\externallibs\uiobjects\src\uitextelementsarea.h
 	<object.h>
 
 1458145588 d:\github\codeblocks\externallibs\uiobjects\src\uispectrum.h
@@ -1731,7 +1731,7 @@
 
 1458251728 source:d:\github\codeblocks\proyectos\onmusik\resource.rc
 
-1459876660 source:d:\github\codeblocks\proyectos\onmusik\src\icogestor.cpp
+1460481591 source:d:\github\codeblocks\proyectos\onmusik\src\icogestor.cpp
 	"Icogestor.h"
 
 1393499909 d:\github\codeblocks\proyectos\onmusik\src\icogestor.h
@@ -1742,13 +1742,13 @@
 	"SDL/SDL_image.h"
 	"SDL/SDL_rotozoom.h"
 
-1460043864 source:d:\github\codeblocks\proyectos\onmusik\src\iofrontend.cpp
+1460497013 source:d:\github\codeblocks\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
 	"uilistcommon.h"
 
-1460037925 d:\github\codeblocks\proyectos\onmusik\src\iofrontend.h
+1460492869 d:\github\codeblocks\proyectos\onmusik\src\iofrontend.h
 	<string>
 	<vector>
 	"Ioutil.h"
@@ -1768,7 +1768,8 @@
 	"jukebox.h"
 	"dropbox.h"
 	"AudioPlayer.h"
-	"lyricswikia.h"
+	"scrapper/scrapper.h"
+	"updater/updater.h"
 
 1460136088 d:\github\codeblocks\proyectos\onmusik\src\ioutil.h
 	<iostream>
@@ -1809,7 +1810,7 @@
 1453468016 d:\github\codeblocks\externallibs\uiobjects\src\listaini.h
 	"ListaSimple.h"
 
-1459806428 d:\github\codeblocks\proyectos\onmusik\src\jukebox.h
+1460481591 d:\github\codeblocks\proyectos\onmusik\src\jukebox.h
 	"Launcher.h"
 	"Menuobject.h"
 	"dropbox.h"
@@ -1881,7 +1882,7 @@
 	"Dirutil.h"
 	"thread.h"
 
-1459987374 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\util\constant.h
+1460481490 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\util\constant.h
 	<sstream>
 	<string.h>
 	<vector>
@@ -2011,7 +2012,7 @@
 	<iostream>
 	"Constant.h"
 
-1460136088 source:d:\github\codeblocks\proyectos\onmusik\src\ioutil.cpp
+1460481591 source:d:\github\codeblocks\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"
@@ -2020,14 +2021,15 @@
 
 1455209140 d:\github\codeblocks\externallibs\uiobjects\src\font\arimo_regular.ttf.h
 
-1459968796 source:d:\github\codeblocks\proyectos\onmusik\src\jukebox.cpp
+1460481591 source:d:\github\codeblocks\proyectos\onmusik\src\jukebox.cpp
 	"jukebox.h"
 
-1460024741 source:d:\github\codeblocks\proyectos\onmusik\src\main.cpp
+1460494033 source:d:\github\codeblocks\proyectos\onmusik\src\main.cpp
 	"main.h"
 	"Dirutil.h"
 	<iostream>
 	<fstream>
+	"updater/updater.h"
 
 1458249604 d:\github\codeblocks\proyectos\onmusik\src\main.h
 	<stdio.h>
@@ -2093,7 +2095,7 @@
 	<Constant.h>
 	"Menuobject.h"
 
-1460037346 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\htmlparser.h
+1460481490 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\htmlparser.h
 	<buffio.h>
 	<iostream>
 	<string>
@@ -2820,4 +2822,46 @@
 1460369044 c:\github\proyectos\httpcurl\httpcurl\src\lyrics\darklyrics.h
 	"htmlparser.h"
 	"lyricsbase.h"
+
+1460481591 d:\github\codeblocks\proyectos\onmusik\src\scrapper\scrapper.h
+	"lyrics/lyricswikia.h"
+	"lyrics/darklyrics.h"
+	"Menuobject.h"
+
+1460481490 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\lyrics\lyricswikia.h
+	"json/json.h"
+	"lyricsbase.h"
+
+1460481490 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\lyrics\lyricsbase.h
+	"util/Constant.h"
+	<Constant.h>
+	"httputil.h"
+	"htmlparser.h"
+
+1460481490 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\lyrics\darklyrics.h
+	"htmlparser.h"
+	"lyricsbase.h"
+
+1460481591 source:d:\github\codeblocks\proyectos\onmusik\src\scrapper\scrapper.cpp
+	"scrapper.h"
+
+1460494579 source:d:\github\codeblocks\proyectos\onmusik\src\updater\updater.cpp
+	"updater.h"
+
+1460494264 d:\github\codeblocks\proyectos\onmusik\src\updater\updater.h
+	"Constant.h"
+	"Dirutil.h"
+	"unzip/unziptool.h"
+	"httputil.h"
+
+1433419955 d:\github\codeblocks\externallibs\uiobjects\src\httpcurl\httputil.h
+	<stdlib.h>
+	<string.h>
+	<stdio.h>
+	<unistd.h>
+	<fcntl.h>
+	<iostream>
+	<string>
+	<fstream>
+	<map>
 

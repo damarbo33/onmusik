@@ -31,6 +31,7 @@
 					<Add directory="ExternalLibs/UIObjects/src" />
 					<Add directory="../../ExternalLibs/tidy/include" />
 					<Add directory="onmusik/src/scrapper" />
+					<Add directory="onmusik/src/updater" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -58,7 +59,6 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
-				<Option parameters='&quot;C:\Johnny Cash Greatest CDS&quot;' />
 				<Compiler>
 					<Add option="-g" />
 					<Add directory="../../ExternalLibs/sqllite/src" />
@@ -79,6 +79,7 @@
 					<Add directory="ExternalLibs/UIObjects/src" />
 					<Add directory="../../ExternalLibs/tidy/include" />
 					<Add directory="onmusik/src/scrapper" />
+					<Add directory="onmusik/src/updater" />
 				</Compiler>
 				<Linker>
 					<Add option="-lsdlgfx" />
@@ -139,6 +140,8 @@
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/scrapper/scrapper.cpp" />
 		<Unit filename="src/scrapper/scrapper.h" />
+		<Unit filename="src/updater/updater.cpp" />
+		<Unit filename="src/updater/updater.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

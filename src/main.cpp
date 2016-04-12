@@ -2,6 +2,7 @@
 #include "Dirutil.h"
 #include <iostream>
 #include <fstream>
+#include "updater/updater.h"
 
 bool procesarTeclado(tEvento *evento, Iofrontend *ioFront){
     bool salir = false;
@@ -65,6 +66,7 @@ int main(int argc, char *argv[]){
             ioFront->addLocalAlbum(fichParm);
             Traza::print("Parameter: " + fichParm, W_DEBUG);
         } else {
+            ioFront->actualizaciones();
             ioFront->refreshAlbumAndPlaylist();
             tEvento evento;
             ioFront->drawMenu(evento);
@@ -105,4 +107,3 @@ int main(int argc, char *argv[]){
     Traza::print("Saliendo de la aplicación", W_DEBUG);
     exit(0);
 }
-
