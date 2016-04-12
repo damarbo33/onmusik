@@ -132,6 +132,7 @@ class Iofrontend : public Ioutil{
         int accionesResetFiltros(tEvento *evento);
         int accionesSwitchFiltros(tEvento *evento);
         int accionesLetras(tEvento *evento);
+        int openLocalDisc(tEvento *evento);
 
         string showExplorador(tEvento *);
         void cargaMenuFromLista(UIListCommon *, tEvento *);
@@ -155,7 +156,7 @@ class Iofrontend : public Ioutil{
         int selectAlbum(tEvento *evento);
         int accionAlbumPopup(tEvento *evento);
         void refreshSpectrum(AudioPlayer *player);
-        void bienvenida();
+
         void loadComboUnidades();
         void reloadSong(int posAlbumSelected, int posSongSelected);
         void getLyricsFromActualSong();
@@ -181,6 +182,10 @@ class Iofrontend : public Ioutil{
         int accionCopiarTextoPopup(tEvento *evento);
         void refreshAlbumAndPlaylist();
         string autenticarDropbox();
+        int fillAlbumLocal(string ruta, bool updateId3tags);
+        void bienvenida();
+        Jukebox * getJuke(){return juke;}
+        void addLocalAlbum(string ruta);
 
 };
 #endif //Iofrontend_H

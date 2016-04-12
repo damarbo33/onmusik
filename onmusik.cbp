@@ -58,6 +58,7 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
+				<Option parameters='&quot;C:\Johnny Cash Greatest CDS&quot;' />
 				<Compiler>
 					<Add option="-g" />
 					<Add directory="../../ExternalLibs/sqllite/src" />

@@ -9,6 +9,8 @@
 
 using namespace std;
 
+static const string filtroFicheros = ".mp3,.mid,.wav,.wma,.cda,.aac,.ac3,.flac,.mp4,.ogg";
+
 struct TID3Tags{
     string album;
     string title;
@@ -38,6 +40,8 @@ class Jukebox
         Dropbox dropboxDownloader;
         string getMetadatos(map<string, string> *metadatos, string key);
         listaSimple<string> *convertedFilesList;
+        string rutaInfoId3;
+        static bool canPlay;
 
     public:
         /** Default constructor */
@@ -54,6 +58,9 @@ class Jukebox
         DWORD refreshPlaylist();
         DWORD downloadFile();
         DWORD refreshAlbum();
+        DWORD refreshPlayListMetadata();
+        DWORD refreshPlayListMetadataFromId3Dir();
+
 
         void setObjectsMenu(tmenu_gestor_objects *var){ObjectsMenu = var;}
         void setDirToUpload(string var){dirToUpload = var;}
@@ -65,7 +72,10 @@ class Jukebox
         void refreshAlbum(string accessToken);
         void downloadFile(string ruta);
         void abortDownload();
-        DWORD refreshPlayListMetadata();
+        void addLocalAlbum(string ruta);
+        void setRutaInfoId3(string var){rutaInfoId3 = var;}
+        bool isCanPlay(){return canPlay;}
+
 
     protected:
 

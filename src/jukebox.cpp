@@ -1,13 +1,17 @@
 #include "jukebox.h"
 
-const string filtroFicheros = ".mp3,.mid,.wav,.wma,.cda,.aac,.ac3,.flac,.mp4,.ogg";
+
 const string filtroOGG = ".ogg";
 const string musicDir = "Music";
 const string fileMetadata = "metadata.txt";
 
+bool Jukebox::canPlay;
+
 Jukebox::Jukebox()
 {
     convertedFilesList = new listaSimple<string>();
+    rutaInfoId3 = "";
+    canPlay = false;
 }
 
 Jukebox::~Jukebox()
@@ -423,7 +427,7 @@ void Jukebox::refreshPlaylist(string rutaAlbumDropbox){
                 if (metadatos.count(metaKeyTime) > 0){
                     //cout << "Buscando tiempo para: " << metaKeyTime << endl;
                     strSeconds = metadatos.at(metaKeyTime);
-                    ulongSeconds = ceil(Constant::strToTipo<double>(strSeconds));
+                    ulongSeconds = floor(Constant::strToTipo<double>(strSeconds));
                 } else {
                     strSeconds = "";
                     ulongSeconds = 0;
@@ -526,14 +530,14 @@ DWORD Jukebox::refreshPlayListMetadata(){
     if (!songTags.album.empty()) playList->getCol(posSongSelected, 2)->setTexto(songTags.album);
     if (!songTags.duration.empty()) playList->getCol(posSongSelected, 3)->setValor(songTags.duration);
     if (!songTags.duration.empty()) playList->getCol(posSongSelected, 3)
-                        ->setTexto(Constant::timeFormat(ceil(Constant::strToTipo<double>(songTags.duration))));
+                        ->setTexto(Constant::timeFormat(floor(Constant::strToTipo<double>(songTags.duration))));
     Traza::print("Playlist actualizado", W_DEBUG);
     UIProgressBar *objProg = (UIProgressBar *)ObjectsMenu->getObjByName("progressBarMedia");
     int max_ = objProg->getProgressMax();
     Traza::print("Actualizando barra de progreso con el valor", max_, W_DEBUG);
     //Actualizamos la barra de progreso en el caso de que no tuvieramos informacion del maximo de duracion
     if (max_ == 0){
-        max_ = ceil(Constant::strToTipo<double>(songTags.duration));
+        max_ = floor(Constant::strToTipo<double>(songTags.duration));
         objProg->setProgressMax(max_);
         ObjectsMenu->getObjByName("mediaTimerTotal")->setLabel(Constant::timeFormat(max_));
     }
@@ -541,6 +545,10 @@ DWORD Jukebox::refreshPlayListMetadata(){
     playList->setImgDrawed(false);
     return 0;
 }
+
+
+
+
 
 /**
 *
@@ -551,11 +559,108 @@ void Jukebox::downloadFile(string ruta){
     dropboxDownloader.getFile(tempFileDir, ruta, accessToken);
 }
 
+/**
+*
+*/
 void Jukebox::abortDownload(){
     dropboxDownloader.abortDownload();
 }
 
+/**
+*
+*/
+void Jukebox::addLocalAlbum(string ruta){
+    Traza::print("Jukebox::addLocalAlbum", W_DEBUG);
+    UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
+    Dirutil dir;
+    string nombreAlbum = dir.getFolder(ruta);
+    nombreAlbum = nombreAlbum.substr(nombreAlbum.find_last_of(Constant::getFileSep())+1);
 
+    if (dir.existe(ruta)){
+        Traza::print("Jukebox::addLocalAlbum anyadiendo: " + ruta, W_DEBUG);
+        albumList->addElemLista(nombreAlbum, dir.getFolder(ruta), music);
+    }
+    Traza::print("Jukebox::addLocalAlbum END", W_DEBUG);
+}
+
+/**
+*
+*/
+DWORD Jukebox::refreshPlayListMetadataFromId3Dir(){
+    UIListGroup *playList = ((UIListGroup *)ObjectsMenu->getObjByName("playLists"));
+    double duration = 0.0;
+    canPlay = false;
+
+    Dirutil dir;
+    listaSimple<FileProps> *filelist = new listaSimple<FileProps>();
+    FileProps file;
+    string nombreCancion;
+
+    string ruta = rutaInfoId3;
+    ruta = dir.getFolder(ruta);
+
+    playList->clearLista();
+    dir.listarDir(ruta.c_str(), filelist, filtroFicheros);
+    int posFound = 0;
+    int pos = 0;
+
+
+    for (int i=0; i < filelist->getSize(); i++){
+            file = filelist->get(i);
+            if (string("..").compare(file.filename) != 0){
+                vector <ListGroupCol *> miFila;
+                miFila.push_back(new ListGroupCol(file.filename, file.dir + Constant::getFileSep() + file.filename));
+                miFila.push_back(new ListGroupCol("",""));
+                miFila.push_back(new ListGroupCol("",""));
+                miFila.push_back(new ListGroupCol(Constant::timeFormat(0), "0"));
+                playList->addElemLista(miFila);
+                if (rutaInfoId3.compare(file.dir + Constant::getFileSep() + file.filename) == 0){
+                    posFound = pos;
+                }
+                pos++;
+            }
+    }
+    playList->calcularScrPos();
+    playList->setPosActualLista(posFound);
+    playList->refreshLastSelectedPos();
+    playList->calcularScrPos();
+    canPlay = true;
+
+    delete filelist;
+    playList->setImgDrawed(false);
+
+    for (int i=0; i < playList->getSize(); i++){
+        string file = playList->getValue(i);
+        Traza::print("Obteniendo datos de la cancion: " + file, W_DEBUG);
+        TID3Tags songTags = getSongInfo(file);
+        Traza::print("Datos obtenidos", W_DEBUG);
+        if (rutaInfoId3.compare(playList->getValue(i)) == 0){
+            duration = floor(Constant::strToTipo<double>(songTags.duration));
+        }
+        if (!songTags.title.empty()) playList->getCol(i, 0)->setTexto(songTags.title);
+        if (!songTags.artist.empty()) playList->getCol(i, 1)->setValor(songTags.artist);
+        if (!songTags.artist.empty()) playList->getCol(i, 1)->setTexto(songTags.artist);
+        if (!songTags.album.empty()) playList->getCol(i, 2)->setValor(songTags.album);
+        if (!songTags.album.empty()) playList->getCol(i, 2)->setTexto(songTags.album);
+        if (!songTags.duration.empty()) playList->getCol(i, 3)->setValor(songTags.duration);
+        if (!songTags.duration.empty()) playList->getCol(i, 3)
+                            ->setTexto(Constant::timeFormat(floor(Constant::strToTipo<double>(songTags.duration))));
+        playList->setImgDrawed(false);
+    }
+
+    Traza::print("Playlist actualizado", W_DEBUG);
+    UIProgressBar *objProg = (UIProgressBar *)ObjectsMenu->getObjByName("progressBarMedia");
+    int max_ = objProg->getProgressMax();
+    Traza::print("Actualizando barra de progreso con el valor", max_, W_DEBUG);
+    //Actualizamos la barra de progreso en el caso de que no tuvieramos informacion del maximo de duracion
+    if (max_ == 0){
+        max_ = duration;
+        objProg->setProgressMax(max_);
+        ObjectsMenu->getObjByName("mediaTimerTotal")->setLabel(Constant::timeFormat(max_));
+    }
+    Traza::print("Redibujar playlist", W_DEBUG);
+    return 0;
+}
 
 
 

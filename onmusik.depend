@@ -1031,7 +1031,7 @@
 	"biquad.h"
 	"statevar.h"
 
-1460359576 c:\github\externallibs\uiobjects\src\constant.h
+1460380878 c:\github\externallibs\uiobjects\src\constant.h
 	<fstream>
 	<sstream>
 	<string.h>
@@ -1113,13 +1113,13 @@
 	"Excepcion.h"
 	"Traza.h"
 
-1460373350 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
+1460452014 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
 	"uilistcommon.h"
 
-1460287042 c:\github\proyectos\onmusik\src\iofrontend.h
+1460444508 c:\github\proyectos\onmusik\src\iofrontend.h
 	<string>
 	<vector>
 	"Ioutil.h"
@@ -1276,7 +1276,7 @@
 	<iostream>
 	<vector>
 
-1460032724 c:\github\externallibs\uiobjects\src\uitextelementsarea.h
+1460374765 c:\github\externallibs\uiobjects\src\uitextelementsarea.h
 	<object.h>
 
 1458145588 c:\github\externallibs\uiobjects\src\uispectrum.h
@@ -1295,7 +1295,7 @@
 1453468016 c:\github\externallibs\uiobjects\src\listaini.h
 	"ListaSimple.h"
 
-1459802828 c:\github\proyectos\onmusik\src\jukebox.h
+1460451223 c:\github\proyectos\onmusik\src\jukebox.h
 	"Launcher.h"
 	"Menuobject.h"
 	"dropbox.h"
@@ -1497,7 +1497,7 @@
 	<iostream>
 	"Constant.h"
 
-1460132488 source:c:\github\proyectos\onmusik\src\ioutil.cpp
+1460383987 source:c:\github\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"
@@ -1506,10 +1506,10 @@
 
 1455209140 c:\github\externallibs\uiobjects\src\font\arimo_regular.ttf.h
 
-1459965196 source:c:\github\proyectos\onmusik\src\jukebox.cpp
+1460451675 source:c:\github\proyectos\onmusik\src\jukebox.cpp
 	"jukebox.h"
 
-1460021141 source:c:\github\proyectos\onmusik\src\main.cpp
+1460442826 source:c:\github\proyectos\onmusik\src\main.cpp
 	"main.h"
 	"Dirutil.h"
 	<iostream>

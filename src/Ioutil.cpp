@@ -2120,6 +2120,13 @@ void Ioutil::drawUIProgressBar(Object *obj, tEvento *evento){
                     objProg->setPosXNow(evento->mouse_x);
                     int dif = evento->mouse_x > 0 ? evento->mouse_x - objProg->getX() : 0;
                     float percent = objProg->getW() >= 1 ? dif/(float)objProg->getW() : 0;
+                    if (evento->mouse_x == x + w - INPUTBORDER){
+                        percent = 1;
+                    } else if(evento->mouse_x == x + INPUTBORDER){
+                        percent = 0;
+                    }
+
+
                     long tempPos = ceil(objProg->getProgressMax() * percent);
 
                     objProg->setLastTimeTick(SDL_GetTicks());

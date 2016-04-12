@@ -30,6 +30,12 @@ Iofrontend::Iofrontend(){
         pt2Func[i] = NULL;
     }
     propertiesPt2Func.size = 0;
+
+    juke = new Jukebox();
+    player = new AudioPlayer();
+    scrapper = new Scrapper();
+    Constant::setExecMethod(launch_create_process);
+
     Traza::print("Asignando elementos y acciones", W_PARANOIC);
     initUIObjs();
 
@@ -40,9 +46,6 @@ Iofrontend::Iofrontend(){
     posAlbumSelected = 0;
     posSongSelected = 0;
 
-    juke = new Jukebox();
-    player = new AudioPlayer();
-    scrapper = new Scrapper();
 
     finishedDownload = false;
     threadPlayer = NULL;
@@ -51,9 +54,7 @@ Iofrontend::Iofrontend(){
     setSelMenu(PANTALLAREPRODUCTOR);
     tEvento evento;
     drawMenu(evento);
-    refreshAlbumAndPlaylist();
-    drawMenu(evento);
-    bienvenida();
+
     Traza::print("Fin Constructor de IoFrontend", W_PARANOIC);
 }
 
@@ -74,6 +75,7 @@ Iofrontend::~Iofrontend(){
     }
     delete juke;
     delete player;
+    delete scrapper;
     Traza::print("Destructor de IoFrontend FIN", W_DEBUG);
 }
 
@@ -134,6 +136,7 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("spectrum", GUISPECTRUM, 0,0,0,0, "", true)->setEnabled(true);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("labelVol",  GUILABEL,  0,0,0,0, "100%", false)->setEnabled(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnAddContent",  GUIBUTTON, 0,0,0,0, "Subir nuevo disco", true)->setIcon(add)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnOpenLocal",  GUIBUTTON, 0,0,0,0, "Abrir fichero local", true)->setIcon(folder)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("mediaTimerTotal",  GUILABEL,  0,0,0,0, "0:00:00", false)->setEnabled(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("mediaTimer",  GUILABEL,  0,0,0,0, "0:00:00", false)->setEnabled(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("progressBarMedia", GUIPROGRESSBAR, 0,0,0,0, "", true)->setShadow(false);
@@ -185,6 +188,7 @@ void Iofrontend::initUIObjs(){
     LetrasLabel->setTextColor(cBlanco);
     LetrasLabel->setVisible(false);
     LetrasLabel->setColor(cNegroClaro);
+    LetrasLabel->setIntervalDespl(Constant::getMENUSPACE()*2);
 
 
     ((UIProgressBar *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarMedia"))->setTypeHint(HINT_TIME);
@@ -243,6 +247,7 @@ void Iofrontend::initUIObjs(){
     addEvent("btnBackward",  &Iofrontend::accionesMediaRetroceder);
     addEvent("progressBarMedia", &Iofrontend::mediaClicked);
     addEvent("btnAddContent", &Iofrontend::uploadDiscToDropbox);
+    addEvent("btnOpenLocal", &Iofrontend::openLocalDisc);
     addEvent("albumList", &Iofrontend::selectAlbum);
     addEvent("playLists", &Iofrontend::accionesPlaylist);
     addEvent("popupAlbum", &Iofrontend::accionAlbumPopup);
@@ -264,6 +269,7 @@ void Iofrontend::initUIObjs(){
     addEvent("btnResetEq", &Iofrontend::accionesResetFiltros);
     addEvent("btnSwitchEq", &Iofrontend::accionesSwitchFiltros);
     addEvent("btnLetras", &Iofrontend::accionesLetras);
+    juke->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
 }
 
 /**
@@ -732,6 +738,8 @@ void Iofrontend::setDinamicSizeObjects(){
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnAddContent")->setTam(2, 2, FAMFAMICONW, FAMFAMICONH);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnEqualizer")->setTam(FAMFAMICONW + 4, 2, FAMFAMICONW, FAMFAMICONH);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnLetras")->setTam(FAMFAMICONW * 2 + 4, 2, FAMFAMICONW, FAMFAMICONH);
+        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnOpenLocal")->setTam(FAMFAMICONW * 3 + 4, 2, FAMFAMICONW, FAMFAMICONH);
+
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarMedia")->setTam( TIMEW + SEPTIMER, bottom - PROGRESSSEPBOTTOM, this->getWidth() - TIMEW*2 - SEPTIMER*2, PROGRESSHEIGHT);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimer")->setTam(SEPTIMER, bottom - PROGRESSSEPBOTTOM, TIMEW, FAMFAMICONH);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimerTotal")->setTam(this->getWidth() - TIMEW, bottom - PROGRESSSEPBOTTOM, TIMEW, FAMFAMICONH);
@@ -1660,6 +1668,7 @@ int Iofrontend::accionesMediaStop(tEvento *evento){
     obj->getObjByName("spectrum")->setImgDrawed(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setIcon(control_play);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setImgDrawed(false);
+
     return 0;
 }
 
@@ -1676,6 +1685,32 @@ int Iofrontend::accionesPlaylist(tEvento *evento){
     return 0;
 }
 
+/**
+*
+*/
+int Iofrontend::openLocalDisc(tEvento *evento){
+    Traza::print("Iofrontend::openLocalDisc", W_DEBUG);
+    long delay = 0;
+    unsigned long before = 0;
+
+    try{
+        Dirutil dir;
+        //Abrimos el explorador de archivos y esperamos a que el usuario seleccione un fichero
+        //o directorio
+        string fichName = showExplorador(evento);
+//        if (!dir.isDir(fichName)){
+//            fichName = dir.getFolder(fichName);
+//        }
+        //Si se ha seleccionado algo, establecemos el texto en el objeto que hemos recibido por parametro
+        if (!fichName.empty()){
+            this->addLocalAlbum(fichName);
+        }
+    } catch (Excepcion &e){
+        Traza::print("uploadDiscToDropbox: " + string(e.getMessage()), W_ERROR);
+    }
+
+    return 0;
+}
 /**
 *
 */
@@ -1852,7 +1887,6 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
             threadPlayer = NULL;
         }
 
-
         //Comprobamos que no haya ninguna descarga activa
         if (threadDownloader != NULL){
             if (threadDownloader->isRunning()){
@@ -1871,19 +1905,23 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
         Dirutil dir;
         dir.borrarArchivo(file);
 
-        //Creamos el thread
-        threadDownloader = new Thread<Jukebox>(juke, &Jukebox::downloadFile);
-        //Lanzamos el thread
-        if (threadDownloader->start()){
-            Traza::print("Thread started with id: ",threadDownloader->getThreadID(), W_DEBUG);
-            //esperamos a que se carguen al menos 100KB
-            std::ifstream::pos_type tam = 0;
-            while ((tam = dir.filesize(file.c_str())) < 50000){
-                Constant::waitms(50);
+        if (!dir.existe(cancion)){
+
+            //Creamos el thread
+            threadDownloader = new Thread<Jukebox>(juke, &Jukebox::downloadFile);
+            //Lanzamos el thread
+            if (threadDownloader->start()){
+                Traza::print("Thread started with id: ",threadDownloader->getThreadID(), W_DEBUG);
+                //esperamos a que se carguen al menos 100KB
+                std::ifstream::pos_type tam = 0;
+                while ((tam = dir.filesize(file.c_str())) < 50000){
+                    Constant::waitms(50);
+                }
+                bucleReproductor();
             }
+        } else {
             bucleReproductor();
         }
-
         UIButton * objButtonRandom = (UIButton *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnRandom");
         UIButton * objButtonRepeat = (UIButton *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnRepeat");
 
@@ -1932,6 +1970,7 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
             }
         }
     } while (player->getStatus() != STOPED && playList->getPosActualLista() < playList->getSize());
+    accionesMediaStop(NULL);
 
     return 0;
 }
@@ -1966,7 +2005,7 @@ bool Iofrontend::bucleReproductor(){
         posSongSelected = playList->getLastSelectedPos();
 
         //Asignamos el tiempo total de la cancion
-        lenSongSec = time.empty() ? 0 : ceil(Constant::strToTipo<double>(time));
+        lenSongSec = time.empty() ? 0 : floor(Constant::strToTipo<double>(time));
         //Una vez sabemos el maximo de tiempo, damos valor a la barra de progreso con el maximo de segundos
         //y al label para mostrar el total de tiempo de la pelicula
         UIProgressBar *objProg = (UIProgressBar *)obj->getObjByName("progressBarMedia");
@@ -1983,11 +2022,18 @@ bool Iofrontend::bucleReproductor(){
         //Inicializamos el reproductor
         player->setScreen(screen);
         player->initAudio();
-        player->setFilename(file);
         player->setStatus(PLAYING);
         player->setViewSpectrum(ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum")->isEnabled());
-        player->setSongDownloaded(false);
         player->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
+
+        Dirutil dir;
+        if (dir.existe(cancion)){
+            player->setFilename(cancion);
+            player->setSongDownloaded(true);
+        } else {
+            player->setFilename(file);
+            player->setSongDownloaded(false);
+        }
 
         if (threadPlayer != NULL){
             delete threadPlayer;
@@ -2059,13 +2105,16 @@ bool Iofrontend::bucleReproductor(){
 
                 //Recargamos la cancion si se ha terminado la descarga de la misma
                 //y no se habia obtenido informacion del tiempo total de la cancion
-                if (lenSongSec == 0){
-                    reloadSong(posAlbumSelected, posSongSelected);
-                //Si no se ha descargado, comprobamos si se ha terminado la descarga
-                } else if (!threadDownloader->isRunning() && !finishedDownload && player->getStatus() == PLAYING &&
-                            posAlbumSelected == albumList->getLastSelectedPos() && !player->isSongDownloaded()){
-                    player->setSongDownloaded(true);
+                if (threadDownloader != NULL){
+                    if (lenSongSec == 0){
+                        reloadSong(posAlbumSelected, posSongSelected);
+                    //Si no se ha descargado, comprobamos si se ha terminado la descarga
+                    } else if (!threadDownloader->isRunning() && !finishedDownload && player->getStatus() == PLAYING &&
+                                posAlbumSelected == albumList->getLastSelectedPos() && !player->isSongDownloaded()){
+                        player->setSongDownloaded(true);
+                    }
                 }
+
 
                 flipScr();
                 delay = before - SDL_GetTicks() + TIMETOLIMITFRAME;
@@ -2092,7 +2141,7 @@ bool Iofrontend::bucleReproductor(){
 void Iofrontend::reloadSong(int posAlbumSelected, int posSongSelected){
     if (threadDownloader != NULL && player != NULL){
         tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
-        UIListGroup *playList = ((UIListGroup *)obj->getObjByName("playLists"));
+
         UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
 
         //Cuando detectamos que se ha descargado el fichero totalmente, recargamos
@@ -2102,6 +2151,7 @@ void Iofrontend::reloadSong(int posAlbumSelected, int posSongSelected){
         //reproduciendo una cancion y no se ha seleccionado otro album que haya cambiado la lista
         if (!threadDownloader->isRunning() && !finishedDownload && player->getStatus() == PLAYING &&
             posAlbumSelected == albumList->getLastSelectedPos()){
+            UIListGroup *playList = ((UIListGroup *)obj->getObjByName("playLists"));
             Traza::print("Descarga completada correctamente", W_DEBUG);
             //Indicamos que la cancion se ha terminado de descargar
             player->setSongDownloaded(true);
@@ -2168,85 +2218,69 @@ void Iofrontend::refreshAlbumAndPlaylist(){
 }
 
 /**
-*
-*/
-//void Iofrontend::refreshAlbum(){
-//    Traza::print("Comprobando autorizacion refreshAlbum...", W_DEBUG);
-//    string accessToken = autenticarDropbox();
-//
-//    if (accessToken.empty()){
-//        showMessage("No se ha podido conectar a dropbox. Se aborta la subida", 2000);
-//    } else {
-//        tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
-//        juke->setObjectsMenu(obj);
-//        juke->setAccessToken(accessToken);
-//
-////        Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshAlbum);
-////        thread->start();
-////        pintarIconoProcesando(thread);
-////        clearScr();
-//        Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshAlbum);
-//        tEvento evento;
-//        pintarIconoProcesando(true);
-//        thread->start();
-//        while (thread->isRunning()){
-//            evento = WaitForKey();
-//            procesarControles(obj, &evento, NULL);
-//            pintarIconoProcesando(false);
-//        }
-//        procesarControles(obj, &evento, NULL);
-//        flipScr();
-//        delete thread;
-//
-//        ((UIListGroup *)obj->getObjByName("albumList"))->setImgDrawed(false);
-//    }
-//}
-
-/**
 * Se llama cuando se hace doble click o se selecciona un nuevo album de la lista
 */
 int Iofrontend::selectAlbum(tEvento *evento){
     Traza::print("Iofrontend::selectAlbum", W_DEBUG);
     UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
-    Traza::print("Comprobando autorizacion selectAlbum...", W_DEBUG);
-    string accessToken = autenticarDropbox();
+    UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
 
-    if (accessToken.empty()){
-        showMessage("No se ha podido conectar a dropbox. Se aborta la subida", 2000);
+    string albumSelected = albumList->getValue(albumList->getPosActualLista());
+    Dirutil dir;
+    if (dir.existe(albumSelected)){
+        //fillAlbumLocal(albumSelected, false);
+
+//        ObjectsMenu[PANTALLAREPRODUCTOR]->setFocus("playLists");
+//        juke->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
+//        juke->setRutaInfoId3(albumSelected);
+//        Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlayListMetadataFromId3Dir);
+//
+//        if (thread->start())
+//            Traza::print("Thread addLocalAlbum started with id: ",thread->getThreadID(), W_DEBUG);
+        this->addLocalAlbum(albumSelected);
+
     } else {
-        tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
-        juke->setObjectsMenu(obj);
-        juke->setAccessToken(accessToken);
-        Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlaylist);
+        Traza::print("Comprobando autorizacion selectAlbum...", W_DEBUG);
+        string accessToken = autenticarDropbox();
 
-        if (thread->start())
-            Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
-        pintarIconoProcesando(true);
+        if (accessToken.empty()){
+            showMessage("No se ha podido conectar a dropbox. Se aborta la subida", 2000);
+        } else {
+            tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+            juke->setObjectsMenu(obj);
+            juke->setAccessToken(accessToken);
+            Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlaylist);
+
+            if (thread->start())
+                Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
+            pintarIconoProcesando(true);
 
 
-        tEvento evento;
-        while (thread->isRunning()){
-            evento = WaitForKey();
+            tEvento evento;
+            while (thread->isRunning()){
+                evento = WaitForKey();
+                procesarControles(obj, &evento, NULL);
+                pintarIconoProcesando(false);
+            }
+
+            UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
+
+            if (textElems->isVisible() && !playList->isVisible()){
+                playList->setVisible(true);
+                textElems->setVisible(false);
+            }
+
+            playList->setPosActualLista(0);
+            playList->refreshLastSelectedPos();
             procesarControles(obj, &evento, NULL);
-            pintarIconoProcesando(false);
+            flipScr();
+            delete thread;
         }
-
-        UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
-        UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
-
-        if (textElems->isVisible() && !playList->isVisible()){
-            playList->setVisible(true);
-            textElems->setVisible(false);
-        }
-
-        playList->setPosActualLista(0);
-        playList->refreshLastSelectedPos();
-        procesarControles(obj, &evento, NULL);
-        flipScr();
-        delete thread;
     }
     return 0;
 }
+
+
 
 /**
 *
@@ -2256,8 +2290,6 @@ string Iofrontend::autenticarDropbox(){
     Dropbox *dropbox = new Dropbox();
     if (this->accessToken.empty()){
         Traza::print("Comprobando autorizacion autenticarDropbox...", W_DEBUG);
-        Constant::setExecMethod(launch_create_process);
-
         tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
         Thread<Dropbox> *thread = new Thread<Dropbox>(dropbox, &Dropbox::authenticate);
         tEvento evento;
@@ -2420,4 +2452,45 @@ void Iofrontend::bienvenida(){
     }
 }
 
+/**
+*
+*/
+void Iofrontend::addLocalAlbum(string ruta){
+    tmenu_gestor_objects *pantRepr = ObjectsMenu[PANTALLAREPRODUCTOR];
 
+    UIList *albumList = ((UIList *)pantRepr->getObjByName("albumList"));
+    UIListGroup *playList = ((UIListGroup *)pantRepr->getObjByName("playLists"));
+
+    Dirutil dir;
+    if (!dir.isDir(ruta)){
+        pantRepr->setFocus("playLists");
+        juke->setObjectsMenu(pantRepr);
+        juke->setRutaInfoId3(ruta);
+        Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlayListMetadataFromId3Dir);
+
+        if (thread->start()){
+            Traza::print("Thread addLocalAlbum started with id: ",thread->getThreadID(), W_DEBUG);
+            tEvento evento;
+            long before = SDL_GetTicks();
+
+            while (!juke->isCanPlay() && SDL_GetTicks() - before < 7000){
+                evento = WaitForKey();
+                procesarControles(pantRepr, &evento, NULL);
+            }
+
+            if (player->getStatus() != PLAYING){
+                accionesPlaylist(NULL);
+                pantRepr->getObjByName("btnPlay")->setIcon(control_pause);
+                pantRepr->getObjByName("btnPlay")->setImgDrawed(false);
+            }
+        }
+    } else {
+        pantRepr->setFocus("playLists");
+        juke->setObjectsMenu(pantRepr);
+        juke->setRutaInfoId3(ruta);
+        Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlayListMetadataFromId3Dir);
+
+        if (thread->start())
+            Traza::print("Thread addLocalAlbum started with id: ",thread->getThreadID(), W_DEBUG);
+    }
+}
