@@ -34,6 +34,8 @@ Iofrontend::Iofrontend(){
     juke = new Jukebox();
     player = new AudioPlayer();
     scrapper = new Scrapper();
+
+    juke->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
     Constant::setExecMethod(launch_create_process);
 
     Traza::print("Asignando elementos y acciones", W_PARANOIC);
@@ -269,7 +271,7 @@ void Iofrontend::initUIObjs(){
     addEvent("btnResetEq", &Iofrontend::accionesResetFiltros);
     addEvent("btnSwitchEq", &Iofrontend::accionesSwitchFiltros);
     addEvent("btnLetras", &Iofrontend::accionesLetras);
-    juke->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
+
 }
 
 /**
@@ -1663,12 +1665,10 @@ int Iofrontend::accionesMediaStop(tEvento *evento){
     obj->getObjByName("mediaTimer")->setLabel(Constant::timeFormat(0));
     objProg->setProgressMax(0);
     objProg->setProgressPos(0);
-    ((UISpectrum *) ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum"))->setImgDrawed(false);
+    ((UISpectrum *) obj->getObjByName("spectrum"))->setImgDrawed(false);
     obj->getObjByName("statusMessage")->setLabel("");
     obj->getObjByName("spectrum")->setImgDrawed(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setIcon(control_play);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setImgDrawed(false);
-
+    obj->getObjByName("btnPlay")->setIcon(control_play)->setImgDrawed(false);
     return 0;
 }
 
@@ -1681,7 +1681,9 @@ int Iofrontend::accionesPlaylist(tEvento *evento){
     playList->refreshLastSelectedPos();
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setIcon(control_pause);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setImgDrawed(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->setFocus("playLists");
     startSongPlaylist(evento);
+
     return 0;
 }
 
@@ -1905,8 +1907,9 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
         Dirutil dir;
         dir.borrarArchivo(file);
 
+        //Comprobamos si estamos intentando reproducir una cancion del disco
+        //duro o de dropbox
         if (!dir.existe(cancion)){
-
             //Creamos el thread
             threadDownloader = new Thread<Jukebox>(juke, &Jukebox::downloadFile);
             //Lanzamos el thread
@@ -1914,14 +1917,25 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
                 Traza::print("Thread started with id: ",threadDownloader->getThreadID(), W_DEBUG);
                 //esperamos a que se carguen al menos 100KB
                 std::ifstream::pos_type tam = 0;
-                while ((tam = dir.filesize(file.c_str())) < 50000){
-                    Constant::waitms(50);
+
+                tEvento tmpEvento;
+                long before = SDL_GetTicks();
+                //Esperamos a que se carguen al menos 50K de la cancion
+                while ((tam = dir.filesize(file.c_str())) < 50000 && SDL_GetTicks() - before < 10000){
+                    this->clearScr(cGrisOscuro);
+                    tmpEvento = WaitForKey();
+                    procesarControles(ObjectsMenu[PANTALLAREPRODUCTOR], &tmpEvento, NULL);
+                    this->flipScr();
+                    SDL_Delay(20);
                 }
                 bucleReproductor();
             }
         } else {
+            Traza::print("Lanzando reproduccion de ficheros local", W_DEBUG);
             bucleReproductor();
+            Traza::print("Finalizando reproduccion de ficheros local", W_DEBUG);
         }
+
         UIButton * objButtonRandom = (UIButton *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnRandom");
         UIButton * objButtonRepeat = (UIButton *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnRepeat");
 
@@ -2045,10 +2059,15 @@ bool Iofrontend::bucleReproductor(){
         threadPlayer = new Thread<AudioPlayer>(player, &AudioPlayer::loadFile);
         if (threadPlayer->start())
             Traza::print("Thread reproductor started with id: ", threadPlayer->getThreadID(), W_DEBUG);
+
+        Traza::print("bucleReproductor player started", W_DEBUG);
         //Obtiene las letras de la cancion actual
         getLyricsFromActualSong();
 
+        Traza::print("Estado Cancion 0",player->getStatus(), W_PARANOIC);
+
         do{
+                Traza::print("Estado Cancion 1", player->getStatus(), W_PARANOIC);
                 clearScr(cGrisOscuro);
                 //Procesamos los controles de la aplicacion
                 askEvento = WaitForKey();
@@ -2060,15 +2079,21 @@ bool Iofrontend::bucleReproductor(){
                     objProg->setProgressPos(player->getActualPlayTime()/1000);
                     timer1s = before;
                 }
+                Traza::print("Estado Cancion 2", player->getStatus(), W_PARANOIC);
                 //Procesamos los eventos para cada elemento que pintamos por pantalla
                 procesarControles(obj, &askEvento, &screenEvents);
+                Traza::print("Estado Cancion 3", player->getStatus(), W_PARANOIC);
                 //Si pulsamos escape, paramos la ejecucion
                 salir = (askEvento.isKey && askEvento.key == SDLK_ESCAPE) || player->getStatus() == STOPED
                         || player->getStatus() == FINISHEDSONG;
 
+                Traza::print("Estado Cancion 4", player->getStatus(), W_PARANOIC);
+
                 if (salir && (player->getStatus() == STOPED
                         || player->getStatus() == FINISHEDSONG))
-                    Traza::print("Saliendo por fin de cancion", W_DEBUG);
+                    Traza::print("Saliendo por fin de cancion",player->getStatus(), W_DEBUG);
+
+
 
                 if ((askEvento.isKey && askEvento.key == SDLK_SPACE) || askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_START)){
                     player->pause();
@@ -2093,16 +2118,19 @@ bool Iofrontend::bucleReproductor(){
                         timerPanelMedia = SDL_GetTicks();
                     }
                 } else if (askEvento.quit){
+                    Traza::print("Estado Cancion 5 stop", player->getStatus(), W_PARANOIC);
                     player->stop();
                     while(threadPlayer->isRunning()){};
                     salir = true;
                     exit(0);
                 }
 
+                Traza::print("Estado Cancion 6", player->getStatus(), W_PARANOIC);
                 if(player->getNeed_refresh()){
                     refreshSpectrum(player);
                 }
 
+                Traza::print("Estado Cancion 7", player->getStatus(), W_PARANOIC);
                 //Recargamos la cancion si se ha terminado la descarga de la misma
                 //y no se habia obtenido informacion del tiempo total de la cancion
                 if (threadDownloader != NULL){
@@ -2115,7 +2143,7 @@ bool Iofrontend::bucleReproductor(){
                     }
                 }
 
-
+                Traza::print("Estado Cancion 8", player->getStatus(), W_PARANOIC);
                 flipScr();
                 delay = before - SDL_GetTicks() + TIMETOLIMITFRAME;
                 if(delay > 0) SDL_Delay(delay);
@@ -2140,6 +2168,7 @@ bool Iofrontend::bucleReproductor(){
 */
 void Iofrontend::reloadSong(int posAlbumSelected, int posSongSelected){
     if (threadDownloader != NULL && player != NULL){
+        Traza::print("Iofrontend::reloadSong", W_DEBUG);
         tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
 
         UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
@@ -2168,6 +2197,8 @@ void Iofrontend::reloadSong(int posAlbumSelected, int posSongSelected){
             threadPlayer = new Thread<AudioPlayer>(player, &AudioPlayer::loadFile);
             if (threadPlayer->start())
                 Traza::print("Thread reproductor started with id: ", threadPlayer->getThreadID(), W_DEBUG);
+
+            Traza::print("reloadSong player started", W_DEBUG);
             finishedDownload = true;
 
             //Una vez que el fichero esta descargado, ya podemos obtener los tags id3 que contienen
@@ -2466,24 +2497,23 @@ void Iofrontend::addLocalAlbum(string ruta){
         pantRepr->setFocus("playLists");
         juke->setObjectsMenu(pantRepr);
         juke->setRutaInfoId3(ruta);
+        juke->setCanPlay(false);
         Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlayListMetadataFromId3Dir);
 
         if (thread->start()){
             Traza::print("Thread addLocalAlbum started with id: ",thread->getThreadID(), W_DEBUG);
             tEvento evento;
             long before = SDL_GetTicks();
-
             while (!juke->isCanPlay() && SDL_GetTicks() - before < 7000){
-                evento = WaitForKey();
                 procesarControles(pantRepr, &evento, NULL);
             }
 
             if (player->getStatus() != PLAYING){
+                pantRepr->setFocus("playLists");
                 accionesPlaylist(NULL);
-                pantRepr->getObjByName("btnPlay")->setIcon(control_pause);
-                pantRepr->getObjByName("btnPlay")->setImgDrawed(false);
             }
         }
+
     } else {
         pantRepr->setFocus("playLists");
         juke->setObjectsMenu(pantRepr);

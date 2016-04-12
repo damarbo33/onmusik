@@ -23,7 +23,7 @@ class Scrapper
         string artist;
         vector <TrackInfo *> info;
 
-        DWORD getLyricsWikia();
+        DWORD getLyricsSong();
         LyricsBase *arr[2];
 };
 

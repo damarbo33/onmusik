@@ -1008,11 +1008,11 @@
 	"Ioutil.h"
 	"Iofrontend.h"
 
-1459972627 source:c:\github\proyectos\mp3play\audioplayer.cpp
+1460475689 source:c:\github\proyectos\mp3play\audioplayer.cpp
 	"audioplayer.h"
 	"Constant.h"
 
-1459972585 c:\github\proyectos\mp3play\audioplayer.h
+1460472090 c:\github\proyectos\mp3play\audioplayer.h
 	<iostream>
 	<fstream>
 	<stdio.h>
@@ -1063,7 +1063,7 @@
 
 1458251728 source:c:\github\proyectos\onmusik\resource.rc
 
-1459873060 source:c:\github\proyectos\onmusik\src\icogestor.cpp
+1460463650 source:c:\github\proyectos\onmusik\src\icogestor.cpp
 	"Icogestor.h"
 
 1393499909 c:\github\proyectos\onmusik\src\icogestor.h
@@ -1113,7 +1113,7 @@
 	"Excepcion.h"
 	"Traza.h"
 
-1460452014 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
+1460476124 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
@@ -1295,7 +1295,7 @@
 1453468016 c:\github\externallibs\uiobjects\src\listaini.h
 	"ListaSimple.h"
 
-1460451223 c:\github\proyectos\onmusik\src\jukebox.h
+1460455649 c:\github\proyectos\onmusik\src\jukebox.h
 	"Launcher.h"
 	"Menuobject.h"
 	"dropbox.h"
@@ -1497,7 +1497,7 @@
 	<iostream>
 	"Constant.h"
 
-1460383987 source:c:\github\proyectos\onmusik\src\ioutil.cpp
+1460464371 source:c:\github\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"
@@ -1506,7 +1506,7 @@
 
 1455209140 c:\github\externallibs\uiobjects\src\font\arimo_regular.ttf.h
 
-1460451675 source:c:\github\proyectos\onmusik\src\jukebox.cpp
+1460474659 source:c:\github\proyectos\onmusik\src\jukebox.cpp
 	"jukebox.h"
 
 1460442826 source:c:\github\proyectos\onmusik\src\main.cpp
@@ -2799,7 +2799,7 @@
 1460291027 source:e:\backup\codeblocks 20160327\github\codeblocks\proyectos\onmusik\src\scrapper\scrapper.cpp
 	"scrapper.h"
 
-1460371764 c:\github\proyectos\onmusik\src\scrapper\scrapper.h
+1460476231 c:\github\proyectos\onmusik\src\scrapper\scrapper.h
 	"lyrics/lyricswikia.h"
 	"lyrics/darklyrics.h"
 	"Menuobject.h"
@@ -2808,7 +2808,7 @@
 	"json/json.h"
 	"lyricsbase.h"
 
-1460372842 source:c:\github\proyectos\onmusik\src\scrapper\scrapper.cpp
+1460476236 source:c:\github\proyectos\onmusik\src\scrapper\scrapper.cpp
 	"scrapper.h"
 
 1460372333 c:\github\proyectos\httpcurl\httpcurl\src\lyrics\lyricsbase.h

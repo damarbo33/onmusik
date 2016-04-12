@@ -21,30 +21,33 @@ Scrapper::~Scrapper(){
 *
 */
 DWORD Scrapper::getLyrics(){
-    getLyricsWikia();
+    getLyricsSong();
     return 0;
 }
 
 /**
 *
 */
-DWORD Scrapper::getLyricsWikia(){
+DWORD Scrapper::getLyricsSong(){
     vector <TrackInfo *> info;
     int ret = NOTFOUND;
+    UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu->getObjByName("LetrasBox");
+    textElems->setFieldText("LetraCancion", "Cargando...");
+    textElems->setFieldText("TituloLetraCancion", track);
+
     for (int i=0; i < 2 && ret != SINERROR && ObjectsMenu != NULL; i++){
         Traza::print("Buscando en: " + arr[i]->getServiceName(), W_DEBUG);
         ret = arr[i]->trackSearch(track, artist, &info);
         if (ret == SINERROR){
             Traza::print("Url obtenida: " + info.at(0)->url, W_DEBUG);
             ret = arr[i]->trackLyrics(info.at(0));
-            UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu->getObjByName("LetrasBox");
+
             if (ret == SINERROR){
                 Traza::print("Letra obtenida correctamente", W_DEBUG);
                 textElems->setFieldText("LetraCancion", info.at(0)->lyrics_body);
             } else {
                 textElems->setFieldText("LetraCancion", "");
             }
-            textElems->setFieldText("TituloLetraCancion", track);
             textElems->setOffsetDesplazamiento(0);
             textElems->setImgDrawed(false);
         }

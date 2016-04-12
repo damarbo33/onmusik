@@ -10,6 +10,7 @@
 using namespace std;
 
 static const string filtroFicheros = ".mp3,.mid,.wav,.wma,.cda,.aac,.ac3,.flac,.mp4,.ogg";
+static const string filtroFicherosReproducibles = ".mp3,.mid,.wav,.ogg";
 
 struct TID3Tags{
     string album;
@@ -75,6 +76,7 @@ class Jukebox
         void addLocalAlbum(string ruta);
         void setRutaInfoId3(string var){rutaInfoId3 = var;}
         bool isCanPlay(){return canPlay;}
+        void setCanPlay(bool var){canPlay = var;}
 
 
     protected:

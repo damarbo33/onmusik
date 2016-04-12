@@ -2749,12 +2749,15 @@ void Ioutil::pintarSemiCirculo (int x, int y, int r, t_color color, int angle)
 */
 void Ioutil::pintarIconoProcesando(Thread<Jukebox> *thread){
     long delay = 0;
-    unsigned long before = 0;
-    int grados = 0;
-    int x = screen->w/2 - 50;
-    int y = screen->h/2 - 50;
-    SDL_Rect iconRect = {(short int)x, (short int)y, 50, 50};
-    SDL_Rect iconRectFondo = {(short int)x, (short int)y, 100, 100};
+    static unsigned long before = 0;
+    static int grados = 0;
+    const int iconW = 50;
+    const int iconH = 50;
+    int x = screen->w/2 - iconW / 2;
+    int y = screen->h/2 - iconH / 2;
+    SDL_Rect iconRect = {(short int)x, (short int)y, iconW, iconH};
+    SDL_Rect iconRectFondo = {(short int)x - iconW / 2, (short int)y - iconH / 2, iconW * 2, iconH * 2};
+
     SDL_Surface *mySurface = NULL;
     takeScreenShot(&mySurface, iconRectFondo);
     int limite = FRAMEPERIOD/25;
@@ -2779,21 +2782,24 @@ void Ioutil::pintarIconoProcesando(bool refreshBackground){
     long delay = 0;
     static unsigned long before = 0;
     static int grados = 0;
-    int x = screen->w/2 - 50;
-    int y = screen->h/2 - 50;
-    SDL_Rect iconRect = {(short int)x, (short int)y, 50, 50};
-    SDL_Rect iconRectFondo = {(short int)x, (short int)y, 100, 100};
+    const int iconW = 50;
+    const int iconH = 50;
+    int x = screen->w/2 - iconW / 2;
+    int y = screen->h/2 - iconH / 2;
+    SDL_Rect iconRect = {(short int)x, (short int)y, iconW, iconH};
+    SDL_Rect iconRectFondo = {(short int)x - iconW / 2, (short int)y - iconH / 2, iconW * 2, iconH * 2};
     static SDL_Surface *mySurface = NULL;
 
     if (refreshBackground){
         takeScreenShot(&mySurface, iconRectFondo);
         grados = 0;
     }
-
     int limite = FRAMEPERIOD/25;
     before = SDL_GetTicks();
     printScreenShot(&mySurface, iconRectFondo);
+
     drawIco(reloj_de_arena, grados, iconRect.x, iconRect.y, iconRect.w, iconRect.h);
+
     grados += 5;
     t_region region = {iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h};
     updateScr(&region);

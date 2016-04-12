@@ -152,6 +152,17 @@ bool IcoGestor::drawIcono(int numIco, SDL_Surface * dstSurface, int angle, int x
         SDL_Rect dstRect = { (short int)x, (short int)y, 0, 0 };
         SDL_Surface *bitmap = NULL;
         redimension(arrayIcons.Icon[numIco], angle, destw, desth, &bitmap);
+
+        if (angle != 0){
+            //offsetX = (newWidth - originalWidth) / 2
+            int offsetX = (bitmap->w - destw) / 2;
+            dstRect.x -= offsetX;
+
+            int offsetY = (bitmap->h - desth) / 2;
+            dstRect.y -= offsetY;
+        }
+
+
         SDL_BlitSurface(bitmap, NULL, dstSurface, &dstRect);
         SDL_FreeSurface(bitmap);
         return true;

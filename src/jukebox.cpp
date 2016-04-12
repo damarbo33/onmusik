@@ -592,22 +592,23 @@ DWORD Jukebox::refreshPlayListMetadataFromId3Dir(){
     canPlay = false;
 
     Dirutil dir;
-    listaSimple<FileProps> *filelist = new listaSimple<FileProps>();
+//    listaSimple<FileProps> *filelist = new listaSimple<FileProps>();
+    vector<FileProps> *filelist = new vector<FileProps>();
     FileProps file;
     string nombreCancion;
-
     string ruta = rutaInfoId3;
     ruta = dir.getFolder(ruta);
 
     playList->clearLista();
-    dir.listarDir(ruta.c_str(), filelist, filtroFicheros);
+    //dir.listarDir(ruta.c_str(), filelist, filtroFicheros);
+    dir.listarDirRecursivo(ruta, filelist);
     int posFound = 0;
     int pos = 0;
 
 
-    for (int i=0; i < filelist->getSize(); i++){
-            file = filelist->get(i);
-            if (string("..").compare(file.filename) != 0){
+    for (int i=0; i < filelist->size(); i++){
+            file = filelist->at(i);
+            if (filtroFicherosReproducibles.find(dir.getExtension(file.filename)) != string::npos ){
                 vector <ListGroupCol *> miFila;
                 miFila.push_back(new ListGroupCol(file.filename, file.dir + Constant::getFileSep() + file.filename));
                 miFila.push_back(new ListGroupCol("",""));
@@ -624,10 +625,10 @@ DWORD Jukebox::refreshPlayListMetadataFromId3Dir(){
     playList->setPosActualLista(posFound);
     playList->refreshLastSelectedPos();
     playList->calcularScrPos();
-    canPlay = true;
 
     delete filelist;
     playList->setImgDrawed(false);
+    canPlay = true;
 
     for (int i=0; i < playList->getSize(); i++){
         string file = playList->getValue(i);
@@ -659,6 +660,7 @@ DWORD Jukebox::refreshPlayListMetadataFromId3Dir(){
         ObjectsMenu->getObjByName("mediaTimerTotal")->setLabel(Constant::timeFormat(max_));
     }
     Traza::print("Redibujar playlist", W_DEBUG);
+
     return 0;
 }
 
