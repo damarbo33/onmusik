@@ -43,19 +43,26 @@ void Updater::updateFFmpeg(string ruta){
 
     HttpUtil utilHttp;
 
-    UnzipTool *unzipTool = new UnzipTool();
+
     if (!dir.existe(file1)){
         utilHttp.download(url1, strFileName1);
-        if (dir.existe(strFileName1))
+        if (dir.existe(strFileName1)){
+            UnzipTool *unzipTool = new UnzipTool();
             unzipTool->descomprimirZip(strFileName1.c_str());
+            delete unzipTool;
+            dir.borrarArchivo(strFileName1);
+        }
     }
-    delete unzipTool;
-    unzipTool = new UnzipTool();
 
     if (!dir.existe(file2)){
         utilHttp.download(url2, strFileName2);
-        if (dir.existe(strFileName2))
+        if (dir.existe(strFileName2)){
+            UnzipTool *unzipTool = new UnzipTool();
             unzipTool->descomprimirZip(strFileName2.c_str());
+            delete unzipTool;
+            dir.borrarArchivo(strFileName2);
+        }
+
     }
-    delete unzipTool;
+
 }

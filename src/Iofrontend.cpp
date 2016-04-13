@@ -17,11 +17,11 @@ const int MAXDBGAIN = 20;
 *
 */
 Iofrontend::Iofrontend(){
-    Traza::print("Constructor de IoFrontend", W_DEBUG);
+    Traza::print("Constructor de IoFrontend", W_INFO);
     convColor = new Colorutil();
     imgGestor = new ImagenGestor();
 
-    Traza::print("Creando objetos de cada menu", W_PARANOIC);
+    Traza::print("Creando objetos de cada menu", W_INFO);
     for (int i=0; i < MAXMENU; i++){
         ObjectsMenu[i] = new tmenu_gestor_objects(this->getWidth(), this->getHeight()); //Inicializo el puntero asignado a cada menu. En el constructor de esta clase,                                                    //se crean tantos objetos como se defina en la constante MAXOBJECTS
     }
@@ -36,7 +36,7 @@ Iofrontend::Iofrontend(){
     scrapper = new Scrapper();
     juke->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
     Constant::setExecMethod(launch_create_process);
-    Traza::print("Asignando elementos y acciones", W_PARANOIC);
+    Traza::print("Asignando elementos y acciones", W_INFO);
     initUIObjs();
     posAlbumSelected = 0;
     posSongSelected = 0;
@@ -47,7 +47,7 @@ Iofrontend::Iofrontend(){
     setSelMenu(PANTALLAREPRODUCTOR);
     tEvento evento;
     drawMenu(evento);
-    Traza::print("Fin Constructor de IoFrontend", W_PARANOIC);
+    Traza::print("Fin Constructor de IoFrontend", W_INFO);
 }
 
 
@@ -56,11 +56,11 @@ Iofrontend::Iofrontend(){
 * Destructor
 */
 Iofrontend::~Iofrontend(){
-    Traza::print("Destructor de IoFrontend", W_DEBUG);
+    Traza::print("Destructor de IoFrontend", W_INFO);
     delete convColor;
 
 //  A los objetos no los podemos eliminar porque no fueron creados dinamicamente
-    Traza::print("Eliminando objetos de cada Menu", W_DEBUG);
+    Traza::print("Eliminando objetos de cada Menu", W_INFO);
     for (int i=0; i < MAXMENU; i++){
         Traza::print("Eliminando menu: ", i, W_PARANOIC);
         delete ObjectsMenu[i];
@@ -68,7 +68,7 @@ Iofrontend::~Iofrontend(){
     delete juke;
     delete player;
     delete scrapper;
-    Traza::print("Destructor de IoFrontend FIN", W_DEBUG);
+    Traza::print("Destructor de IoFrontend FIN", W_INFO);
 }
 
 
@@ -218,6 +218,8 @@ void Iofrontend::initUIObjs(){
     playList->addHeaderWith(100);
     playList->setColor(cNegroClaro);
     playList->setTextColor(cBlanco);
+
+    ((UISpectrum *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum"))->calcZoom(ALBUMWIDTH);
 
 
     //Establecemos los elementos que se redimensionan
@@ -377,7 +379,7 @@ bool Iofrontend::procesarControles(tmenu_gestor_objects *objMenu, tEvento *event
                                         /**Los botones no pueden hacer que se salga de la aplicacion. Solo ejecutamos la funcion*/
                                         //salir = (*this.*pt2Func[posBoton])(evento); //Ejecutamos la funcion especificada en el puntero a funcion almacenado
                                         (*this.*pt2Func[posBoton])(evento); //Ejecutamos la funcion especificada en el puntero a funcion almacenado
-                                        Traza::print("procesarControles: Evento lanzado para " + object->getName(), W_DEBUG);
+                                        Traza::print("procesarControles: Evento lanzado para " + object->getName(), W_INFO);
                                     }
                                 }
                             }
@@ -395,7 +397,7 @@ bool Iofrontend::procesarControles(tmenu_gestor_objects *objMenu, tEvento *event
                                         //Forzamos a que se actualicen todos los elementos
                                         objMenu->resetElements();
                                         salir = (*this.*pt2Func[posBoton])(evento); //Ejecutamos la funcion especificada en el puntero a funcion almacenado
-                                        Traza::print("procesarControles: Evento lanzado para " + object->getName(), W_DEBUG);
+                                        Traza::print("procesarControles: Evento lanzado para " + object->getName(), W_INFO);
                                     }
                                 }
                             }
@@ -763,7 +765,7 @@ void Iofrontend::setDinamicSizeObjects(){
 */
 bool Iofrontend::casoPANTALLACONFIRMAR(string titulo, string txtDetalle){
     ignoreButtonRepeats = true;
-    Traza::print("casoPANTALLACONFIRMAR: Inicio", W_PARANOIC);
+    Traza::print("casoPANTALLACONFIRMAR: Inicio", W_INFO);
     bool salir = false;
     tEvento askEvento;
     clearEvento(&askEvento);
@@ -828,7 +830,7 @@ bool Iofrontend::casoPANTALLACONFIRMAR(string titulo, string txtDetalle){
 */
 string Iofrontend::casoPANTALLAPREGUNTA(string titulo, string label){
     ignoreButtonRepeats = true;
-    Traza::print("casoPANTALLAPREGUNTA: Inicio", W_PARANOIC);
+    Traza::print("casoPANTALLAPREGUNTA: Inicio", W_INFO);
     bool salir = false;
     tEvento askEvento;
     clearEvento(&askEvento);
@@ -910,7 +912,7 @@ void Iofrontend::comprobarUnicode(int menu){
         i++;
     }
 
-    Traza::print("comprobarUnicode: " + Constant::TipoToStr(menu) + ((found == true) ? " UNICODE=S":" UNICODE=N"), W_DEBUG);
+    Traza::print("comprobarUnicode: " + Constant::TipoToStr(menu) + ((found == true) ? " UNICODE=S":" UNICODE=N"), W_PARANOIC);
     SDL_EnableUNICODE(found);
 }
 
@@ -920,6 +922,7 @@ void Iofrontend::comprobarUnicode(int menu){
 */
 void Iofrontend::setTextFromExplorador(tEvento *evento, UIInput *objCampoEdit){
     try{
+        Traza::print("Iofrontend::setTextFromExplorador", W_INFO);
         Dirutil dir;
         tmenu_gestor_objects *objMenu = ObjectsMenu[this->getSelMenu()];
         //Si el objeto ya tiene datos, comprobamos si existe el directorio que supuestamente contiene
@@ -946,7 +949,7 @@ void Iofrontend::setTextFromExplorador(tEvento *evento, UIInput *objCampoEdit){
 *
 */
 string Iofrontend::showExplorador(tEvento *evento){
-    Traza::print("showExplorador: Inicio", W_PARANOIC);
+    Traza::print("showExplorador: Inicio", W_INFO);
     bool salir = false;
     tEvento askEvento;
     clearEvento(&askEvento);
@@ -1069,6 +1072,7 @@ int Iofrontend::accionesListaExplorador(tEvento *evento){
     string fileSelec = "";
 
     try{
+        Traza::print("Iofrontend::accionesListaExplorador", W_INFO);
         tmenu_gestor_objects *objMenu = ObjectsMenu[PANTALLABROWSER2];
         UIList * obj = (UIList *)objMenu->getObjByName(OBJLISTABROWSER2);
         Dirutil dir;
@@ -1132,6 +1136,7 @@ int Iofrontend::accionesListaExplorador(tEvento *evento){
 *
 */
 void Iofrontend::loadComboUnidades(){
+    Traza::print("Iofrontend::loadComboUnidades", W_INFO);
     UIComboBox *combo = (UIComboBox *)ObjectsMenu[PANTALLABROWSER2]->getObjByName("comboBrowser");
     combo->clearLista();
     combo->setPosActualLista(0);
@@ -1156,7 +1161,7 @@ void Iofrontend::loadComboUnidades(){
 *
 */
 int Iofrontend::accionCombo(tEvento *evento){
-    Traza::print("Iofrontend::accionCombo", W_DEBUG);
+    Traza::print("Iofrontend::accionCombo", W_INFO);
     UIComboBox *combo = (UIComboBox *)ObjectsMenu[PANTALLABROWSER2]->getObjByName("comboBrowser");
     string unidad = combo->getValue(combo->getPosActualLista());
     Traza::print("Iofrontend::accionCombo. Drive: " + unidad, W_DEBUG);
@@ -1183,6 +1188,7 @@ int Iofrontend::accionCombo(tEvento *evento){
 int Iofrontend::loadDirFromExplorer(tEvento *evento){
 
     try{
+        Traza::print("Iofrontend::loadDirFromExplorer", W_INFO);
         //Obtenemos los objetos del menu actual
         tmenu_gestor_objects *objMenu = ObjectsMenu[this->getSelMenu()];
         //Obtenemos el objeto que ha sido seleccionado y que tiene el foco
@@ -1235,6 +1241,7 @@ bool Iofrontend::procesarMenuActual(tmenu_gestor_objects *objMenu, tEvento *even
 */
 void Iofrontend::showMenuEmergente(int menu, string objImagenFondo){
     try{
+         Traza::print("Iofrontend::showMenuEmergente", W_INFO);
         //Procesamos el menu actual para que se vuelva a repintar
         procesarControles(ObjectsMenu[getSelMenu()], new tEvento(), NULL);
         //Seleccionamos el menu que queremos mostrar como si fuese emergente
@@ -1311,7 +1318,7 @@ bool Iofrontend::procesarPopups(tmenu_gestor_objects *objMenu, tEvento *evento){
 * en campos input.
 */
 int Iofrontend::accionCopiarTextoPopup(tEvento *evento){
-    Traza::print("accionCopiarTextoPopup", W_DEBUG);
+    Traza::print("accionCopiarTextoPopup", W_INFO);
     //Se obtiene el objeto menupopup que en principio esta seleccionado
     int menu = this->getSelMenu();
     tmenu_gestor_objects *objsMenu = ObjectsMenu[menu];
@@ -1396,7 +1403,7 @@ string Iofrontend::casoJOYBUTTONS(tEvento *evento){
 *
 */
 int Iofrontend::accionesMediaAvanzar(tEvento *evento){
-    Traza::print("Iofrontend::accionesMediaAvanzar", W_DEBUG);
+    Traza::print("Iofrontend::accionesMediaAvanzar", W_INFO);
     UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
     if (player->getStatus() != STOPED && playList->getPosActualLista() < playList->getSize() - 1){
         playList->nextSelectedPos();
@@ -1414,7 +1421,7 @@ int Iofrontend::accionesMediaAvanzar(tEvento *evento){
 *
 */
 int Iofrontend::accionesMediaRetroceder(tEvento *evento){
-    Traza::print("Iofrontend::accionesMediaRetroceder", W_DEBUG);
+    Traza::print("Iofrontend::accionesMediaRetroceder", W_INFO);
     if (player->getStatus() != STOPED){
         UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
         playList->prevSelectedPos();
@@ -1428,6 +1435,7 @@ int Iofrontend::accionesMediaRetroceder(tEvento *evento){
 *
 */
 int Iofrontend::accionesMediaPause(tEvento *evento){
+    Traza::print("Iofrontend::accionesMediaPause", W_INFO);
     UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
     if (player->getStatus() == PLAYING){
         player->pause();
@@ -1531,6 +1539,7 @@ int Iofrontend::accionesfiltroAudio8(tEvento *evento){
 *
 */
 int Iofrontend::accionesResetFiltros(tEvento *evento){
+    Traza::print("Iofrontend::accionesResetFiltros", W_INFO);
     for(int i=0; i < NBIQUADFILTERS; i++){
         UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio" + Constant::TipoToStr(i));
         objfilterGraves->setProgressPos(MAXDBGAIN/2);
@@ -1551,6 +1560,7 @@ int Iofrontend::accionesResetFiltros(tEvento *evento){
 *
 */
 int Iofrontend::accionesSwitchFiltros(tEvento *evento){
+    Traza::print("Iofrontend::accionesSwitchFiltros", W_INFO);
     player->setEqualizerOn(!player->isEqualizerOn());
     if (!player->isEqualizerOn()){
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setIcon(btn_off);
@@ -1570,6 +1580,7 @@ int Iofrontend::accionesSwitchFiltros(tEvento *evento){
 *
 */
 int Iofrontend::accionesLetras(tEvento *evento){
+    Traza::print("Iofrontend::accionesLetras", W_INFO);
     UIListGroup *objPlayList = (UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists");
     UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
 
@@ -1589,6 +1600,7 @@ int Iofrontend::accionesLetras(tEvento *evento){
 *
 */
 void Iofrontend::getLyricsFromActualSong(){
+    Traza::print("Iofrontend::getLyricsFromActualSong", W_INFO);
     UIListGroup *objPlayList = (UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists");
     UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
     if (textElems->isVisible()){
@@ -1611,6 +1623,7 @@ void Iofrontend::getLyricsFromActualSong(){
 *
 */
 int Iofrontend::accionesEqualizer(tEvento *evento){
+    Traza::print("Iofrontend::accionesEqualizer", W_INFO);
     player->setEqualizerVisible(!player->isEqualizerVisible());
     UISpectrum *objSpectrum = (UISpectrum *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum");
 
@@ -1647,7 +1660,7 @@ int Iofrontend::accionesEqualizer(tEvento *evento){
 *
 */
 int Iofrontend::accionesMediaStop(tEvento *evento){
-    Traza::print("Iofrontend::accionesMediaStop", W_DEBUG);
+    Traza::print("Iofrontend::accionesMediaStop", W_INFO);
     player->stop();
     Traza::print("Iofrontend::accionesMediaStop. Terminando thread...", W_DEBUG);
     if (threadPlayer != NULL)
@@ -1671,14 +1684,13 @@ int Iofrontend::accionesMediaStop(tEvento *evento){
 *
 */
 int Iofrontend::accionesPlaylist(tEvento *evento){
-    Traza::print("Iofrontend::accionesPlaylist", W_DEBUG);
+    Traza::print("Iofrontend::accionesPlaylist", W_INFO);
     UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
     playList->refreshLastSelectedPos();
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setIcon(control_pause);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setImgDrawed(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->setFocus("playLists");
     startSongPlaylist(evento);
-
     return 0;
 }
 
@@ -1686,7 +1698,7 @@ int Iofrontend::accionesPlaylist(tEvento *evento){
 *
 */
 int Iofrontend::openLocalDisc(tEvento *evento){
-    Traza::print("Iofrontend::openLocalDisc", W_DEBUG);
+    Traza::print("Iofrontend::openLocalDisc", W_INFO);
     long delay = 0;
     unsigned long before = 0;
 
@@ -1699,11 +1711,12 @@ int Iofrontend::openLocalDisc(tEvento *evento){
 //            fichName = dir.getFolder(fichName);
 //        }
         //Si se ha seleccionado algo, establecemos el texto en el objeto que hemos recibido por parametro
+        Traza::print("Iofrontend::openLocalDisc. Reproduciendo: " + fichName, W_DEBUG);
         if (!fichName.empty()){
             this->addLocalAlbum(fichName);
         }
     } catch (Excepcion &e){
-        Traza::print("uploadDiscToDropbox: " + string(e.getMessage()), W_ERROR);
+        Traza::print("Iofrontend::openLocalDisc: " + string(e.getMessage()), W_ERROR);
     }
 
     return 0;
@@ -1712,7 +1725,7 @@ int Iofrontend::openLocalDisc(tEvento *evento){
 *
 */
 int Iofrontend::uploadDiscToDropbox(tEvento *evento){
-    Traza::print("Iofrontend::uploadDiscToDropbox", W_DEBUG);
+    Traza::print("Iofrontend::uploadDiscToDropbox", W_INFO);
     long delay = 0;
     unsigned long before = 0;
 
@@ -1752,7 +1765,7 @@ int Iofrontend::uploadDiscToDropbox(tEvento *evento){
 *
 */
 int Iofrontend::mediaClicked(tEvento *evento){
-    Traza::print("Iofrontend::mediaClicked", W_DEBUG);
+    Traza::print("Iofrontend::mediaClicked", W_INFO);
     //Comprobamos si se ha terminado la descarga y recargamos en ese caso
     reloadSong(posAlbumSelected, posSongSelected);
 
@@ -1769,7 +1782,7 @@ int Iofrontend::mediaClicked(tEvento *evento){
 *
 */
 int Iofrontend::accionVolumen(tEvento *evento){
-    Traza::print("Iofrontend::accionVolumen", W_DEBUG);
+    Traza::print("Iofrontend::accionVolumen", W_INFO);
     UIProgressBar * objProg = (UIProgressBar *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarVolumen");
     UIButton * objMute = (UIButton *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("ImgVol");
     Traza::print("Pos pulsada volumen: ", objProg->getProgressPos(), W_DEBUG);
@@ -1787,7 +1800,7 @@ int Iofrontend::accionVolumen(tEvento *evento){
 }
 
 int Iofrontend::accionRepeat(tEvento *evento){
-    Traza::print("Iofrontend::accionRepeat", W_DEBUG);
+    Traza::print("Iofrontend::accionRepeat", W_INFO);
     UIButton * objButton = (UIButton *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnRepeat");
     if (objButton->getIcon() == btn_repeat_off){
         objButton->setIcon(btn_repeat);
@@ -1799,7 +1812,7 @@ int Iofrontend::accionRepeat(tEvento *evento){
 }
 
 int Iofrontend::accionRandom(tEvento *evento){
-    Traza::print("Iofrontend::accionRandom", W_DEBUG);
+    Traza::print("Iofrontend::accionRandom", W_INFO);
     UIButton * objButton = (UIButton *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnRandom");
     if (objButton->getIcon() == btn_random_off){
         objButton->setIcon(btn_random);
@@ -1813,7 +1826,7 @@ int Iofrontend::accionRandom(tEvento *evento){
 *
 */
 int Iofrontend::accionVolumenMute(tEvento *evento){
-    Traza::print("Iofrontend::accionVolumenMute", W_DEBUG);
+    Traza::print("Iofrontend::accionVolumenMute", W_INFO);
     UIProgressBar * objProg = (UIProgressBar *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarVolumen");
     UIButton * objMute = (UIButton *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("ImgVol");
     static int volAnt = 0;
@@ -1839,7 +1852,7 @@ int Iofrontend::accionVolumenMute(tEvento *evento){
 *
 */
 void Iofrontend::setPanelMediaVisible(bool var){
-    Traza::print("Iofrontend::setPanelMediaVisible", W_DEBUG);
+    Traza::print("Iofrontend::setPanelMediaVisible", W_INFO);
     try{
         tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
         obj->getObjByName("panelMedia")->setVisible(var);
@@ -1864,7 +1877,7 @@ void Iofrontend::setPanelMediaVisible(bool var){
 *
 */
 int Iofrontend::startSongPlaylist(tEvento *evento){
-    Traza::print("Iofrontend::startSongPlaylist", W_DEBUG);
+    Traza::print("Iofrontend::startSongPlaylist", W_INFO);
     UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
     do{
         string cancion = playList->getValue(playList->getLastSelectedPos());
@@ -1987,7 +2000,7 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
 *
 */
 bool Iofrontend::bucleReproductor(){
-    Traza::print("Iofrontend::bucleReproductor", W_DEBUG);
+    Traza::print("Iofrontend::bucleReproductor", W_INFO);
     bool salir = false;
     long delay = 0;
     unsigned long before = 0;
@@ -2039,6 +2052,7 @@ bool Iofrontend::bucleReproductor(){
         if (dir.existe(cancion)){
             player->setFilename(cancion);
             player->setSongDownloaded(true);
+            finishedDownload = true;
         } else {
             player->setFilename(file);
             player->setSongDownloaded(false);
@@ -2058,7 +2072,6 @@ bool Iofrontend::bucleReproductor(){
         Traza::print("bucleReproductor player started", W_DEBUG);
         //Obtiene las letras de la cancion actual
         getLyricsFromActualSong();
-
         Traza::print("Estado Cancion 0",player->getStatus(), W_PARANOIC);
 
         do{
@@ -2121,9 +2134,9 @@ bool Iofrontend::bucleReproductor(){
                 }
 
                 Traza::print("Estado Cancion 6", player->getStatus(), W_PARANOIC);
-                if(player->getNeed_refresh()){
+//                if(player->getNeed_refresh()){
                     refreshSpectrum(player);
-                }
+//                }
 
                 Traza::print("Estado Cancion 7", player->getStatus(), W_PARANOIC);
                 //Recargamos la cancion si se ha terminado la descarga de la misma
@@ -2162,6 +2175,8 @@ bool Iofrontend::bucleReproductor(){
 *
 */
 void Iofrontend::reloadSong(int posAlbumSelected, int posSongSelected){
+    Traza::print("Iofrontend::reloadSong", W_INFO);
+
     if (threadDownloader != NULL && player != NULL){
         Traza::print("Iofrontend::reloadSong", W_DEBUG);
         tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
@@ -2217,7 +2232,7 @@ int Iofrontend::calculaPosPanelMedia(){
 *
 */
 void Iofrontend::refreshAlbumAndPlaylist(){
-    Traza::print("Iofrontend::refreshAlbumAndPlaylist", W_DEBUG);
+    Traza::print("Iofrontend::refreshAlbumAndPlaylist", W_INFO);
 
     string accessToken = autenticarDropbox();
     if (accessToken.empty()){
@@ -2254,24 +2269,15 @@ void Iofrontend::refreshAlbumAndPlaylist(){
 * Se llama cuando se hace doble click o se selecciona un nuevo album de la lista
 */
 int Iofrontend::selectAlbum(tEvento *evento){
-    Traza::print("Iofrontend::selectAlbum", W_DEBUG);
+    Traza::print("Iofrontend::selectAlbum", W_INFO);
     UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
     UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
 
     string albumSelected = albumList->getValue(albumList->getPosActualLista());
     Dirutil dir;
+
     if (dir.existe(albumSelected)){
-        //fillAlbumLocal(albumSelected, false);
-
-//        ObjectsMenu[PANTALLAREPRODUCTOR]->setFocus("playLists");
-//        juke->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
-//        juke->setRutaInfoId3(albumSelected);
-//        Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlayListMetadataFromId3Dir);
-//
-//        if (thread->start())
-//            Traza::print("Thread addLocalAlbum started with id: ",thread->getThreadID(), W_DEBUG);
         this->addLocalAlbum(albumSelected);
-
     } else {
         Traza::print("Comprobando autorizacion selectAlbum...", W_DEBUG);
         string accessToken = autenticarDropbox();
@@ -2319,7 +2325,7 @@ int Iofrontend::selectAlbum(tEvento *evento){
 *
 */
 string Iofrontend::autenticarDropbox(){
-    Traza::print("Iofrontend::autenticarDropbox", W_DEBUG);
+    Traza::print("Iofrontend::autenticarDropbox", W_INFO);
     Dropbox *dropbox = new Dropbox();
     if (this->accessToken.empty()){
         Traza::print("Comprobando autorizacion autenticarDropbox...", W_DEBUG);
@@ -2378,7 +2384,7 @@ string Iofrontend::autenticarDropbox(){
 * en campos input.
 */
 int Iofrontend::accionAlbumPopup(tEvento *evento){
-    Traza::print("Iofrontend::accionAlbumPopup", W_DEBUG);
+    Traza::print("Iofrontend::accionAlbumPopup", W_INFO);
     //Se obtiene el objeto menupopup que en principio esta seleccionado
     int menu = this->getSelMenu();
     tmenu_gestor_objects *objsMenu = ObjectsMenu[menu];
@@ -2421,12 +2427,35 @@ int Iofrontend::accionAlbumPopup(tEvento *evento){
 *
 */
 void Iofrontend::refreshSpectrum(AudioPlayer *player){
+    Traza::print("Iofrontend::refreshSpectrum", W_PARANOIC);
     UISpectrum *obj = ((UISpectrum *) ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum"));
-    if (obj->isEnabled()){
-        AudioPlayer::TStreamMusicPlaying streamData = player->getStreamMusicPlaying();
-        obj->buf = streamData.stream[streamData.which];
-        player->setNeed_refresh(0);
+    AudioPlayer::TStreamMusicPlaying *streamData = player->getStreamMusicPlaying();
+
+    if (obj->isEnabled() && player->getNeed_refresh() == 1){
+        //No permitimos que se actualice el buffer mientras vamos a pintar,
+        //porque sino se producen artefactos por intentar dibujar algo que se
+        //puede estar copiando en memoria en un thread a parte
+        streamData->canUpdateBuffer = false;
+        //Copiamos el puntero con la informacion de los datos de audio
+        obj->buf = streamData->stream[streamData->which];
+        //De forma alternativa, podemos copiar el buffer entero en lugar de
+        //usar un puntero a memoria
+//        if (obj->buf == NULL)
+//            obj->buf = new Sint16[2*BUFFERSPECTRUMVIS];
+//        memcpy(obj->buf, streamData.stream[streamData.which], BUFFERSPECTRUMVIS*2);
+        //Establecemos el tamanyo del buffer para que lo sepa el metodo de dibujado
+        //y no produzca overflow
+        obj->setBuffSize(streamData->bufSize);
+        //Indicamos que debemos redibujar la imagen del visualizador del audio
         obj->setImgDrawed(false);
+        //Especificamos que necesitamos una nueva muestra de audio cuando sea posible
+        player->setNeed_refresh(0);
+    }
+
+    //Si ya hemos dibujado la imagen correctamente, indicamos al thread del audio
+    //que podemos volver a rellenar el buffer del audio
+    if (obj->getImgDrawed() == true){
+        streamData->canUpdateBuffer = true;
     }
 }
 
@@ -2434,6 +2463,7 @@ void Iofrontend::refreshSpectrum(AudioPlayer *player){
 *
 */
 void Iofrontend::actualizaciones(){
+    Traza::print("Iofrontend::actualizaciones", W_INFO);
     Updater *updater = new Updater();
     string ruta = Constant::getAppDir() + Constant::getFileSep() + "rsc";
     if (updater->needUpdate(ruta)){
@@ -2459,7 +2489,7 @@ void Iofrontend::actualizaciones(){
 }
 
 void Iofrontend::bienvenida(){
-    Traza::print("bienvenida: Inicio", W_PARANOIC);
+    Traza::print("bienvenida: Inicio", W_INFO);
     UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
 
     if (!this->accessToken.empty() && albumList->getSize() == 0){
@@ -2524,39 +2554,47 @@ void Iofrontend::bienvenida(){
 */
 void Iofrontend::addLocalAlbum(string ruta){
     tmenu_gestor_objects *pantRepr = ObjectsMenu[PANTALLAREPRODUCTOR];
+    Traza::print("Iofrontend::addLocalAlbum. Reproduciendo: " + ruta, W_INFO);
 
-    UIList *albumList = ((UIList *)pantRepr->getObjByName("albumList"));
-    UIListGroup *playList = ((UIListGroup *)pantRepr->getObjByName("playLists"));
+    try{
+        UIList *albumList = ((UIList *)pantRepr->getObjByName("albumList"));
+        UIListGroup *playList = ((UIListGroup *)pantRepr->getObjByName("playLists"));
 
-    Dirutil dir;
-    if (!dir.isDir(ruta)){
+        Dirutil dir;
         pantRepr->setFocus("playLists");
-        juke->setObjectsMenu(pantRepr);
-        juke->setRutaInfoId3(ruta);
-        juke->setCanPlay(false);
-        Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlayListMetadataFromId3Dir);
 
-        if (thread->start()){
-            Traza::print("Thread addLocalAlbum started with id: ",thread->getThreadID(), W_DEBUG);
-            tEvento evento;
-            long before = SDL_GetTicks();
-            while (!juke->isCanPlay() && SDL_GetTicks() - before < 7000){
-                procesarControles(pantRepr, &evento, NULL);
-            }
+        if (!dir.isDir(ruta)){
+            Traza::print("Iofrontend::addLocalAlbum. Detectado fichero", W_DEBUG);
+            juke->setObjectsMenu(pantRepr);
+            juke->setRutaInfoId3(ruta);
+            juke->setCanPlay(false);
+            Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlayListMetadataFromId3Dir);
 
-            if (player->getStatus() != PLAYING){
-                pantRepr->setFocus("playLists");
-                accionesPlaylist(NULL);
+            if (thread->start()){
+                Traza::print("Thread addLocalAlbum started with id: ",thread->getThreadID(), W_DEBUG);
+                tEvento evento;
+                long before = SDL_GetTicks();
+                while (!juke->isCanPlay() && SDL_GetTicks() - before < 7000){
+                    procesarControles(pantRepr, &evento, NULL);
+                }
+
+                if (player->getStatus() != PLAYING){
+                    Traza::print("Thread addLocalAlbum Lanzando Playlist", W_DEBUG);
+                    pantRepr->setFocus("playLists");
+                    accionesPlaylist(NULL);
+                }
             }
+        } else {
+            Traza::print("Iofrontend::addLocalAlbum. Detectado directorio", W_DEBUG);
+            juke->setObjectsMenu(pantRepr);
+            juke->setRutaInfoId3(ruta);
+            Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlayListMetadataFromId3Dir);
+
+            if (thread->start())
+                Traza::print("Thread addLocalAlbum started with id: ",thread->getThreadID(), W_DEBUG);
         }
-
-    } else {
-        pantRepr->setFocus("playLists");
-        juke->setObjectsMenu(pantRepr);
-        juke->setRutaInfoId3(ruta);
-        Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlayListMetadataFromId3Dir);
-
-        if (thread->start())
-            Traza::print("Thread addLocalAlbum started with id: ",thread->getThreadID(), W_DEBUG);
+    } catch (Excepcion &e){
+        Traza::print("Excepcion al cargar album local: " + string(e.getMessage()), W_DEBUG);
     }
+
 }

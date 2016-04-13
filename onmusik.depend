@@ -1008,11 +1008,11 @@
 	"Ioutil.h"
 	"Iofrontend.h"
 
-1460475689 source:c:\github\proyectos\mp3play\audioplayer.cpp
+1460547032 source:c:\github\proyectos\mp3play\audioplayer.cpp
 	"audioplayer.h"
 	"Constant.h"
 
-1460472090 c:\github\proyectos\mp3play\audioplayer.h
+1460556045 c:\github\proyectos\mp3play\audioplayer.h
 	<iostream>
 	<fstream>
 	<stdio.h>
@@ -1031,7 +1031,7 @@
 	"biquad.h"
 	"statevar.h"
 
-1460380878 c:\github\externallibs\uiobjects\src\constant.h
+1460557964 c:\github\externallibs\uiobjects\src\constant.h
 	<fstream>
 	<sstream>
 	<string.h>
@@ -1113,13 +1113,13 @@
 	"Excepcion.h"
 	"Traza.h"
 
-1460476124 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
+1460556500 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
 	"uilistcommon.h"
 
-1460444508 c:\github\proyectos\onmusik\src\iofrontend.h
+1460527847 c:\github\proyectos\onmusik\src\iofrontend.h
 	<string>
 	<vector>
 	"Ioutil.h"
@@ -1140,6 +1140,7 @@
 	"dropbox.h"
 	"AudioPlayer.h"
 	"scrapper/scrapper.h"
+	"updater/updater.h"
 
 1460132488 c:\github\proyectos\onmusik\src\ioutil.h
 	<iostream>
@@ -1279,7 +1280,7 @@
 1460374765 c:\github\externallibs\uiobjects\src\uitextelementsarea.h
 	<object.h>
 
-1458145588 c:\github\externallibs\uiobjects\src\uispectrum.h
+1460557828 c:\github\externallibs\uiobjects\src\uispectrum.h
 	<object.h>
 
 1458551372 c:\github\externallibs\uiobjects\src\thread.h
@@ -1320,7 +1321,7 @@
 	<locale>
 	<fcntl.h>
 
-1456750350 c:\github\externallibs\uiobjects\src\unzip\unziptool.h
+1460533621 c:\github\externallibs\uiobjects\src\unzip\unziptool.h
 	<unistd.h>
 	"zlib.h"
 	"unzip.h"
@@ -1497,7 +1498,7 @@
 	<iostream>
 	"Constant.h"
 
-1460464371 source:c:\github\proyectos\onmusik\src\ioutil.cpp
+1460559525 source:c:\github\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"
@@ -1509,11 +1510,12 @@
 1460474659 source:c:\github\proyectos\onmusik\src\jukebox.cpp
 	"jukebox.h"
 
-1460442826 source:c:\github\proyectos\onmusik\src\main.cpp
+1460527847 source:c:\github\proyectos\onmusik\src\main.cpp
 	"main.h"
 	"Dirutil.h"
 	<iostream>
 	<fstream>
+	"updater/updater.h"
 
 1458249604 c:\github\proyectos\onmusik\src\main.h
 	<stdio.h>
@@ -2864,4 +2866,13 @@
 	<string>
 	<fstream>
 	<map>
+
+1460527847 c:\github\proyectos\onmusik\src\updater\updater.h
+	"Constant.h"
+	"Dirutil.h"
+	"unzip/unziptool.h"
+	"httputil.h"
+
+1460533494 source:c:\github\proyectos\onmusik\src\updater\updater.cpp
+	"updater.h"
 

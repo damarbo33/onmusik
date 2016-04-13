@@ -1301,24 +1301,30 @@ void Ioutil::drawUISpectrum(Object *obj){
                 if (objspectrum->buf != NULL){
                     x_+=INPUTBORDER;
                     y_+=INPUTBORDER;
-                    for(x=0;x<W*2;x++)
-                    {
-                        const int X=x>>1, b=x&1 ,t=H4+H2*b;
-                        int y1,h1;
-                        if(objspectrum->buf[x]<0)
-                        {
-                            h1=-Y(objspectrum->buf[x]);
-                            y1=t-h1;
-                        }
-                        else
-                        {
-                            y1=t;
-                            h1=Y(objspectrum->buf[x]);
-                        }
+                    int lenX = W*2 > objspectrum->getBuffSize() ? objspectrum->getBuffSize() : W*2;
+//
+                    if (lenX > 0){
+//                        int inc = floor(objspectrum->getBuffSize() / (float)lenX);
+//                        if (inc < 1) inc = 1;
+                        //inc = 1;
+                        int ejex = 0;
 
-                        pintarLineaV(X + x_, y1 + y_, h1, cBlanco);
-                        //pintarLineaSpectrum(X + x_, y1 + y_, h1, ALBUMWIDTH/4, cBlanco);
+                        for(x=0;x<lenX;x++){
+                            const int X=x>>1, b=x&1 ,t=H4+H2*b;
+                            int y1,h1;
+                            if(objspectrum->buf[ejex]<0){
+                                h1=-Y(objspectrum->buf[ejex]);
+                                y1=t-h1;
+                            } else {
+                                y1=t;
+                                h1=Y(objspectrum->buf[ejex]);
+                            }
+                            pintarLineaV(X + x_, y1 + y_, h1, cBlanco);
+                            //pintarLineaSpectrum(X + x_, y1 + y_, h1, ALBUMWIDTH/4, cBlanco);
+                            ejex+=objspectrum->getZoom();
+                        }
                     }
+
                 }
             }
             SDL_UnlockSurface(screen);
@@ -1326,8 +1332,11 @@ void Ioutil::drawUISpectrum(Object *obj){
         } else {
             cachearObjeto(obj);
         }
+
+        cout << "";
     }
 }
+
 
 /**
 *
