@@ -24,7 +24,7 @@
 #include "uiprogressbar.h"
 #include "uipopupmenu.h"
 #include "jukebox.h"
-#include "dropbox.h"
+#include "servers/dropbox.h"
 #include "AudioPlayer.h"
 #include "scrapper/scrapper.h"
 #include "updater/updater.h"

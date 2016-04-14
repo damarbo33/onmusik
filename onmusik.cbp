@@ -12,7 +12,7 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-Os" />
 					<Add directory="../../ExternalLibs/sqllite/src" />
 					<Add directory="../../ExternalLibs/libjpeg/src/libjpeg" />
 					<Add directory="../../ExternalLibs/UIObjects/src" />
@@ -59,7 +59,9 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
+				<Option parameters='&quot;C:\Users\dmarcobo\Desktop\440Dual.wav&quot;' />
 				<Compiler>
+					<Add option="-pg" />
 					<Add option="-g" />
 					<Add directory="../../ExternalLibs/sqllite/src" />
 					<Add directory="../../ExternalLibs/libjpeg/src/libjpeg" />
@@ -82,6 +84,7 @@
 					<Add directory="onmusik/src/updater" />
 				</Compiler>
 				<Linker>
+					<Add option="-pg -lgmon" />
 					<Add option="-lsdlgfx" />
 					<Add option="-lmingw32" />
 					<Add option="-lSDLmain" />
