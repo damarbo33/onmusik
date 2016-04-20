@@ -1088,7 +1088,7 @@
 1401208624 c:\github\externallibs\uiobjects\src\fileprops.h
 	<string>
 
-1453463013 c:\github\externallibs\uiobjects\src\listasimple.h
+1461066032 c:\github\externallibs\uiobjects\src\listasimple.h
 	<string.h>
 	<stdio.h>
 	"Excepcion.h"
@@ -1113,13 +1113,13 @@
 	"Excepcion.h"
 	"Traza.h"
 
-1460561827 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
+1461063328 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
 	"uilistcommon.h"
 
-1460527847 c:\github\proyectos\onmusik\src\iofrontend.h
+1460615431 c:\github\proyectos\onmusik\src\iofrontend.h
 	<string>
 	<vector>
 	"Ioutil.h"
@@ -1137,7 +1137,7 @@
 	"uiprogressbar.h"
 	"uipopupmenu.h"
 	"jukebox.h"
-	"dropbox.h"
+	"servers/dropbox.h"
 	"AudioPlayer.h"
 	"scrapper/scrapper.h"
 	"updater/updater.h"
@@ -1293,13 +1293,13 @@
 	"Constant.h"
 	"SDL/SDL.h"
 
-1453468016 c:\github\externallibs\uiobjects\src\listaini.h
+1461065119 c:\github\externallibs\uiobjects\src\listaini.h
 	"ListaSimple.h"
 
-1460455649 c:\github\proyectos\onmusik\src\jukebox.h
+1460615424 c:\github\proyectos\onmusik\src\jukebox.h
 	"Launcher.h"
 	"Menuobject.h"
-	"dropbox.h"
+	"servers/dropbox.h"
 	"listaIni.h"
 	"thread.h"
 
@@ -1368,7 +1368,7 @@
 	"Dirutil.h"
 	"thread.h"
 
-1460367331 c:\github\proyectos\httpcurl\httpcurl\src\util\constant.h
+1461059752 c:\github\proyectos\httpcurl\httpcurl\src\util\constant.h
 	<sstream>
 	<string.h>
 	<vector>
@@ -1382,7 +1382,7 @@
 	<iomanip>
 	<windows.h>
 
-1457629889 c:\github\proyectos\httpcurl\httpcurl\src\httputil.h
+1461057936 c:\github\proyectos\httpcurl\httpcurl\src\httputil.h
 	<stdlib.h>
 	<string.h>
 	<stdio.h>
@@ -1507,7 +1507,7 @@
 
 1455209140 c:\github\externallibs\uiobjects\src\font\arimo_regular.ttf.h
 
-1460474659 source:c:\github\proyectos\onmusik\src\jukebox.cpp
+1461059915 source:c:\github\proyectos\onmusik\src\jukebox.cpp
 	"jukebox.h"
 
 1460527847 source:c:\github\proyectos\onmusik\src\main.cpp
@@ -2875,4 +2875,20 @@
 
 1460533494 source:c:\github\proyectos\onmusik\src\updater\updater.cpp
 	"updater.h"
+
+1461059822 c:\github\proyectos\httpcurl\httpcurl\src\servers\dropbox.h
+	<iostream>
+	<windows.h>
+	"util/Constant.h"
+	<vector>
+	<map>
+	"httputil.h"
+	<iostream>
+	<fstream>
+	<sys/stat.h>
+	<Constant.h>
+	"json/json.h"
+	<vector>
+	"Dirutil.h"
+	"thread.h"
 

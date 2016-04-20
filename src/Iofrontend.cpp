@@ -6,8 +6,8 @@
 //Estos son los campos necesarios para identificar la aplicacion
 //de dropbox que he dado de alta mediante oauth.
 //No deben ser de dominio publico
-const string cliendid="";
-const string secret="";
+const string cliendid="cgydn2vmpbaubpn";
+const string secret="3us3tyi7fdzaa0q";
 bool Iofrontend::finishedDownload;
 const int MAXDBGAIN = 20;
 
@@ -2335,7 +2335,7 @@ string Iofrontend::autenticarDropbox(){
 
         clearScr();
         procesarControles(obj, &evento, NULL);
-        drawTextCent("Conectando a dropbox. Espere...",0,-70,true,true, cBlanco);
+        drawTextCent("Conectando a dropbox. Espere...", 0, -70,true,true, cBlanco);
         flipScr();
 
         pintarIconoProcesando(true);

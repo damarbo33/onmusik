@@ -363,7 +363,7 @@ void Jukebox::refreshAlbum(string accessToken){
     UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
     Dropbox dropbox;
     albumList->clearLista();
-    DropboxFiles files;
+    CloudFiles files;
     dropbox.listFiles("/" + musicDir, accessToken, &files);
     string ruta;
     for (int i=0; i < files.fileList.size(); i++){
@@ -383,7 +383,7 @@ void Jukebox::refreshPlaylist(string rutaAlbumDropbox){
     Traza::print("Jukebox::refreshPlaylist", W_DEBUG);
     Dirutil dir;
     Dropbox dropbox;
-    DropboxFiles files;
+    CloudFiles files;
     string ruta;
     UIListGroup *playList = ((UIListGroup *)ObjectsMenu->getObjByName("playLists"));
 

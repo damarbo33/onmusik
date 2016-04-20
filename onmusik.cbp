@@ -59,7 +59,6 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
-				<Option parameters='&quot;C:\Users\dmarcobo\Desktop\440Dual.wav&quot;' />
 				<Compiler>
 					<Add option="-pg" />
 					<Add option="-g" />
