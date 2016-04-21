@@ -6,8 +6,12 @@
 //Estos son los campos necesarios para identificar la aplicacion
 //de dropbox que he dado de alta mediante oauth.
 //No deben ser de dominio publico
-const string cliendid="cgydn2vmpbaubpn";
-const string secret="3us3tyi7fdzaa0q";
+const string cliendid="";
+const string secret="";
+
+const string googleClientId = "";
+const string googleSecret = "";
+
 bool Iofrontend::finishedDownload;
 const int MAXDBGAIN = 20;
 
@@ -91,11 +95,23 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLACONFIRMAR]->add("btnSiConfirma", GUIBUTTON, -(BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
     ObjectsMenu[PANTALLACONFIRMAR]->add("btnNoConfirma", GUIBUTTON, (BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
 
+    ObjectsMenu[PANTALLALOGIN]->add("borde", GUIPANELBORDER,0,0,0,0, "Seleccione una opcion", false);
+    ObjectsMenu[PANTALLALOGIN]->add("textosBox", GUITEXTELEMENTSAREA, 0, -40 * zoomText, getWidth()-50, 70, "", true)->setVerContenedor(false);
+    ObjectsMenu[PANTALLALOGIN]->add("btnGoogle", GUIBUTTON, -(BUTTONSERVERW/2 + 5)*2, 30,BUTTONSERVERW,BUTTONH, "Google", true)->setIcon(google_png);
+    ObjectsMenu[PANTALLALOGIN]->add("btnDropbox", GUIBUTTON, 0, 30,BUTTONSERVERW,BUTTONH, "Dropbox", true)->setIcon(dropbox_png);
+    ObjectsMenu[PANTALLALOGIN]->add("btnLoginCancel", GUIBUTTON, (BUTTONSERVERW/2 + 5) * 2, 30,BUTTONSERVERW,BUTTONH, "Cancelar", true)->setIcon(cross);
+
     UITextElementsArea *infoTextRom = (UITextElementsArea *)ObjectsMenu[PANTALLACONFIRMAR]->getObjByName("textosBox");
     t_posicion pos = {0,0,0,0};
     infoTextRom->addField("labelDetalle","","",pos, true);
     infoTextRom->setTextColor(cBlanco);
     infoTextRom->setColor(cNegro);
+
+    infoTextRom = (UITextElementsArea *)ObjectsMenu[PANTALLALOGIN]->getObjByName("textosBox");
+    infoTextRom->addField("labelDetalle","","",pos, true);
+    infoTextRom->setTextColor(cBlanco);
+    infoTextRom->setColor(cNegro);
+
 
     //2, 2, FAMFAMICONW, FAMFAMICONH
     ObjectsMenu[PANTALLABIENVENIDA]->add("borde", GUIPANEL, 2 + FAMFAMICONW, 2 + FAMFAMICONH,getWidth(),getHeight(), "Bienvenido!", false)->setEnabled(false);;
@@ -233,6 +249,10 @@ void Iofrontend::initUIObjs(){
     //Botones para la pantalla de confirmacion
     addEvent("btnSiConfirma", &Iofrontend::marcarBotonSeleccionado);
     addEvent("btnNoConfirma", &Iofrontend::marcarBotonSeleccionado);
+
+    addEvent("btnGoogle", &Iofrontend::marcarBotonSeleccionado);
+    addEvent("btnDropbox", &Iofrontend::marcarBotonSeleccionado);
+    addEvent("btnLoginCancel", &Iofrontend::marcarBotonSeleccionado);
 
     //Botones para la pantalla de video
     addEvent("btnPlay",  &Iofrontend::accionesMediaPause);
@@ -1739,20 +1759,13 @@ int Iofrontend::uploadDiscToDropbox(tEvento *evento){
         }
         //Si se ha seleccionado algo, establecemos el texto en el objeto que hemos recibido por parametro
         if (!fichName.empty()){
-                Dropbox dropbox;
-                Traza::print("Comprobando autorizacion...", W_DEBUG);
-                string accessToken = autenticarDropbox();
-
-                if (accessToken.empty()){
-                    showMessage("No se ha podido conectar a dropbox. Se aborta la subida", 2000);
-                } else {
-                    juke->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
-                    juke->setDirToUpload(fichName);
-                    juke->setAccessToken(accessToken);
-                    Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::convertir);
-                    if (thread->start())
-                        Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
-                }
+            Traza::print("Comprobando autorizacion...", W_DEBUG);
+            IOauth2 *server = juke->getServerCloud(DROPBOXSERVER);
+            juke->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
+            juke->setDirToUpload(fichName);
+            Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::convertir);
+            if (thread->start())
+                Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
         }
     } catch (Excepcion &e){
         Traza::print("uploadDiscToDropbox: " + string(e.getMessage()), W_ERROR);
@@ -2240,7 +2253,6 @@ void Iofrontend::refreshAlbumAndPlaylist(){
     } else {
         tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
         juke->setObjectsMenu(obj);
-        juke->setAccessToken(accessToken);
 
         Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshAlbumAndPlaylist);
         tEvento evento;
@@ -2280,41 +2292,36 @@ int Iofrontend::selectAlbum(tEvento *evento){
         this->addLocalAlbum(albumSelected);
     } else {
         Traza::print("Comprobando autorizacion selectAlbum...", W_DEBUG);
-        string accessToken = autenticarDropbox();
 
-        if (accessToken.empty()){
-            showMessage("No se ha podido conectar a dropbox. Se aborta la subida", 2000);
-        } else {
-            tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
-            juke->setObjectsMenu(obj);
-            juke->setAccessToken(accessToken);
-            Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlaylist);
+        tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+        juke->setObjectsMenu(obj);
+        Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlaylist);
 
-            if (thread->start())
-                Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
-            pintarIconoProcesando(true);
+        if (thread->start())
+            Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
+        pintarIconoProcesando(true);
 
 
-            tEvento evento;
-            while (thread->isRunning()){
-                evento = WaitForKey();
-                procesarControles(obj, &evento, NULL);
-                pintarIconoProcesando(false);
-            }
-
-            UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
-
-            if (textElems->isVisible() && !playList->isVisible()){
-                playList->setVisible(true);
-                textElems->setVisible(false);
-            }
-
-            playList->setPosActualLista(0);
-            playList->refreshLastSelectedPos();
+        tEvento evento;
+        while (thread->isRunning()){
+            evento = WaitForKey();
             procesarControles(obj, &evento, NULL);
-            flipScr();
-            delete thread;
+            pintarIconoProcesando(false);
         }
+
+        UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
+
+        if (textElems->isVisible() && !playList->isVisible()){
+            playList->setVisible(true);
+            textElems->setVisible(false);
+        }
+
+        playList->setPosActualLista(0);
+        playList->refreshLastSelectedPos();
+        procesarControles(obj, &evento, NULL);
+        flipScr();
+        delete thread;
+
     }
     return 0;
 }
@@ -2324,57 +2331,137 @@ int Iofrontend::selectAlbum(tEvento *evento){
 /**
 *
 */
+//string Iofrontend::autenticarDropbox(){
+//    Traza::print("Iofrontend::autenticarDropbox", W_INFO);
+//    Dropbox *dropbox = new Dropbox();
+//    if (this->accessToken.empty()){
+//        Traza::print("Comprobando autorizacion autenticarDropbox...", W_DEBUG);
+//        tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+//        Thread<Dropbox> *thread = new Thread<Dropbox>(dropbox, &Dropbox::authenticate);
+//        tEvento evento;
+//
+//        clearScr();
+//        procesarControles(obj, &evento, NULL);
+//        drawTextCent("Conectando a dropbox. Espere...", 0, -70,true,true, cBlanco);
+//        flipScr();
+//
+//        pintarIconoProcesando(true);
+//
+//        thread->start();
+//        while (thread->isRunning()){
+//            evento = WaitForKey();
+//            procesarControles(obj, &evento, NULL);
+//            pintarIconoProcesando(false);
+//        }
+//        procesarControles(obj, &evento, NULL);
+//
+//        string mensaje = "Para usar la aplicación debes dar permisos desde tu cuenta de dropbox. ";
+//        mensaje.append("A continuación se abrirá un explorador. Debes logarte en Dropbox y pulsar el botón de \"PERMITIR\".");
+//        mensaje.append("Seguidamente deberás copiar el código obtenido y pegarlo en la ventana de Onmusik que aparecerá a continuación.");
+//
+//        if (thread->getExitCode() != ERRORCONNECT){
+//            this->accessToken = dropbox->getAccessToken();
+//            //Si despues de autenticarse, no se ha podido obtener el access token, lo obtenemos manualmente
+//            if (this->accessToken.empty()){
+//                bool permiso = casoPANTALLACONFIRMAR("Autorizar aplicación", mensaje);
+//                if (permiso){
+//                    dropbox->launchAuthorize(cliendid);
+//                    string code = casoPANTALLAPREGUNTA("Autorizar aplicación", "Introduce el campo obtenido de la página de dropbox (CTRL+V)");
+//                    if (!code.empty()){
+//                        clearScr(cGrisOscuro);
+//                        procesarControles(obj, &evento, NULL);
+//                        flipScr();
+//                        this->accessToken = dropbox->storeAccessToken(cliendid, secret, code, false);
+//                    }
+//                }
+//            }
+//        } else {
+//            showMessage("No se ha podido autenticar en dropbox. Revise su conexión o especifique datos de proxy", 4000);
+//        }
+//        delete thread;
+//        delete dropbox;
+//    }
+//    return this->accessToken;
+//}
+
 string Iofrontend::autenticarDropbox(){
     Traza::print("Iofrontend::autenticarDropbox", W_INFO);
-    Dropbox *dropbox = new Dropbox();
-    if (this->accessToken.empty()){
-        Traza::print("Comprobando autorizacion autenticarDropbox...", W_DEBUG);
-        tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
-        Thread<Dropbox> *thread = new Thread<Dropbox>(dropbox, &Dropbox::authenticate);
-        tEvento evento;
 
+    string strAccessToken;
+    string strNameServer;
+
+    juke->getServerCloud(GOOGLEDRIVESERVER)->setClientid(googleClientId);
+    juke->getServerCloud(GOOGLEDRIVESERVER)->setSecret(googleSecret);
+    juke->getServerCloud(DROPBOXSERVER)->setClientid(cliendid);
+    juke->getServerCloud(DROPBOXSERVER)->setSecret(secret);
+
+    Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::authenticateServers);
+
+    if (thread->start())
+        //Realizamos la conexion de prueba a google y a dropbox
+        Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
+        tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+        tEvento evento;
         clearScr();
         procesarControles(obj, &evento, NULL);
-        drawTextCent("Conectando a dropbox. Espere...", 0, -70,true,true, cBlanco);
+        drawTextCent("Conectando a servicios. Espere...", 0, -70,true,true, cBlanco);
         flipScr();
 
         pintarIconoProcesando(true);
-
         thread->start();
         while (thread->isRunning()){
-            evento = WaitForKey();
+            WaitForKey();
             procesarControles(obj, &evento, NULL);
             pintarIconoProcesando(false);
         }
         procesarControles(obj, &evento, NULL);
 
-        string mensaje = "Para usar la aplicación debes dar permisos desde tu cuenta de dropbox. ";
-        mensaje.append("A continuación se abrirá un explorador. Debes logarte en Dropbox y pulsar el botón de \"PERMITIR\".");
-        mensaje.append("Seguidamente deberás copiar el código obtenido y pegarlo en la ventana de Onmusik que aparecerá a continuación.");
-
-        if (thread->getExitCode() != ERRORCONNECT){
-            this->accessToken = dropbox->getAccessToken();
-            //Si despues de autenticarse, no se ha podido obtener el access token, lo obtenemos manualmente
-            if (this->accessToken.empty()){
-                bool permiso = casoPANTALLACONFIRMAR("Autorizar aplicación", mensaje);
-                if (permiso){
-                    dropbox->launchAuthorize(cliendid);
-                    string code = casoPANTALLAPREGUNTA("Autorizar aplicación", "Introduce el campo obtenido de la página de dropbox (CTRL+V)");
-                    if (!code.empty()){
-                        clearScr(cGrisOscuro);
-                        procesarControles(obj, &evento, NULL);
-                        flipScr();
-                        this->accessToken = dropbox->storeAccessToken(cliendid, secret, code);
-                    }
+        obj = ObjectsMenu[PANTALLALOGIN];
+        //Comprobamos si ha habido algun error en la obtencion del accesstoken
+        bool someErrorToken = false;
+        for (int i=0; i < MAXSERVERS; i++){
+            if (juke->getServerCloud(i)->getOauthStatus() != ERRORCONNECT){
+                strAccessToken = juke->getServerCloud(i)->getAccessToken();
+                if (strAccessToken.empty()){
+                    someErrorToken = true;
+                }
+                if (i == DROPBOXSERVER){
+                    obj->getObjByName("btnDropbox")->setEnabled(strAccessToken.empty());
+                } else if (i == GOOGLEDRIVESERVER){
+                    obj->getObjByName("btnGoogle")->setEnabled(strAccessToken.empty());
                 }
             }
-        } else {
-            showMessage("No se ha podido autenticar en dropbox. Revise su conexión o especifique datos de proxy", 4000);
         }
-        delete thread;
-        delete dropbox;
-    }
-    return this->accessToken;
+
+
+        //Si despues de autenticarse, no se ha podido obtener el access token, lo obtenemos manualmente
+        if (someErrorToken){
+            string mensaje = "Para usar la aplicación debes dar permisos desde tu cuenta de Google o Dropbox. ";
+            mensaje.append("A continuación se abrirá un explorador. Debes logarte en Dropbox o Google y pulsar el botón de \"PERMITIR\".");
+            mensaje.append("Seguidamente deberás copiar el código obtenido y pegarlo en la ventana de Onmusik que aparecerá a continuación.");
+
+            int serverSelected = casoPANTALLALOGIN("Autorizar aplicación", mensaje);
+            if (serverSelected < MAXSERVERS){
+                string tmpClient = juke->getServerCloud(serverSelected)->getClientid();
+                string tmpSecret = juke->getServerCloud(serverSelected)->getSecret();
+                strNameServer = arrNameServers[serverSelected];
+
+                juke->getServerCloud(serverSelected)->launchAuthorize(tmpClient);
+                string code = casoPANTALLAPREGUNTA("Autorizar aplicación", "Introduce el campo obtenido de la página de "
+                                                   + strNameServer + " (CTRL+V)");
+                if (!code.empty()){
+                    clearScr(cGrisOscuro);
+                    procesarControles(ObjectsMenu[PANTALLAREPRODUCTOR], &evento, NULL);
+                    flipScr();
+                    strAccessToken = juke->getServerCloud(serverSelected)->storeAccessToken(tmpClient, tmpSecret, code, false);
+                }
+            }
+        }
+//        else {
+//            showMessage("No se ha podido autenticar en los servidores. Revise su conexión o especifique datos de proxy", 4000);
+//        }
+
+    return strAccessToken;
 }
 
 
@@ -2402,9 +2489,9 @@ int Iofrontend::accionAlbumPopup(tEvento *evento){
                 cout << "Borramos: " << borrar << endl;
                 bool confirm = casoPANTALLACONFIRMAR("Borrar Álbum", "¿Está seguro de que desea eliminar: " + borrar + "?");
                 if (confirm){
-                    string accessToken = autenticarDropbox();
-                    Dropbox dropbox;
-                    bool res = dropbox.deleteFiles(Constant::uencodeUTF8(borrar), accessToken);
+                    IOauth2 *server = juke->getServerCloud(DROPBOXSERVER);
+                    bool res = server->deleteFiles(Constant::uencodeUTF8(borrar), server->getAccessToken());
+
                     if (res){
                         showMessage("Álbum eliminado correctamente", 2000);
                         tEvento askEvento;
@@ -2492,7 +2579,14 @@ void Iofrontend::bienvenida(){
     Traza::print("bienvenida: Inicio", W_INFO);
     UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
 
-    if (!this->accessToken.empty() && albumList->getSize() == 0){
+    bool someAccesToken = false;
+    for (int i=0; i < MAXSERVERS; i++){
+        if (!juke->getServerCloud(i)->getAccessToken().empty()){
+            someAccesToken = true;
+        }
+    }
+
+    if (someAccesToken && albumList->getSize() == 0){
         ignoreButtonRepeats = true;
         bool salir = false;
         tEvento askEvento;
@@ -2596,5 +2690,72 @@ void Iofrontend::addLocalAlbum(string ruta){
     } catch (Excepcion &e){
         Traza::print("Excepcion al cargar album local: " + string(e.getMessage()), W_DEBUG);
     }
+}
 
+int Iofrontend::casoPANTALLALOGIN(string titulo, string txtDetalle){
+    ignoreButtonRepeats = true;
+    Traza::print("casoPANTALLALOGIN: Inicio", W_INFO);
+    bool salir = false;
+    tEvento askEvento;
+    clearEvento(&askEvento);
+    int salida = MAXSERVERS;
+    int menuInicial = getSelMenu();
+
+    //Procesamos el menu antes de continuar para que obtengamos la captura
+    //de pantalla que usaremos de fondo
+    procesarControles(ObjectsMenu[menuInicial], &askEvento, NULL);
+    SDL_Rect iconRectFondo = {0, 0, this->getWidth(), this->getHeight()};
+    SDL_Surface *mySurface = NULL;
+    takeScreenShot(&mySurface, iconRectFondo);
+
+    //Seguidamente cambiamos la pantalla a la de la confirmacion
+    setSelMenu(PANTALLALOGIN);
+    tmenu_gestor_objects *objMenu = ObjectsMenu[PANTALLALOGIN];
+    objMenu->getObjByName("borde")->setLabel(titulo);
+
+    UITextElementsArea *textElems = (UITextElementsArea *)objMenu->getObjByName("textosBox");
+    textElems->setImgDrawed(false);
+    textElems->setFieldText("labelDetalle", txtDetalle);
+
+    long delay = 0;
+    unsigned long before = 0;
+    objMenu->setFocus(0);
+
+    do{
+        before = SDL_GetTicks();
+        askEvento = WaitForKey();
+//        clearScr(cBgScreen);
+        printScreenShot(&mySurface, iconRectFondo);
+        drawRectAlpha(iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h , cNegro, 200);
+
+        procesarControles(objMenu, &askEvento, NULL);
+
+        flipScr();
+        salir = (askEvento.isJoy && askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_B)) ||
+        (askEvento.isKey && askEvento.key == SDLK_ESCAPE);
+
+        if (objMenu->getObjByName("btnGoogle")->getTag().compare("selected") == 0){
+            salir = true;
+            salida = GOOGLEDRIVESERVER;
+            objMenu->getObjByName("btnGoogle")->setTag("");
+            Traza::print("Detectado Google pulsado", W_DEBUG);
+        }else if (objMenu->getObjByName("btnDropbox")->getTag().compare("selected") == 0){
+            salir = true;
+            salida = DROPBOXSERVER;
+            objMenu->getObjByName("btnDropbox")->setTag("");
+            Traza::print("Detectado Dropbox pulsado", W_DEBUG);
+
+        } else if (objMenu->getObjByName("btnLoginCancel")->getTag().compare("selected") == 0){
+            salir = true;
+            salida = MAXSERVERS;
+            objMenu->getObjByName("btnLoginCancel")->setTag("");
+            Traza::print("Detectado NO pulsado", W_DEBUG);
+        }
+
+        delay = before - SDL_GetTicks() + TIMETOLIMITFRAME;
+        if(delay > 0) SDL_Delay(delay);
+    } while (!salir);
+
+    setSelMenu(menuInicial);
+    return salida;
 }

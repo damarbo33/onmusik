@@ -4,6 +4,7 @@
 #include "Launcher.h"
 #include "Menuobject.h"
 #include "servers/dropbox.h"
+#include "servers/googledrive.h"
 #include "listaIni.h"
 #include "thread.h"
 
@@ -29,28 +30,15 @@ const char arrTags[9][20] = {{"album"},{"title"},
 {"composer"},{"artist"},{"date"}};
 
 typedef enum{tagAlbum, tagTitle, tagDuration,tagTrack,tagGenre,tagPublisher,tagComposer,tagArtist,tagDate,tagMAX} id3Pos;
+typedef enum{DROPBOXSERVER, GOOGLEDRIVESERVER, MAXSERVERS} cloudServers;
+const char arrNameServers[3][20] = {{"Drobox"},{"Google"},{"undefined"}};
 
 class Jukebox
 {
-    private:
-        tmenu_gestor_objects *ObjectsMenu;
-        string dirToUpload;
-        string fileToDownload;
-        string accessToken;
-        void hashMapMetadatos(map<string, string> *metadatos, string ruta);
-        Dropbox dropboxDownloader;
-        string getMetadatos(map<string, string> *metadatos, string key);
-        listaSimple<string> *convertedFilesList;
-        string rutaInfoId3;
-        static bool canPlay;
-
     public:
-        /** Default constructor */
         Jukebox();
-        /** Default destructor */
         virtual ~Jukebox();
 
-//        double getSongTime(string filepath);
         TID3Tags getSongInfo(string filepath);
         void convertir(string ruta);
         DWORD convertir();
@@ -61,16 +49,14 @@ class Jukebox
         DWORD refreshAlbum();
         DWORD refreshPlayListMetadata();
         DWORD refreshPlayListMetadataFromId3Dir();
+        DWORD authenticateServers();
 
 
         void setObjectsMenu(tmenu_gestor_objects *var){ObjectsMenu = var;}
         void setDirToUpload(string var){dirToUpload = var;}
         void setFileToDownload(string var){fileToDownload = var;}
-        void setAccessToken(string var){accessToken = var;}
-        void uploadMusicToDropbox(string ruta, string accessToken);
-        void refreshAlbumAndPlaylist(string accessToken);
+        void uploadMusicToDropbox(string ruta);
         void refreshPlaylist(string rutaAlbumDropbox);
-        void refreshAlbum(string accessToken);
         void downloadFile(string ruta);
         void abortDownload();
         void addLocalAlbum(string ruta);
@@ -78,8 +64,28 @@ class Jukebox
         bool isCanPlay(){return canPlay;}
         void setCanPlay(bool var){canPlay = var;}
 
+        IOauth2 *getServerCloud(int idServer){
+            if (idServer >= 0 && idServer < MAXSERVERS)
+                return arrCloud[idServer];
+            else
+                return NULL;
+        }
 
     protected:
+
+    private:
+        tmenu_gestor_objects *ObjectsMenu;
+        string dirToUpload;
+        string fileToDownload;
+        void hashMapMetadatos(map<string, string> *metadatos, string ruta);
+//        Dropbox dropboxDownloader;
+        IOauth2 *serverDownloader;
+
+        string getMetadatos(map<string, string> *metadatos, string key);
+        listaSimple<string> *convertedFilesList;
+        string rutaInfoId3;
+        static bool canPlay;
+        IOauth2 * arrCloud[MAXSERVERS];
 
 };
 

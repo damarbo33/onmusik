@@ -2286,11 +2286,17 @@ void Ioutil::drawUIButton(Object *obj){
                 textx += INPUTCONTENT;
                 //Se pinta el fondo del boton. Para los botones es una imagen que hemos guardado en el gestor de iconos
                 bool btnDrawed = false;
-                if (obj->isFocus()){
-                    btnDrawed = gestorIconos->drawIcono(boton_selected, screen, 0, obj->getX(), obj->getY(), obj->getW(), obj->getH());
+
+                if (obj->isEnabled()){
+                    if (obj->isFocus()){
+                        btnDrawed = gestorIconos->drawIcono(boton_selected, screen, 0, obj->getX(), obj->getY(), obj->getW(), obj->getH());
+                    } else {
+                        btnDrawed = gestorIconos->drawIcono(boton, screen, 0, obj->getX(), obj->getY(), obj->getW(), obj->getH());
+                    }
                 } else {
-                    btnDrawed = gestorIconos->drawIcono(boton, screen, 0, obj->getX(), obj->getY(), obj->getW(), obj->getH());
+                    btnDrawed = gestorIconos->drawIcono(boton_disabled, screen, 0, obj->getX(), obj->getY(), obj->getW(), obj->getH());
                 }
+
                 //Si ha habido algun problema pintando el boton, pintamos un fondo que resalte un poco sobre el texto
                 //que pintamos a continuacion
                 if (!btnDrawed){

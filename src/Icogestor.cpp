@@ -101,6 +101,9 @@ void IcoGestor::cargarIconos(){
     cargarIcono("btn_off.png");
     cargarIcono("btn_on.png");
     cargarIcono("btn_reset_eq.png");
+    cargarIcono("Dropbox.png");
+    cargarIcono("Google-Drive-icon.png");
+    cargarIcono("boton_disabled.png");
 
 }
 

@@ -47,6 +47,7 @@
             MENUPOPUPS,
             PANTALLAPREGUNTA,
             PANTALLABIENVENIDA,
+            PANTALLALOGIN,
             MAXMENU
     } enumMenus;
 

@@ -7,13 +7,22 @@ const string fileMetadata = "metadata.txt";
 
 bool Jukebox::canPlay;
 
-Jukebox::Jukebox()
-{
+/**
+*
+*/
+Jukebox::Jukebox(){
     convertedFilesList = new listaSimple<string>();
     rutaInfoId3 = "";
     canPlay = false;
+
+    this->serverDownloader = NULL;
+    arrCloud[DROPBOXSERVER] = new Dropbox();
+    arrCloud[GOOGLEDRIVESERVER] = new GoogleDrive();
 }
 
+/**
+*
+*/
 Jukebox::~Jukebox()
 {
     string rutaMetadata = Constant::getAppDir() + tempFileSep + fileMetadata;
@@ -23,35 +32,12 @@ Jukebox::~Jukebox()
     dir.borrarArchivo(rutaMetadata);
     dir.borrarArchivo(tempFileDir);
 
+    Traza::print("Eliminando servidores", W_DEBUG);
+    for (int i=0; i < MAXSERVERS; i++){
+        delete arrCloud[i];
+    }
+    Traza::print("Servidores eliminados", W_DEBUG);
 }
-
-/**
-*
-*/
-//double Jukebox::getSongTime(string filepath){
-//    try{
-//        Launcher lanzador;
-//        FileLaunch emulInfo;
-//        Dirutil dir;
-//        //Se especifica el fichero de musica a reproducir
-//        emulInfo.rutaroms = dir.getFolder(filepath);
-//        emulInfo.nombrerom = dir.getFileName(filepath);
-//        //Se especifica el ejecutable
-//        emulInfo.rutaexe = dir.GetShortUtilName(Constant::getAppDir()) + tempFileSep + "rsc";
-//        emulInfo.fileexe = "ffprobe.exe";
-//        emulInfo.parmsexe = string("-i \"%ROMFULLPATH%\" -show_entries format=duration -v quiet -of csv=\"p=0\"");
-//
-//        //Lanzamos el programa
-//        bool resultado = lanzador.lanzarProgramaUNIXFork(&emulInfo);
-//        string childStd = lanzador.getStdOut();
-//        return Constant::strToTipo<double>(childStd);
-//
-//    } catch (Excepcion &e){
-//        Traza::print("Excepcion en getSongTime para " + filepath, W_DEBUG);
-//
-//    }
-//    return 0;
-//}
 
 /**
 *
@@ -135,7 +121,6 @@ TID3Tags Jukebox::getSongInfo(string filepath){
         delete lista;
     } catch (Excepcion &e){
         Traza::print("Excepcion en getSongInfo para " + filepath, W_ERROR);
-
     }
     return songTags;
 }
@@ -145,7 +130,7 @@ TID3Tags Jukebox::getSongInfo(string filepath){
 */
 DWORD Jukebox::convertir(){
     convertir(dirToUpload);
-    uploadMusicToDropbox(dirToUpload, this->accessToken);
+    uploadMusicToDropbox(dirToUpload);
 
     return 0;
 }
@@ -162,21 +147,24 @@ DWORD Jukebox::downloadFile(){
 *
 */
 DWORD Jukebox::uploadMusicToDropbox(){
-    uploadMusicToDropbox(dirToUpload, this->accessToken);
+    uploadMusicToDropbox(dirToUpload);
     return 0;
 }
 /**
 *
 */
 DWORD Jukebox::refreshAlbumAndPlaylist(){
-    refreshAlbumAndPlaylist(this->accessToken);
+
+    refreshAlbum();
+    UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
+    if (albumList->getSize() > 0){
+        string albumSelec = albumList->getListValues()->get(0);
+        refreshPlaylist(albumSelec);
+    }
+
     return 0;
 }
 
-DWORD Jukebox::refreshAlbum(){
-    refreshAlbum(this->accessToken);
-    return 0;
-}
 
 DWORD Jukebox::refreshPlaylist(){
     UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
@@ -286,178 +274,10 @@ void Jukebox::convertir(string ruta){
     }
 }
 
-/**
-*
-*/
-void Jukebox::uploadMusicToDropbox(string ruta, string accessToken){
-    string rutaMetadata = ruta + tempFileSep + fileMetadata;
-    Dirutil dir;
-    listaSimple<FileProps> *filelist = new listaSimple<FileProps>();
-    dir.listarDir(ruta.c_str(), filelist, filtroOGG);
-    FileProps file;
-    Dropbox dropbox;
-    int countFile = 0;
-    string rutaLocal;
-    string upid;
-    string nombreAlbum;
-    string rutaUpload;
 
-    if (!accessToken.empty() && filelist->getSize() > 0){
-        for (int i=0; i < filelist->getSize(); i++){
-            file = filelist->get(i);
-            rutaLocal = file.dir + tempFileSep + file.filename;
-            nombreAlbum = file.dir.substr(file.dir.find_last_of(tempFileSep) + 1);
-            rutaUpload = musicDir + "/" + nombreAlbum + "/" + file.filename;
 
-            if (filtroOGG.find(dir.getExtension(file.filename)) != string::npos && file.filename.compare("..") != 0){
-                countFile++;
-                int percent = (countFile/(float)(filelist->getSize()-1))*100;
-                ObjectsMenu->getObjByName("statusMessage")->setLabel("Subiendo "
-                            + Constant::TipoToStr(percent) + "% "
-                            + " " + file.filename);
 
-                Traza::print("Subiendo fichero...", W_DEBUG);
-                upid = dropbox.chunckedUpload(rutaLocal, accessToken);
-                Traza::print("Confirmando subida del album " + rutaUpload + "...", W_DEBUG);
-                dropbox.commitChunkedUpload(rutaUpload, accessToken, upid);
-                //Si habiamos convertido el fichero, lo borramos
-                if (convertedFilesList->find(rutaLocal) != -1){
-                    dir.borrarArchivo(rutaLocal);
-                }
-            }
-        }
 
-        ObjectsMenu->getObjByName("statusMessage")->setLabel("Subiendo " + fileMetadata);
-        Traza::print("Subiendo metadatos...", W_DEBUG);
-        upid = dropbox.chunckedUpload(rutaMetadata, accessToken);
-        rutaUpload = musicDir + "/" + nombreAlbum + "/" + fileMetadata;
-        Traza::print("Confirmando metadatos " + rutaUpload + "...", W_DEBUG);
-        dropbox.commitChunkedUpload(rutaUpload, accessToken, upid);
-        dir.borrarArchivo(rutaMetadata);
-
-        UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
-        albumList->addElemLista(nombreAlbum, "/" + musicDir + "/" + nombreAlbum, music);
-        albumList->setImgDrawed(false);
-        ObjectsMenu->getObjByName("statusMessage")->setLabel("Album " + nombreAlbum + " subido");
-    }
-
-}
-
-/**
-*
-*/
-void Jukebox::refreshAlbumAndPlaylist(string accessToken){
-    refreshAlbum(accessToken);
-    UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
-    if (albumList->getSize() > 0){
-        string albumSelec = albumList->getListValues()->get(0);
-        refreshPlaylist(albumSelec);
-    }
-}
-
-/**
-*
-*/
-void Jukebox::refreshAlbum(string accessToken){
-    Traza::print("Jukebox::refreshAlbum", W_DEBUG);
-    UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
-    Dropbox dropbox;
-    albumList->clearLista();
-    CloudFiles files;
-    dropbox.listFiles("/" + musicDir, accessToken, &files);
-    string ruta;
-    for (int i=0; i < files.fileList.size(); i++){
-        if (files.fileList.at(i)->isDir){
-            ruta = files.fileList.at(i)->path;
-            Traza::print("Jukebox::refreshAlbum anyadiendo: " + ruta, W_DEBUG);
-            albumList->addElemLista(ruta.substr(ruta.find_last_of("/")+1),ruta,music);
-        }
-    }
-    Traza::print("Jukebox::refreshAlbum END", W_DEBUG);
-}
-
-/**
-*
-*/
-void Jukebox::refreshPlaylist(string rutaAlbumDropbox){
-    Traza::print("Jukebox::refreshPlaylist", W_DEBUG);
-    Dirutil dir;
-    Dropbox dropbox;
-    CloudFiles files;
-    string ruta;
-    UIListGroup *playList = ((UIListGroup *)ObjectsMenu->getObjByName("playLists"));
-
-    if (!rutaAlbumDropbox.empty()){
-        playList->clearLista();
-        string albumSelec = rutaAlbumDropbox;
-        Traza::print("albumSelec: " + albumSelec, W_DEBUG);
-        //Obtenemos los ficheros que nos devuelve dropbox
-        Traza::print("Jukebox::refreshPlaylist. ListFiles: " + albumSelec, W_DEBUG);
-        dropbox.listFiles(albumSelec, accessToken, &files);
-        string filename;
-        string metadataLocal = Constant::getAppDir() + tempFileSep + "metadata.txt";
-
-        Traza::print("Jukebox::refreshPlaylist. Descargando Metadatos: " + metadataLocal, W_DEBUG);
-        //Descargando fichero con metadatos
-        dropbox.getFile(metadataLocal,
-                        albumSelec + "/" + "metadata.txt",
-                        accessToken);
-
-        map<string, string> metadatos;
-        Traza::print("Jukebox::refreshPlaylist. Generando Hashmap", W_DEBUG);
-        hashMapMetadatos(&metadatos, metadataLocal);
-        string strSeconds;
-        unsigned long ulongSeconds = 0;
-        string metaKeyTime;
-        string metaKeyArtist;
-        string metaKeyAlbum;
-        string metaKeyTitle;
-        string fichero;
-
-        Traza::print("Jukebox::refreshPlaylist. Rellenando metadatos para cada cancion", W_DEBUG);
-        for (int i=0; i < files.fileList.size(); i++){
-            ruta = files.fileList.at(i)->path;
-            filename = ruta.substr(ruta.find_last_of("/")+1);
-//            cout << filename  << "; " << dir.getExtension(filename) << endl;
-            if (!files.fileList.at(i)->isDir && filtroOGG.find(dir.getExtension(filename)) != string::npos){
-                fichero = dir.getFileNameNoExt(filename);
-                Traza::print(ruta, W_PARANOIC);
-                //Miramos en la hashmap si existe nuestra clave
-                metaKeyTime = fichero + arrTags[tagDuration];
-                if (metadatos.count(metaKeyTime) > 0){
-                    //cout << "Buscando tiempo para: " << metaKeyTime << endl;
-                    strSeconds = metadatos.at(metaKeyTime);
-                    ulongSeconds = floor(Constant::strToTipo<double>(strSeconds));
-                } else {
-                    strSeconds = "";
-                    ulongSeconds = 0;
-                }
-
-                metaKeyArtist = getMetadatos(&metadatos, fichero + arrTags[tagArtist]);
-                metaKeyAlbum = getMetadatos(&metadatos, fichero + arrTags[tagAlbum]);
-                metaKeyTitle = getMetadatos(&metadatos, fichero + arrTags[tagTitle]);
-
-                Traza::print("Jukebox::refreshPlaylist. Album: " + metaKeyAlbum, W_DEBUG);
-                Traza::print("Jukebox::refreshPlaylist. Title: " + metaKeyTitle, W_DEBUG);
-
-                metaKeyAlbum = Constant::udecodeUTF8(metaKeyAlbum);
-                metaKeyTitle = Constant::udecodeUTF8(metaKeyTitle);
-
-                Traza::print("Jukebox::refreshPlaylist. Album: " + metaKeyAlbum, W_DEBUG);
-                Traza::print("Jukebox::refreshPlaylist. Title: " + metaKeyTitle, W_DEBUG);
-
-                vector <ListGroupCol *> miFila;
-                miFila.push_back(new ListGroupCol(metaKeyTitle.empty() ? dir.getFileNameNoExt(filename) : metaKeyTitle,ruta));
-                miFila.push_back(new ListGroupCol(metaKeyArtist, metaKeyArtist));
-                miFila.push_back(new ListGroupCol(metaKeyAlbum, metaKeyAlbum));
-                miFila.push_back(new ListGroupCol(Constant::timeFormat(ulongSeconds), strSeconds));
-                playList->addElemLista(miFila);
-            }
-        }
-        playList->setImgDrawed(false);
-    }
-    Traza::print("Jukebox::refreshPlaylist END", W_DEBUG);
-}
 
 /**
 *
@@ -546,24 +366,34 @@ DWORD Jukebox::refreshPlayListMetadata(){
     return 0;
 }
 
-
-
-
-
 /**
 *
 */
 void Jukebox::downloadFile(string ruta){
     Dirutil dir;
     string tempFileDir = Constant::getAppDir() + tempFileSep + "temp.ogg";
-    dropboxDownloader.getFile(tempFileDir, ruta, accessToken);
+    //Creamos el servidor de descarga y damos valor a sus propiedades
+    this->serverDownloader = new Dropbox(this->getServerCloud(DROPBOXSERVER));
+    //Realizamos la descarga del fichero
+    this->serverDownloader->getFile(tempFileDir, ruta, this->serverDownloader->getAccessToken());
+    //Actualizamos las propiedades por si ha habido un cambio en el token por un refreshtoken de oauth
+    // (Por ahora solo en Google drive)
+    Traza::print("Fichero " + ruta + " descargado", W_DEBUG);
+    this->getServerCloud(DROPBOXSERVER)->setProperties(this->serverDownloader);
+    //Liberamos los recursos
+    delete this->serverDownloader;
+    this->serverDownloader = NULL;
 }
 
 /**
 *
 */
 void Jukebox::abortDownload(){
-    dropboxDownloader.abortDownload();
+    if (this->serverDownloader != NULL){
+        this->serverDownloader->abortDownload();
+        delete this->serverDownloader;
+        this->serverDownloader = NULL;
+    }
 }
 
 /**
@@ -664,13 +494,181 @@ DWORD Jukebox::refreshPlayListMetadataFromId3Dir(){
     return 0;
 }
 
+/**
+*
+*/
+DWORD Jukebox::authenticateServers(){
+    DWORD salida = NOERROR;
+    for (int i=0; i < MAXSERVERS; i++){
+        int error = arrCloud[i]->authenticate();
+        if (error == ERRORREFRESHTOKEN){
+            arrCloud[i]->storeAccessToken(arrCloud[i]->getClientid(), arrCloud[i]->getSecret(), arrCloud[i]->getRefreshToken(), true);
+        } else if (error != NOERROR){
+            salida = error;
+        }
+    }
+    return salida;
+}
 
+/**
+*
+*/
+DWORD Jukebox::refreshAlbum(){
+    Traza::print("Jukebox::refreshAlbum", W_DEBUG);
+    UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
+    albumList->clearLista();
+    CloudFiles files;
 
+    IOauth2 *server = this->getServerCloud(DROPBOXSERVER);
+    server->listFiles("/" + musicDir, server->getAccessToken(), &files);
 
+    string ruta;
+    for (int i=0; i < files.fileList.size(); i++){
+        if (files.fileList.at(i)->isDir){
+            ruta = files.fileList.at(i)->path;
+            Traza::print("Jukebox::refreshAlbum anyadiendo: " + ruta, W_DEBUG);
+            albumList->addElemLista(ruta.substr(ruta.find_last_of("/")+1),ruta,music);
+        }
+    }
+    Traza::print("Jukebox::refreshAlbum END", W_DEBUG);
+    return 0;
+}
 
+/**
+*
+*/
+void Jukebox::uploadMusicToDropbox(string ruta){
+    string rutaMetadata = ruta + tempFileSep + fileMetadata;
+    Dirutil dir;
+    listaSimple<FileProps> *filelist = new listaSimple<FileProps>();
+    dir.listarDir(ruta.c_str(), filelist, filtroOGG);
+    FileProps file;
+    int countFile = 0;
+    string rutaLocal;
+    string nombreAlbum;
+    string rutaUpload;
+    IOauth2 *server = this->getServerCloud(DROPBOXSERVER);
 
+    if (!server->getAccessToken().empty() && filelist->getSize() > 0){
+        for (int i=0; i < filelist->getSize(); i++){
+            file = filelist->get(i);
+            rutaLocal = file.dir + tempFileSep + file.filename;
+            nombreAlbum = file.dir.substr(file.dir.find_last_of(tempFileSep) + 1);
+            rutaUpload = musicDir + "/" + nombreAlbum + "/" + file.filename;
 
+            if (filtroOGG.find(dir.getExtension(file.filename)) != string::npos && file.filename.compare("..") != 0){
+                countFile++;
+                int percent = (countFile/(float)(filelist->getSize()-1))*100;
+                ObjectsMenu->getObjByName("statusMessage")->setLabel("Subiendo "
+                            + Constant::TipoToStr(percent) + "% "
+                            + " " + file.filename);
 
+                Traza::print("Subiendo fichero...", W_DEBUG);
+                Traza::print("Confirmando subida del album " + rutaUpload + "...", W_DEBUG);
+                server->chunckedUpload(rutaLocal, rutaUpload, server->getAccessToken());
+                //Si habiamos convertido el fichero, lo borramos
+                if (convertedFilesList->find(rutaLocal) != -1){
+                    dir.borrarArchivo(rutaLocal);
+                }
+            }
+        }
+
+        ObjectsMenu->getObjByName("statusMessage")->setLabel("Subiendo " + fileMetadata);
+        Traza::print("Subiendo metadatos...", W_DEBUG);
+        rutaUpload = musicDir + "/" + nombreAlbum + "/" + fileMetadata;
+        Traza::print("Confirmando metadatos " + rutaUpload + "...", W_DEBUG);
+        server->chunckedUpload(rutaMetadata, rutaUpload, server->getAccessToken());
+        dir.borrarArchivo(rutaMetadata);
+        UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
+        albumList->addElemLista(nombreAlbum, "/" + musicDir + "/" + nombreAlbum, music);
+        albumList->setImgDrawed(false);
+        ObjectsMenu->getObjByName("statusMessage")->setLabel("Album " + nombreAlbum + " subido");
+    }
+
+}
+
+/**
+*
+*/
+void Jukebox::refreshPlaylist(string rutaAlbumDropbox){
+    Traza::print("Jukebox::refreshPlaylist", W_DEBUG);
+    Dirutil dir;
+    CloudFiles files;
+    string ruta;
+    UIListGroup *playList = ((UIListGroup *)ObjectsMenu->getObjByName("playLists"));
+    IOauth2 *server = this->getServerCloud(DROPBOXSERVER);
+
+    if (!rutaAlbumDropbox.empty()){
+        playList->clearLista();
+        string albumSelec = rutaAlbumDropbox;
+        Traza::print("albumSelec: " + albumSelec, W_DEBUG);
+        //Obtenemos los ficheros que nos devuelve dropbox
+        Traza::print("Jukebox::refreshPlaylist. ListFiles: " + albumSelec, W_DEBUG);
+        server->listFiles(albumSelec, server->getAccessToken(), &files);
+        string filename;
+        string metadataLocal = Constant::getAppDir() + tempFileSep + "metadata.txt";
+
+        Traza::print("Jukebox::refreshPlaylist. Descargando Metadatos: " + metadataLocal, W_DEBUG);
+        //Descargando fichero con metadatos
+        server->getFile(metadataLocal,
+                        albumSelec + "/" + "metadata.txt",
+                        server->getAccessToken());
+
+        map<string, string> metadatos;
+        Traza::print("Jukebox::refreshPlaylist. Generando Hashmap", W_DEBUG);
+        hashMapMetadatos(&metadatos, metadataLocal);
+        string strSeconds;
+        unsigned long ulongSeconds = 0;
+        string metaKeyTime;
+        string metaKeyArtist;
+        string metaKeyAlbum;
+        string metaKeyTitle;
+        string fichero;
+
+        Traza::print("Jukebox::refreshPlaylist. Rellenando metadatos para cada cancion", W_DEBUG);
+        for (int i=0; i < files.fileList.size(); i++){
+            ruta = files.fileList.at(i)->path;
+            filename = ruta.substr(ruta.find_last_of("/")+1);
+//            cout << filename  << "; " << dir.getExtension(filename) << endl;
+            if (!files.fileList.at(i)->isDir && filtroOGG.find(dir.getExtension(filename)) != string::npos){
+                fichero = dir.getFileNameNoExt(filename);
+                Traza::print(ruta, W_PARANOIC);
+                //Miramos en la hashmap si existe nuestra clave
+                metaKeyTime = fichero + arrTags[tagDuration];
+                if (metadatos.count(metaKeyTime) > 0){
+                    //cout << "Buscando tiempo para: " << metaKeyTime << endl;
+                    strSeconds = metadatos.at(metaKeyTime);
+                    ulongSeconds = floor(Constant::strToTipo<double>(strSeconds));
+                } else {
+                    strSeconds = "";
+                    ulongSeconds = 0;
+                }
+
+                metaKeyArtist = getMetadatos(&metadatos, fichero + arrTags[tagArtist]);
+                metaKeyAlbum = getMetadatos(&metadatos, fichero + arrTags[tagAlbum]);
+                metaKeyTitle = getMetadatos(&metadatos, fichero + arrTags[tagTitle]);
+
+                Traza::print("Jukebox::refreshPlaylist. Album: " + metaKeyAlbum, W_DEBUG);
+                Traza::print("Jukebox::refreshPlaylist. Title: " + metaKeyTitle, W_DEBUG);
+
+                metaKeyAlbum = Constant::udecodeUTF8(metaKeyAlbum);
+                metaKeyTitle = Constant::udecodeUTF8(metaKeyTitle);
+
+                Traza::print("Jukebox::refreshPlaylist. Album: " + metaKeyAlbum, W_DEBUG);
+                Traza::print("Jukebox::refreshPlaylist. Title: " + metaKeyTitle, W_DEBUG);
+
+                vector <ListGroupCol *> miFila;
+                miFila.push_back(new ListGroupCol(metaKeyTitle.empty() ? dir.getFileNameNoExt(filename) : metaKeyTitle,ruta));
+                miFila.push_back(new ListGroupCol(metaKeyArtist, metaKeyArtist));
+                miFila.push_back(new ListGroupCol(metaKeyAlbum, metaKeyAlbum));
+                miFila.push_back(new ListGroupCol(Constant::timeFormat(ulongSeconds), strSeconds));
+                playList->addElemLista(miFila);
+            }
+        }
+        playList->setImgDrawed(false);
+    }
+    Traza::print("Jukebox::refreshPlaylist END", W_DEBUG);
+}
 
 
 

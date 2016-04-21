@@ -52,7 +52,6 @@ class SongsReproduced{
 class Iofrontend : public Ioutil{
 
      private :
-        string accessToken;
         Thread<AudioPlayer> *threadPlayer;
         Thread<Jukebox> *threadDownloader;
         Thread<Scrapper> *threadLyrics;
@@ -160,6 +159,7 @@ class Iofrontend : public Ioutil{
         void loadComboUnidades();
         void reloadSong(int posAlbumSelected, int posSongSelected);
         void getLyricsFromActualSong();
+        int casoPANTALLALOGIN(string titulo, string txtDetalle);
 
     public :
         Iofrontend();
