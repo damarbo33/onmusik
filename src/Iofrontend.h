@@ -162,6 +162,7 @@ class Iofrontend : public Ioutil{
         int casoPANTALLALOGIN(string titulo, string txtDetalle);
         int accionUploadPopup(tEvento *evento);
         int uploadToServer(tEvento *evento, int idServer);
+        int comprobarTokenServidores();
 
     public :
         Iofrontend();
@@ -183,7 +184,7 @@ class Iofrontend : public Ioutil{
         int getSelMenu(){ return selMenu;}
         int accionCopiarTextoPopup(tEvento *evento);
         void refreshAlbumAndPlaylist();
-        string autenticarDropbox();
+        int autenticarServicios();
         int fillAlbumLocal(string ruta, bool updateId3tags);
         void bienvenida();
         void actualizaciones();

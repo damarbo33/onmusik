@@ -11,7 +11,7 @@
 using namespace std;
 
 static const string filtroFicheros = ".mp3,.mid,.wav,.wma,.cda,.aac,.ac3,.flac,.mp4,.ogg";
-static const string filtroFicherosReproducibles = ".mp3,.mid,.wav,.ogg";
+static const string filtroFicherosReproducibles = ".mp3,.mid,.wav,.ogg,.flac";
 
 struct TID3Tags{
     string album;
@@ -95,6 +95,9 @@ class Jukebox
         string rutaInfoId3;
         static bool canPlay;
         IOauth2 * arrCloud[MAXSERVERS];
+        string generarNombreAlbum(FileProps *file, string ruta);
+        string generarDirGoogleDrive(string nombreAlbum);
+        void subirMetadatos(string nombreAlbum, string rutaUpload, string rutaMetadata);
 
 };
 

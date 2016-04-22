@@ -29,9 +29,6 @@ void Terminate(void)
 */
 
 int main(int argc, char *argv[]){
-
-    Traza *traza = new Traza();
-
     #ifdef WIN
         string appDir = argv[0];
         int pos = appDir.rfind(Constant::getFileSep());
@@ -50,6 +47,10 @@ int main(int argc, char *argv[]){
         Dirutil dir;
         Constant::setAppDir(dir.getDirActual());
     #endif // UNIX
+
+    string rutaTraza = appDir + Constant::getFileSep() + "Traza.txt";
+
+    Traza *traza = new Traza(rutaTraza.c_str());
     Iofrontend *ioFront = new Iofrontend();
     srand(time(NULL));
 

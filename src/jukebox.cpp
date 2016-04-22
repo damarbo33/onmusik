@@ -274,13 +274,13 @@ DWORD Jukebox::refreshPlaylist(){
 */
 void Jukebox::convertir(string ruta){
     Dirutil dir;
-    listaSimple<FileProps> *filelist = new listaSimple<FileProps>();
+    vector <FileProps> *filelist = new vector <FileProps>();
     Traza::print("Jukebox::convertir", W_DEBUG);
 
     try{
         convertedFilesList->clear();
         Traza::print("Jukebox::clear", W_DEBUG);
-        dir.listarDir(ruta.c_str(), filelist, filtroFicheros);
+        dir.listarDirRecursivo(ruta, filelist, filtroFicheros);
         FileProps file;
         Launcher lanzador;
         FileLaunch emulInfo;
@@ -307,16 +307,16 @@ void Jukebox::convertir(string ruta){
         //wbuilder.settings_["indentation"] = "";
         string rutaFicheroOgg;
         TID3Tags id3Tags;
-        Traza::print("Codificando " + Constant::TipoToStr(filelist->getSize()) + " archivos de la ruta " + ruta, W_DEBUG);
+        Traza::print("Codificando " + Constant::TipoToStr(filelist->size()) + " archivos de la ruta " + ruta, W_DEBUG);
 
-        for (int i=0; i < filelist->getSize(); i++){
-            file = filelist->get(i);
+        for (int i=0; i < filelist->size(); i++){
+            file = filelist->at(i);
             if (filtroFicheros.find(dir.getExtension(file.filename)) != string::npos && file.filename.compare("..") != 0){
                 rutaFicheroOgg = file.dir + tempFileSep + dir.getFileNameNoExt(file.filename) + ".ogg";
 
                 //Counter for the codification progress message
                 countFile++;
-                int percent = (countFile/(float)(filelist->getSize()-1))*100;
+                int percent = (countFile/(float)(filelist->size()-1))*100;
                 ObjectsMenu->getObjByName("statusMessage")->setLabel("Recodificando "
                             + Constant::TipoToStr(percent) + "% "
                             + " " + file.filename);
@@ -599,12 +599,17 @@ DWORD Jukebox::refreshPlayListMetadataFromId3Dir(){
 DWORD Jukebox::authenticateServers(){
     DWORD salida = NOERROR;
     for (int i=0; i < MAXSERVERS; i++){
-        int error = arrCloud[i]->authenticate();
-        if (error == ERRORREFRESHTOKEN){
-            arrCloud[i]->storeAccessToken(arrCloud[i]->getClientid(), arrCloud[i]->getSecret(), arrCloud[i]->getRefreshToken(), true);
-        } else if (error != NOERROR){
-            salida = error;
+        try{
+            int error = arrCloud[i]->authenticate();
+            if (error == ERRORREFRESHTOKEN){
+                arrCloud[i]->storeAccessToken(arrCloud[i]->getClientid(), arrCloud[i]->getSecret(), arrCloud[i]->getRefreshToken(), true);
+            } else if (error != NOERROR){
+                salida = error;
+            }
+        } catch (Excepcion &e){
+            Traza::print("Excepcion capturada", W_DEBUG);
         }
+
     }
     return salida;
 }
@@ -657,41 +662,36 @@ DWORD Jukebox::refreshAlbum(){
 void Jukebox::uploadMusicToDropbox(string ruta){
     string rutaMetadata = ruta + tempFileSep + fileMetadata;
     Dirutil dir;
-    listaSimple<FileProps> *filelist = new listaSimple<FileProps>();
-    dir.listarDir(ruta.c_str(), filelist, filtroOGG);
+    vector<FileProps> *filelist = new vector<FileProps>();
+    dir.listarDirRecursivo(ruta, filelist, filtroOGG);
     FileProps file;
     int countFile = 0;
     string rutaLocal;
     string nombreAlbum;
+    string lastNombreAlbum;
     string rutaUpload;
-    string idRutaUpload;
     IOauth2 *server = this->getServerCloud(this->getServerSelected());
 
-    if (!server->getAccessToken().empty() && filelist->getSize() > 0){
+    if (!server->getAccessToken().empty() && filelist->size() > 0){
 
-        if (this->getServerSelected() == GOOGLEDRIVESERVER){
-            file = filelist->get(0);
-            nombreAlbum = file.dir.substr(file.dir.find_last_of(tempFileSep) + 1);
-            string idMusic = ((GoogleDrive *)server)->fileExist("Music","", server->getAccessToken());
-            if (idMusic.empty()){
-                string idDir = ((GoogleDrive *)server)->mkdir("ONMUSIK", "", server->getAccessToken());
-                idMusic = ((GoogleDrive *)server)->mkdir("Music", idDir, server->getAccessToken());
-            }
-            idRutaUpload = ((GoogleDrive *)server)->mkdir(nombreAlbum, idMusic, server->getAccessToken());
-            rutaUpload = idRutaUpload;
-        }
-
-        for (int i=0; i < filelist->getSize(); i++){
-            file = filelist->get(i);
+        for (int i=0; i < filelist->size(); i++){
+            file = filelist->at(i);
             rutaLocal = file.dir + tempFileSep + file.filename;
-            nombreAlbum = file.dir.substr(file.dir.find_last_of(tempFileSep) + 1);
-            if (this->getServerSelected() != GOOGLEDRIVESERVER){
+            nombreAlbum = generarNombreAlbum(&file, ruta);
+
+            if (lastNombreAlbum.compare(nombreAlbum) != 0 && !lastNombreAlbum.empty()){
+                subirMetadatos(lastNombreAlbum, rutaUpload, rutaMetadata);
+            }
+
+            if (this->getServerSelected() == GOOGLEDRIVESERVER){
+                rutaUpload = generarDirGoogleDrive(nombreAlbum);
+            } else {
                 rutaUpload = musicDir + "/" + nombreAlbum + "/" + file.filename;
             }
 
             if (filtroOGG.find(dir.getExtension(file.filename)) != string::npos && file.filename.compare("..") != 0){
                 countFile++;
-                int percent = (countFile/(float)(filelist->getSize()-1))*100;
+                int percent = countFile/(float)filelist->size()*100;
                 ObjectsMenu->getObjByName("statusMessage")->setLabel("Subiendo "
                             + Constant::TipoToStr(percent) + "% "
                             + " " + file.filename);
@@ -704,30 +704,62 @@ void Jukebox::uploadMusicToDropbox(string ruta){
                     dir.borrarArchivo(rutaLocal);
                 }
             }
+            lastNombreAlbum = nombreAlbum;
         }
 
-        ObjectsMenu->getObjByName("statusMessage")->setLabel("Subiendo " + fileMetadata);
-        Traza::print("Subiendo metadatos...", W_DEBUG);
-        if (this->getServerSelected() != GOOGLEDRIVESERVER){
-            rutaUpload = musicDir + "/" + nombreAlbum + "/" + fileMetadata;
-        }
-        Traza::print("Confirmando metadatos " + rutaUpload + "...", W_DEBUG);
-        server->chunckedUpload(rutaMetadata, rutaUpload, server->getAccessToken());
+        subirMetadatos(nombreAlbum, rutaUpload, rutaMetadata);
         dir.borrarArchivo(rutaMetadata);
-
+        refreshAlbum();
         UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
-
-        if (this->getServerSelected() == GOOGLEDRIVESERVER){
-            albumList->addElemLista(nombreAlbum, idRutaUpload, music, this->getServerSelected());
-        } else {
-            albumList->addElemLista(nombreAlbum, "/" + musicDir + "/" + nombreAlbum, music, this->getServerSelected());
-        }
         albumList->setImgDrawed(false);
         ObjectsMenu->getObjByName("statusMessage")->setLabel("Album " + nombreAlbum + " subido");
     }
 
 }
 
+string Jukebox::generarNombreAlbum(FileProps *file, string ruta){
+    string nombreAlbum;
+    IOauth2 *server = this->getServerCloud(this->getServerSelected());
+    nombreAlbum = file->dir.substr(ruta.length());
+    //Comprobamos si la ruta indicada tiene subdirectorios
+    if (nombreAlbum.empty()){
+        //No hay subdirectorios. Suponemos que el nombre del disco esta indicado en la carpeta
+        nombreAlbum = file->dir.substr(file->dir.find_last_of(tempFileSep) + 1);
+    } else {
+        //Hay subdirectorios, obtenemos el nombre del directorio de la ruta actual
+        //y le concatenamos el subdirectorio entero
+        nombreAlbum = ruta.substr(ruta.find_last_of(tempFileSep) + 1);
+        string subdir = file->dir.substr(file->dir.find_last_of(tempFileSep) + 1);
+        subdir = Constant::replaceAll(subdir, Constant::getFileSep(), "_");
+        nombreAlbum += " " + subdir;
+    }
+    return nombreAlbum;
+}
+
+string Jukebox::generarDirGoogleDrive(string nombreAlbum){
+    IOauth2 *server = this->getServerCloud(this->getServerSelected());
+    string idMusic = ((GoogleDrive *)server)->fileExist("Music","", server->getAccessToken());
+    if (idMusic.empty()){
+        string idDir = ((GoogleDrive *)server)->mkdir("ONMUSIK", "", server->getAccessToken());
+        idMusic = ((GoogleDrive *)server)->mkdir("Music", idDir, server->getAccessToken());
+    }
+    string idRutaUpload = ((GoogleDrive *)server)->fileExist(nombreAlbum,idMusic, server->getAccessToken());
+    if (idRutaUpload.empty()){
+        idRutaUpload = ((GoogleDrive *)server)->mkdir(nombreAlbum, idMusic, server->getAccessToken());
+    }
+    return idRutaUpload;
+}
+
+void Jukebox::subirMetadatos(string nombreAlbum, string rutaUpload, string rutaMetadata){
+    IOauth2 *server = this->getServerCloud(this->getServerSelected());
+    ObjectsMenu->getObjByName("statusMessage")->setLabel("Subiendo " + fileMetadata);
+    Traza::print("Subiendo metadatos...", W_DEBUG);
+    if (this->getServerSelected() != GOOGLEDRIVESERVER){
+        rutaUpload = musicDir + "/" + nombreAlbum + "/" + fileMetadata;
+    }
+    Traza::print("Confirmando metadatos " + rutaUpload + "...", W_DEBUG);
+    server->chunckedUpload(rutaMetadata, rutaUpload, server->getAccessToken());
+}
 
 
 

@@ -6,11 +6,11 @@
 //Estos son los campos necesarios para identificar la aplicacion
 //de dropbox que he dado de alta mediante oauth.
 //No deben ser de dominio publico
-const string cliendid="cgydn2vmpbaubpn";
-const string secret="3us3tyi7fdzaa0q";
+const string cliendid="";
+const string secret="";
 
-const string googleClientId = "124148359190-uu0l9okrvjds7ro7k7gbrolcedo5ij65";
-const string googleSecret = "Ep9yRkOVDo5FgBJRBa89baog";
+const string googleClientId = "";
+const string googleSecret = "";
 
 bool Iofrontend::finishedDownload;
 const int MAXDBGAIN = 20;
@@ -868,6 +868,7 @@ string Iofrontend::casoPANTALLAPREGUNTA(string titulo, string label){
 
     tmenu_gestor_objects *objMenu = ObjectsMenu[PANTALLAPREGUNTA];
     objMenu->getObjByName("valor")->setLabel(label);
+    ((UIInput *)objMenu->getObjByName("valor"))->setText("");
     objMenu->getObjByName("borde")->setLabel(titulo);
 
 
@@ -1068,7 +1069,8 @@ string Iofrontend::showExplorador(tEvento *evento){
             int pos = obj->getPosActualLista();
             if (pos >= 0){
                 fileSelec = obj->getListNames()->get(pos);
-                obj->setTag(diractual + tempFileSep + fileSelec);
+                bool tieneFileSep = diractual.substr(diractual.length()-1).compare(Constant::getFileSep()) == 0;
+                obj->setTag(diractual + (!tieneFileSep ? Constant::getFileSep() : "") + fileSelec);
             }
         }
         fileUri = obj->getTag();
@@ -2239,9 +2241,9 @@ int Iofrontend::calculaPosPanelMedia(){
 void Iofrontend::refreshAlbumAndPlaylist(){
     Traza::print("Iofrontend::refreshAlbumAndPlaylist", W_INFO);
 
-    string accessToken = autenticarDropbox();
-    if (accessToken.empty()){
-        showMessage("No se ha podido conectar a dropbox", 2000);
+    int errorServers = autenticarServicios();
+    if (errorServers == MAXSERVERS){
+        showMessage("No se ha podido conectar a los servidores", 2000);
     } else {
         tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
         juke->setObjectsMenu(obj);
@@ -2381,11 +2383,10 @@ int Iofrontend::selectAlbum(tEvento *evento){
 //    return this->accessToken;
 //}
 
-string Iofrontend::autenticarDropbox(){
-    Traza::print("Iofrontend::autenticarDropbox", W_INFO);
-
-    string strAccessToken;
+int Iofrontend::autenticarServicios(){
+    Traza::print("Iofrontend::autenticarServicios", W_INFO);
     string strNameServer;
+    int someErrorToken = 0;
 
     juke->getServerCloud(GOOGLEDRIVESERVER)->setClientid(googleClientId);
     juke->getServerCloud(GOOGLEDRIVESERVER)->setSecret(googleSecret);
@@ -2412,53 +2413,67 @@ string Iofrontend::autenticarDropbox(){
             pintarIconoProcesando(false);
         }
         procesarControles(obj, &evento, NULL);
-
-        obj = ObjectsMenu[PANTALLALOGIN];
         //Comprobamos si ha habido algun error en la obtencion del accesstoken
-        bool someErrorToken = false;
-        for (int i=0; i < MAXSERVERS; i++){
-            if (juke->getServerCloud(i)->getOauthStatus() != ERRORCONNECT){
-                strAccessToken = juke->getServerCloud(i)->getAccessToken();
-                if (strAccessToken.empty()){
-                    someErrorToken = true;
+        someErrorToken = comprobarTokenServidores();
+        bool salir = false;
+        do{
+            //Si despues de autenticarse, no se ha podido obtener el access token, lo obtenemos manualmente
+            if (someErrorToken > 0){
+                string mensaje = "Para usar la aplicación debes dar permisos desde tu cuenta de Google o Dropbox. ";
+                mensaje.append("A continuación se abrirá un explorador. Debes logarte en Dropbox o Google y pulsar el botón de \"PERMITIR\".");
+                mensaje.append("Seguidamente deberás copiar el código obtenido y pegarlo en la ventana de Onmusik que aparecerá a continuación.");
+
+                int serverSelected = casoPANTALLALOGIN("Autorizar aplicación", mensaje);
+                if (serverSelected < MAXSERVERS){
+                    string tmpClient = juke->getServerCloud(serverSelected)->getClientid();
+                    string tmpSecret = juke->getServerCloud(serverSelected)->getSecret();
+                    strNameServer = arrNameServers[serverSelected];
+
+                    juke->getServerCloud(serverSelected)->launchAuthorize(tmpClient);
+                    string code = casoPANTALLAPREGUNTA("Autorizar aplicación", "Introduce el campo obtenido de la página de "
+                                                       + strNameServer + " (CTRL+V)");
+                    if (!code.empty()){
+                        clearScr(cGrisOscuro);
+                        procesarControles(ObjectsMenu[PANTALLAREPRODUCTOR], &evento, NULL);
+                        flipScr();
+                        juke->getServerCloud(serverSelected)->storeAccessToken(tmpClient, tmpSecret, code, false);
+                    }
+                } else {
+                    salir = true;
                 }
-                if (i == DROPBOXSERVER){
-                    obj->getObjByName("btnDropbox")->setEnabled(strAccessToken.empty());
-                } else if (i == GOOGLEDRIVESERVER){
-                    obj->getObjByName("btnGoogle")->setEnabled(strAccessToken.empty());
-                }
+                someErrorToken = comprobarTokenServidores();
             }
-        }
 
+        } while (someErrorToken > 0 && !salir);
 
-        //Si despues de autenticarse, no se ha podido obtener el access token, lo obtenemos manualmente
-        if (someErrorToken){
-            string mensaje = "Para usar la aplicación debes dar permisos desde tu cuenta de Google o Dropbox. ";
-            mensaje.append("A continuación se abrirá un explorador. Debes logarte en Dropbox o Google y pulsar el botón de \"PERMITIR\".");
-            mensaje.append("Seguidamente deberás copiar el código obtenido y pegarlo en la ventana de Onmusik que aparecerá a continuación.");
-
-            int serverSelected = casoPANTALLALOGIN("Autorizar aplicación", mensaje);
-            if (serverSelected < MAXSERVERS){
-                string tmpClient = juke->getServerCloud(serverSelected)->getClientid();
-                string tmpSecret = juke->getServerCloud(serverSelected)->getSecret();
-                strNameServer = arrNameServers[serverSelected];
-
-                juke->getServerCloud(serverSelected)->launchAuthorize(tmpClient);
-                string code = casoPANTALLAPREGUNTA("Autorizar aplicación", "Introduce el campo obtenido de la página de "
-                                                   + strNameServer + " (CTRL+V)");
-                if (!code.empty()){
-                    clearScr(cGrisOscuro);
-                    procesarControles(ObjectsMenu[PANTALLAREPRODUCTOR], &evento, NULL);
-                    flipScr();
-                    strAccessToken = juke->getServerCloud(serverSelected)->storeAccessToken(tmpClient, tmpSecret, code, false);
-                }
-            }
-        }
 //        else {
 //            showMessage("No se ha podido autenticar en los servidores. Revise su conexión o especifique datos de proxy", 4000);
 //        }
 
-    return strAccessToken;
+    return someErrorToken;
+}
+
+/**
+*
+*/
+int Iofrontend::comprobarTokenServidores(){
+    int someErrorToken = 0;
+    tmenu_gestor_objects *obj = ObjectsMenu[PANTALLALOGIN];
+
+    for (int i=0; i < MAXSERVERS; i++){
+        if (juke->getServerCloud(i)->getOauthStatus() != ERRORCONNECT){
+            string strAccessToken = juke->getServerCloud(i)->getAccessToken();
+            if (strAccessToken.empty()){
+                someErrorToken++;
+            }
+            if (i == DROPBOXSERVER){
+                obj->getObjByName("btnDropbox")->setEnabled(strAccessToken.empty());
+            } else if (i == GOOGLEDRIVESERVER){
+                obj->getObjByName("btnGoogle")->setEnabled(strAccessToken.empty());
+            }
+        }
+    }
+    return someErrorToken;
 }
 
 /**
