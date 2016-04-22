@@ -6,11 +6,11 @@
 //Estos son los campos necesarios para identificar la aplicacion
 //de dropbox que he dado de alta mediante oauth.
 //No deben ser de dominio publico
-const string cliendid="";
-const string secret="";
+const string cliendid="cgydn2vmpbaubpn";
+const string secret="3us3tyi7fdzaa0q";
 
-const string googleClientId = "";
-const string googleSecret = "";
+const string googleClientId = "124148359190-uu0l9okrvjds7ro7k7gbrolcedo5ij65";
+const string googleSecret = "Ep9yRkOVDo5FgBJRBa89baog";
 
 bool Iofrontend::finishedDownload;
 const int MAXDBGAIN = 20;
@@ -221,6 +221,13 @@ void Iofrontend::initUIObjs(){
         popup1->addElemLista("Eliminar Álbum", "delete", controller);
     }
 
+    UIPopupMenu * popup2 = addPopup(PANTALLAREPRODUCTOR, "popupUpload", "btnAddContent");
+    if (popup2 != NULL){
+        popup2->addElemLista("Subir a Dropbox", "dropbox", dropbox_png, DROPBOXSERVER);
+        popup2->addElemLista("Subir a Google", "google", google_png, GOOGLEDRIVESERVER);
+    }
+
+
     vector <ListGroupCol *> miCabecera;
     miCabecera.push_back(new ListGroupCol("Canción", ""));
     miCabecera.push_back(new ListGroupCol("Artista", ""));
@@ -260,11 +267,12 @@ void Iofrontend::initUIObjs(){
     addEvent("btnForward",  &Iofrontend::accionesMediaAvanzar);
     addEvent("btnBackward",  &Iofrontend::accionesMediaRetroceder);
     addEvent("progressBarMedia", &Iofrontend::mediaClicked);
-    addEvent("btnAddContent", &Iofrontend::uploadDiscToDropbox);
+    addEvent("btnAddContent", &Iofrontend::showPopupUpload);
     addEvent("btnOpenLocal", &Iofrontend::openLocalDisc);
     addEvent("albumList", &Iofrontend::selectAlbum);
     addEvent("playLists", &Iofrontend::accionesPlaylist);
     addEvent("popupAlbum", &Iofrontend::accionAlbumPopup);
+    addEvent("popupUpload", &Iofrontend::accionUploadPopup);
     addEvent("progressBarVolumen", &Iofrontend::accionVolumen);
     addEvent("ImgVol", &Iofrontend::accionVolumenMute);
     addEvent("btnRepeat", &Iofrontend::accionRepeat);
@@ -1741,36 +1749,14 @@ int Iofrontend::openLocalDisc(tEvento *evento){
 
     return 0;
 }
+
 /**
 *
 */
-int Iofrontend::uploadDiscToDropbox(tEvento *evento){
-    Traza::print("Iofrontend::uploadDiscToDropbox", W_INFO);
-    long delay = 0;
-    unsigned long before = 0;
-
-    try{
-        Dirutil dir;
-        //Abrimos el explorador de archivos y esperamos a que el usuario seleccione un fichero
-        //o directorio
-        string fichName = showExplorador(evento);
-        if (!dir.isDir(fichName)){
-            fichName = dir.getFolder(fichName);
-        }
-        //Si se ha seleccionado algo, establecemos el texto en el objeto que hemos recibido por parametro
-        if (!fichName.empty()){
-            Traza::print("Comprobando autorizacion...", W_DEBUG);
-            IOauth2 *server = juke->getServerCloud(DROPBOXSERVER);
-            juke->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
-            juke->setDirToUpload(fichName);
-            Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::convertir);
-            if (thread->start())
-                Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
-        }
-    } catch (Excepcion &e){
-        Traza::print("uploadDiscToDropbox: " + string(e.getMessage()), W_ERROR);
-    }
-
+int Iofrontend::showPopupUpload(tEvento *evento){
+    ObjectsMenu[PANTALLAREPRODUCTOR]->setFocus("btnAddContent");
+    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnAddContent")->setPopup(true);
+    procesarPopups(ObjectsMenu[PANTALLAREPRODUCTOR], evento);
     return 0;
 }
 
@@ -1899,30 +1885,33 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
         //Intentamos parar el thread del reproductor
         if (threadPlayer != NULL){
             if (threadPlayer->isRunning()){
-                Traza::print("Terminando Thread de reproduccion...", W_DEBUG);;
+                Traza::print("Iofrontend::startSongPlaylist. Terminando Thread de reproduccion...", W_DEBUG);;
                 player->stop();
                 while(threadPlayer->isRunning()){
-                    Constant::waitms(50);
+                    SDL_Delay(20);
                 }
-                Traza::print("Reproduccion terminada.", W_DEBUG);
+//                threadPlayer->join();
+                Traza::print("Iofrontend::startSongPlaylist. Reproduccion terminada.", W_DEBUG);
             }
             delete threadPlayer;
             threadPlayer = NULL;
         }
 
+        Traza::print("Iofrontend::startSongPlaylist. Cancelando descarga", W_DEBUG);
         //Comprobamos que no haya ninguna descarga activa
         if (threadDownloader != NULL){
             if (threadDownloader->isRunning()){
                 juke->abortDownload();
                 while(threadDownloader->isRunning()){
-                    Constant::waitms(50);
+                    SDL_Delay(20);
                 }
+//                threadDownloader->join();
             }
             delete threadDownloader;
             threadDownloader = NULL;
         }
 
-
+        Traza::print("Iofrontend::startSongPlaylist. Seleccionando: " + cancion, W_DEBUG);
         juke->setFileToDownload(cancion);
         //Borramos el archivo antes de descargarlo
         Dirutil dir;
@@ -1931,6 +1920,9 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
         //Comprobamos si estamos intentando reproducir una cancion del disco
         //duro o de dropbox
         if (!dir.existe(cancion)){
+            UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
+            int idservidor = albumList->getDestino(albumList->getLastSelectedPos());
+            juke->setServerSelected(idservidor);
             //Creamos el thread
             threadDownloader = new Thread<Jukebox>(juke, &Jukebox::downloadFile);
             //Lanzamos el thread
@@ -2285,7 +2277,7 @@ int Iofrontend::selectAlbum(tEvento *evento){
     UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
     UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
 
-    string albumSelected = albumList->getValue(albumList->getPosActualLista());
+    string albumSelected = albumList->getValue(albumList->getLastSelectedPos());
     Dirutil dir;
 
     if (dir.existe(albumSelected)){
@@ -2294,7 +2286,12 @@ int Iofrontend::selectAlbum(tEvento *evento){
         Traza::print("Comprobando autorizacion selectAlbum...", W_DEBUG);
 
         tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+
+        int idservidor = albumList->getDestino(albumList->getLastSelectedPos());
         juke->setObjectsMenu(obj);
+        juke->setServerSelected(idservidor);
+        juke->setAlbumSelected(albumList->getValue(albumList->getLastSelectedPos()));
+
         Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlaylist);
 
         if (thread->start())
@@ -2464,7 +2461,67 @@ string Iofrontend::autenticarDropbox(){
     return strAccessToken;
 }
 
+/**
+*
+*/
+int Iofrontend::accionUploadPopup(tEvento *evento){
+    Traza::print("Iofrontend::accionUploadPopup", W_INFO);
+    //Se obtiene el objeto menupopup que en principio esta seleccionado
+    int menu = this->getSelMenu();
+    tmenu_gestor_objects *objsMenu = ObjectsMenu[menu];
+    Object *obj = objsMenu->getObjByPos(objsMenu->getFocus());
+    //Comprobamos que efectivamente, el elemento es un popup
+    if (obj->getObjectType() == GUIPOPUPMENU){
+        UIPopupMenu *objPopup = (UIPopupMenu *)obj;
+        //Obtenemos el valor del elemento seleccionado en el popup
+        string selected = objPopup->getListValues()->get(objPopup->getPosActualLista());
+        int servidor = objPopup->getListDestinos()->get(objPopup->getPosActualLista());
 
+        if (objPopup->getCallerPopup() != NULL){
+            //Obtenemos el objeto llamador
+//            if (objPopup->getCallerPopup()->getObjectType() == GUILISTBOX){
+                objsMenu->setFirstFocus();
+//            }
+            Traza::print("Subiendo para el servidor: " + selected, W_DEBUG);
+            uploadToServer(evento, servidor);
+        }
+    }
+    return 0;
+}
+
+/**
+*
+*/
+int Iofrontend::uploadToServer(tEvento *evento, int idServer){
+    Traza::print("Iofrontend::uploadToServer", W_INFO);
+    long delay = 0;
+    unsigned long before = 0;
+
+    try{
+        Dirutil dir;
+        //Abrimos el explorador de archivos y esperamos a que el usuario seleccione un fichero
+        //o directorio
+        string fichName = showExplorador(evento);
+        if (!dir.isDir(fichName)){
+            fichName = dir.getFolder(fichName);
+        }
+        //Si se ha seleccionado algo, establecemos el texto en el objeto que hemos recibido por parametro
+        if (!fichName.empty()){
+            Traza::print("Comprobando autorizacion...", W_DEBUG);
+            IOauth2 *server = juke->getServerCloud(idServer);
+
+            juke->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
+            juke->setDirToUpload(fichName);
+            juke->setServerSelected(idServer);
+
+            Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::convertir);
+            if (thread->start())
+                Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
+        }
+    } catch (Excepcion &e){
+        Traza::print("uploadDiscToDropbox: " + string(e.getMessage()), W_ERROR);
+    }
+}
 
 /**
 * Copia el texto seleccionado desde un popup al elemento que lo llama. Por ahora solo lo hace
@@ -2486,12 +2543,20 @@ int Iofrontend::accionAlbumPopup(tEvento *evento){
             if (objPopup->getCallerPopup()->getObjectType() == GUILISTBOX){
                 UIList *objList = (UIList *)objPopup->getCallerPopup();
                 string borrar = objList->getValue(objList->getPosActualLista());
-                cout << "Borramos: " << borrar << endl;
-                bool confirm = casoPANTALLACONFIRMAR("Borrar Álbum", "¿Está seguro de que desea eliminar: " + borrar + "?");
-                if (confirm){
-                    IOauth2 *server = juke->getServerCloud(DROPBOXSERVER);
-                    bool res = server->deleteFiles(Constant::uencodeUTF8(borrar), server->getAccessToken());
+                string text = objList->getListNames()->get(objList->getPosActualLista());
+                Traza::print("Iofrontend::accionAlbumPopup. Borramos: " + borrar, W_DEBUG);
+                int idservidor = objList->getDestino(objList->getPosActualLista());
+                bool confirm = false;
 
+                if (idservidor == DROPBOXSERVER){
+                    confirm = casoPANTALLACONFIRMAR("Borrar Álbum", "¿Está seguro de que desea eliminar: " + borrar + "?");
+                } else if (idservidor == GOOGLEDRIVESERVER){
+                    confirm = casoPANTALLACONFIRMAR("Borrar Álbum", "¿Está seguro de que desea eliminar: " + text + "?");
+                }
+
+                if (confirm){
+                    IOauth2 *server = juke->getServerCloud(idservidor);
+                    bool res = server->deleteFiles(Constant::uencodeUTF8(borrar), server->getAccessToken());
                     if (res){
                         showMessage("Álbum eliminado correctamente", 2000);
                         tEvento askEvento;
@@ -2575,6 +2640,9 @@ void Iofrontend::actualizaciones(){
     delete updater;
 }
 
+/**
+*
+*/
 void Iofrontend::bienvenida(){
     Traza::print("bienvenida: Inicio", W_INFO);
     UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));

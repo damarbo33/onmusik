@@ -1113,13 +1113,13 @@
 	"Excepcion.h"
 	"Traza.h"
 
-1461242429 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
+1461327477 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
 	"uilistcommon.h"
 
-1461220538 c:\github\proyectos\onmusik\src\iofrontend.h
+1461252881 c:\github\proyectos\onmusik\src\iofrontend.h
 	<string>
 	<vector>
 	"Ioutil.h"
@@ -1296,7 +1296,7 @@
 1461135462 c:\github\externallibs\uiobjects\src\listaini.h
 	"ListaSimple.h"
 
-1461229994 c:\github\proyectos\onmusik\src\jukebox.h
+1461309530 c:\github\proyectos\onmusik\src\jukebox.h
 	"Launcher.h"
 	"Menuobject.h"
 	"servers/dropbox.h"
@@ -1322,7 +1322,7 @@
 	<locale>
 	<fcntl.h>
 
-1460533621 c:\github\externallibs\uiobjects\src\unzip\unziptool.h
+1461325394 c:\github\externallibs\uiobjects\src\unzip\unziptool.h
 	<unistd.h>
 	"zlib.h"
 	"unzip.h"
@@ -1348,7 +1348,7 @@
 
 1459803100 c:\github\externallibs\ziputils\unzip\ioapi.h
 
-1459803100 c:\github\externallibs\ziputils\unzip\crypt.h
+1461324637 c:\github\externallibs\ziputils\unzip\crypt.h
 
 1433840904 c:\github\externallibs\uiobjects\src\filelaunch.h
 	<string>
@@ -1369,7 +1369,7 @@
 	"Dirutil.h"
 	"thread.h"
 
-1461079378 c:\github\proyectos\httpcurl\httpcurl\src\util\constant.h
+1461307290 c:\github\proyectos\httpcurl\httpcurl\src\util\constant.h
 	<sstream>
 	<string.h>
 	<vector>
@@ -1383,7 +1383,7 @@
 	<iomanip>
 	<windows.h>
 
-1461057936 c:\github\proyectos\httpcurl\httpcurl\src\httputil.h
+1461325098 c:\github\proyectos\httpcurl\httpcurl\src\httputil.h
 	<stdlib.h>
 	<string.h>
 	<stdio.h>
@@ -1396,6 +1396,7 @@
 	"filecipher.h"
 	<curl/curl.h>
 	"Traza.h"
+	"unzip/GZipHelper.h"
 
 1459803212 c:\github\proyectos\rijndael\filecipher.h
 	<iostream>
@@ -1499,7 +1500,7 @@
 	<iostream>
 	"Constant.h"
 
-1461236970 source:c:\github\proyectos\onmusik\src\ioutil.cpp
+1461251388 source:c:\github\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"
@@ -1508,7 +1509,7 @@
 
 1455209140 c:\github\externallibs\uiobjects\src\font\arimo_regular.ttf.h
 
-1461234817 source:c:\github\proyectos\onmusik\src\jukebox.cpp
+1461327972 source:c:\github\proyectos\onmusik\src\jukebox.cpp
 	"jukebox.h"
 
 1460527847 source:c:\github\proyectos\onmusik\src\main.cpp
@@ -2877,7 +2878,7 @@
 1460533494 source:c:\github\proyectos\onmusik\src\updater\updater.cpp
 	"updater.h"
 
-1461231682 c:\github\proyectos\httpcurl\httpcurl\src\servers\dropbox.h
+1461322438 c:\github\proyectos\httpcurl\httpcurl\src\servers\dropbox.h
 	<iostream>
 	<windows.h>
 	"util/Constant.h"
@@ -2894,7 +2895,7 @@
 	"thread.h"
 	"ioauth2.h"
 
-1461231886 c:\github\proyectos\httpcurl\httpcurl\src\servers\ioauth2.h
+1461314486 c:\github\proyectos\httpcurl\httpcurl\src\servers\ioauth2.h
 	"Constant.h"
 	"httputil.h"
 	"Dirutil.h"
@@ -2902,6 +2903,21 @@
 	"json/json.h"
 	"listaIni.h"
 
-1461231732 c:\github\proyectos\httpcurl\httpcurl\src\servers\googledrive.h
+1461254366 c:\github\proyectos\httpcurl\httpcurl\src\servers\googledrive.h
 	"ioauth2.h"
+
+1461321039 c:\github\externallibs\uiobjects\src\unzip\gziphelper.h
+	"GZipHelper.h"
+	"zutil.h"
+
+1459803101 c:\github\externallibs\ziputils\zlib\zutil.h
+	"zlib.h"
+	<stddef.h>
+	<string.h>
+	<stdlib.h>
+	<errno.h>
+	<alloc.h>
+	<malloc.h>
+	<unix.h>
+	<stdio.h>
 

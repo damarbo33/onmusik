@@ -1494,6 +1494,10 @@ void Ioutil::drawUIPopupMenu(Object *obj){
             y += INPUTCONTENT;
 
             t_color colorText = listObj->isEnabled() && listObj->isFocus() ? cNegro : cGris;
+
+            Traza::print("listObj->isEnabled()",listObj->isEnabled(), W_DEBUG);
+            Traza::print("listObj->isFocus()",listObj->isFocus(), W_DEBUG);
+
             int cont = 0;
             if (listObj->getObjectType() == GUIPOPUPMENU && listObj->getSize() > 0){
                 int icono = -1;

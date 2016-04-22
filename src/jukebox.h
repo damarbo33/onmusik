@@ -56,13 +56,19 @@ class Jukebox
         void setDirToUpload(string var){dirToUpload = var;}
         void setFileToDownload(string var){fileToDownload = var;}
         void uploadMusicToDropbox(string ruta);
-        void refreshPlaylist(string rutaAlbumDropbox);
+//        void refreshPlaylist(string rutaAlbumDropbox);
         void downloadFile(string ruta);
         void abortDownload();
         void addLocalAlbum(string ruta);
         void setRutaInfoId3(string var){rutaInfoId3 = var;}
         bool isCanPlay(){return canPlay;}
         void setCanPlay(bool var){canPlay = var;}
+
+        void setServerSelected(int var){serverSelected = var;}
+        int getServerSelected(){return serverSelected;}
+
+        void setAlbumSelected(string var){albumSelected = var;}
+        string getAlbumSelected(){return albumSelected;}
 
         IOauth2 *getServerCloud(int idServer){
             if (idServer >= 0 && idServer < MAXSERVERS)
@@ -77,6 +83,9 @@ class Jukebox
         tmenu_gestor_objects *ObjectsMenu;
         string dirToUpload;
         string fileToDownload;
+        int serverSelected;
+        string albumSelected;
+
         void hashMapMetadatos(map<string, string> *metadatos, string ruta);
 //        Dropbox dropboxDownloader;
         IOauth2 *serverDownloader;

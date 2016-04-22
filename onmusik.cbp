@@ -18,9 +18,9 @@
 					<Add directory="../../ExternalLibs/UIObjects/src" />
 					<Add directory="../../ExternalLibs/libvlc/sdk/include" />
 					<Add directory="../../ExternalLibs/gumbo-parser-master/src" />
-					<Add directory="../../ExternalLibs/curl-7.40.0-devel-mingw32/include" />
-					<Add directory="../../ExternalLibs/zipUtils/unzip" />
 					<Add directory="../../ExternalLibs/zipUtils/zlib" />
+					<Add directory="../../ExternalLibs/zipUtils/unzip" />
+					<Add directory="../../ExternalLibs/curl-7.40.0-devel-mingw32/include" />
 					<Add directory="../../ExternalLibs/sdl_ext/src" />
 					<Add directory="../httpCurl/httpcurl/src" />
 					<Add directory="../rijndael" />
@@ -35,15 +35,29 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-lsqllite" />
+					<Add option="-lUIObjects" />
 					<Add option="-lsdlgfx" />
 					<Add option="-lmingw32" />
 					<Add option="-lSDLmain" />
 					<Add option="-lSDL" />
-					<Add option="-lSDL_image" />
 					<Add option="-lSDL_mixer" />
 					<Add option="-lSDL_ttf" />
+					<Add option="-lSDL_image" />
 					<Add option="-lzipUtils" />
-					<Add option="-lsqllite" />
+					<Add option="-lhttpcurl" />
+					<Add option="-lcrypto" />
+					<Add option="-lcurl" />
+					<Add option="-lcurldll" />
+					<Add option="-lidn" />
+					<Add option="-lrtmp" />
+					<Add option="-lssh2" />
+					<Add option="-lssh2dll" />
+					<Add option="-lssl" />
+					<Add option="-lz" />
+					<Add option="-lzdll" />
+					<Add option="-ltidy" />
+					<Add option="-lgumboParser" />
 					<Add library="../../ExternalLibs/libjpeg/bin/Release/libjpeg.a" />
 					<Add directory="../../ExternalLibs/UIObjects/bin/Release" />
 					<Add directory="../../ExternalLibs/zipUtils/bin/Release" />
@@ -84,15 +98,29 @@
 				</Compiler>
 				<Linker>
 					<Add option="-pg -lgmon" />
+					<Add option="-lsqllite" />
+					<Add option="-lUIObjects" />
 					<Add option="-lsdlgfx" />
 					<Add option="-lmingw32" />
 					<Add option="-lSDLmain" />
 					<Add option="-lSDL" />
-					<Add option="-lSDL_image" />
 					<Add option="-lSDL_mixer" />
 					<Add option="-lSDL_ttf" />
+					<Add option="-lSDL_image" />
 					<Add option="-lzipUtils" />
-					<Add option="-lsqllite" />
+					<Add option="-lhttpcurl" />
+					<Add option="-lcrypto" />
+					<Add option="-lcurl" />
+					<Add option="-lcurldll" />
+					<Add option="-lidn" />
+					<Add option="-lrtmp" />
+					<Add option="-lssh2" />
+					<Add option="-lssh2dll" />
+					<Add option="-lssl" />
+					<Add option="-lz" />
+					<Add option="-lzdll" />
+					<Add option="-ltidy" />
+					<Add option="-lgumboParser" />
 					<Add library="../../ExternalLibs/libjpeg/bin/Release/libjpeg.a" />
 					<Add directory="../../ExternalLibs/UIObjects/bin/Release" />
 					<Add directory="../../ExternalLibs/zipUtils/bin/Release" />
@@ -107,22 +135,6 @@
 		<Compiler>
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Linker>
-			<Add option="-lUIObjects" />
-			<Add option="-lhttpcurl" />
-			<Add option="-lgumboParser" />
-			<Add option="-ltidy" />
-			<Add option="-lcrypto" />
-			<Add option="-lcurl" />
-			<Add option="-lcurldll" />
-			<Add option="-lidn" />
-			<Add option="-lrtmp" />
-			<Add option="-lssh2" />
-			<Add option="-lssh2dll" />
-			<Add option="-lssl" />
-			<Add option="-lz" />
-			<Add option="-lzdll" />
-		</Linker>
 		<Unit filename="../MP3Play/audioplayer.cpp" />
 		<Unit filename="../MP3Play/biquad.cpp" />
 		<Unit filename="../MP3Play/biquad.h" />

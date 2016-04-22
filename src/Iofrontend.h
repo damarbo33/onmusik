@@ -150,7 +150,7 @@ class Iofrontend : public Ioutil{
         //Muestra el menu especificado como si fuera emergente
         void showMenuEmergente(int menu, string objImagenFondo);
         bool cargarOpcionesGenerales();
-        int uploadDiscToDropbox(tEvento *evento);
+        int showPopupUpload(tEvento *evento);
         int startSongPlaylist(tEvento *evento);
         int selectAlbum(tEvento *evento);
         int accionAlbumPopup(tEvento *evento);
@@ -160,6 +160,8 @@ class Iofrontend : public Ioutil{
         void reloadSong(int posAlbumSelected, int posSongSelected);
         void getLyricsFromActualSong();
         int casoPANTALLALOGIN(string titulo, string txtDetalle);
+        int accionUploadPopup(tEvento *evento);
+        int uploadToServer(tEvento *evento, int idServer);
 
     public :
         Iofrontend();
