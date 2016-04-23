@@ -63,6 +63,7 @@ class Jukebox
         void setRutaInfoId3(string var){rutaInfoId3 = var;}
         bool isCanPlay(){return canPlay;}
         void setCanPlay(bool var){canPlay = var;}
+        void setConcatNameFolder(bool var){concatNameFolder = var;}
 
         void setServerSelected(int var){serverSelected = var;}
         int getServerSelected(){return serverSelected;}
@@ -85,6 +86,7 @@ class Jukebox
         string fileToDownload;
         int serverSelected;
         string albumSelected;
+        bool concatNameFolder;
 
         void hashMapMetadatos(map<string, string> *metadatos, string ruta);
 //        Dropbox dropboxDownloader;

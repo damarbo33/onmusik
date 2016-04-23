@@ -91,7 +91,7 @@ void Iofrontend::initUIObjs(){
 
 
     ObjectsMenu[PANTALLACONFIRMAR]->add("borde", GUIPANELBORDER,0,0,0,0, "Seleccione una opcion", false);
-    ObjectsMenu[PANTALLACONFIRMAR]->add("textosBox", GUITEXTELEMENTSAREA, 0, -40 * zoomText, getWidth()-50, 70, "", true)->setVerContenedor(false);
+    ObjectsMenu[PANTALLACONFIRMAR]->add("textosBox", GUITEXTELEMENTSAREA, 0, -50 * zoomText, getWidth()-50, 120, "", true)->setVerContenedor(false);
     ObjectsMenu[PANTALLACONFIRMAR]->add("btnSiConfirma", GUIBUTTON, -(BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
     ObjectsMenu[PANTALLACONFIRMAR]->add("btnNoConfirma", GUIBUTTON, (BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
 
@@ -815,6 +815,17 @@ bool Iofrontend::casoPANTALLACONFIRMAR(string titulo, string txtDetalle){
     UITextElementsArea *textElems = (UITextElementsArea *)objMenu->getObjByName("textosBox");
     textElems->setImgDrawed(false);
     textElems->setFieldText("labelDetalle", txtDetalle);
+
+    int len = fontStrLen(txtDetalle);
+    if (len < this->getWidth()){
+        textElems->setW(len + 4 * INPUTBORDER + TEXLABELTEXTSPACE);
+        textElems->setH(Constant::getMENUSPACE() + 2*INPUTBORDER);
+        objMenu->centrarObjeto(textElems);
+//        textElems->setX(this->getWidth() - len/2);
+    } else {
+        textElems->setTam(0, -50 * zoomText, getWidth()-50, 120);
+        objMenu->centrarObjeto(textElems);
+    }
 
     long delay = 0;
     unsigned long before = 0;
@@ -2529,9 +2540,37 @@ int Iofrontend::uploadToServer(tEvento *evento, int idServer){
             juke->setDirToUpload(fichName);
             juke->setServerSelected(idServer);
 
-            Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::convertir);
-            if (thread->start())
-                Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
+
+            unsigned int nFiles [2] = {0,0};
+            vector<string> dirs;
+            dir.countDir(fichName.c_str(), nFiles, &dirs, filtroFicheros);
+            string dirSelected = fichName.substr(fichName.find_last_of(tempFileSep) + 1);
+
+            bool continuar = true;
+            if (nFiles[0] > 5 || nFiles[1] > 30){
+                string msg = "¿Estás seguro de subir " + Constant::TipoToStr(nFiles[0]);
+                msg.append(" álbums y " + Constant::TipoToStr(nFiles[1]) + " canciones?");
+                continuar = casoPANTALLACONFIRMAR("Advertencia", msg);
+            }
+
+            if (continuar){
+                string msg = "La ruta seleccionada tiene subdirectorios. ¿Deseas concatenar el";
+                msg.append(" nombre del directorio seleccionado \"" + dirSelected + "\"");
+                msg.append(" al nombre de los discos que se subirán?\nPrevisualización:");
+                for (int i=0; i < dirs.size(); i++){
+                    msg.append("\n- " + dirSelected + " " + dirs.at(i) );
+                }
+
+                juke->setConcatNameFolder(true);
+                if (nFiles[0] > 0){
+                    juke->setConcatNameFolder(casoPANTALLACONFIRMAR("Advertencia", msg));
+                }
+
+                Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::convertir);
+                if (thread->start())
+                    Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
+            }
+
         }
     } catch (Excepcion &e){
         Traza::print("uploadDiscToDropbox: " + string(e.getMessage()), W_ERROR);

@@ -14,6 +14,7 @@ Jukebox::Jukebox(){
     convertedFilesList = new listaSimple<string>();
     rutaInfoId3 = "";
     canPlay = false;
+    concatNameFolder = true;
 
     this->serverDownloader = NULL;
     arrCloud[DROPBOXSERVER] = new Dropbox();
@@ -716,13 +717,15 @@ void Jukebox::uploadMusicToDropbox(string ruta){
     }
 
 }
-
+/**
+*
+*/
 string Jukebox::generarNombreAlbum(FileProps *file, string ruta){
     string nombreAlbum;
     IOauth2 *server = this->getServerCloud(this->getServerSelected());
     nombreAlbum = file->dir.substr(ruta.length());
     //Comprobamos si la ruta indicada tiene subdirectorios
-    if (nombreAlbum.empty()){
+    if (nombreAlbum.empty() || !concatNameFolder){
         //No hay subdirectorios. Suponemos que el nombre del disco esta indicado en la carpeta
         nombreAlbum = file->dir.substr(file->dir.find_last_of(tempFileSep) + 1);
     } else {
