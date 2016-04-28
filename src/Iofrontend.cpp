@@ -6,11 +6,11 @@
 //Estos son los campos necesarios para identificar la aplicacion
 //de dropbox que he dado de alta mediante oauth.
 //No deben ser de dominio publico
-const string cliendid="cgydn2vmpbaubpn";
-const string secret="3us3tyi7fdzaa0q";
+const string cliendid="";
+const string secret="";
 
-const string googleClientId = "124148359190-uu0l9okrvjds7ro7k7gbrolcedo5ij65";
-const string googleSecret = "Ep9yRkOVDo5FgBJRBa89baog";
+const string googleClientId = "";
+const string googleSecret = "";
 
 bool Iofrontend::finishedDownload;
 const int MAXDBGAIN = 20;
@@ -151,16 +151,16 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("progressBarMedia", GUIPROGRESSBAR, 0,0,0,0, "", true)->setShadow(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("progressBarVolumen", GUIPROGRESSBAR, 0,0,0,0, "", true)->setShadow(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("ImgVol", GUIBUTTON, 0,0,0,0, "Ajustar volumen", true)->setIcon(sound)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnBackward", GUIBUTTON, 0,0,0,0, "Saltar a canciÛn anterior", true)->setIcon(control_rewind)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnBackward", GUIBUTTON, 0,0,0,0, "Saltar a canci√≥n anterior", true)->setIcon(control_rewind)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnPlay",     GUIBUTTON, 0,0,0,0, "Reproducir", true)->setIcon(control_play)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnStop",     GUIBUTTON, 0,0,0,0, "Parar", true)->setIcon(control_stop)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnForward",  GUIBUTTON, 0,0,0,0, "Saltar a canciÛn siguiente", true)->setIcon(control_fastforward)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnForward",  GUIBUTTON, 0,0,0,0, "Saltar a canci√≥n siguiente", true)->setIcon(control_fastforward)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnRepeat", GUIBUTTON, 0,0,0,0, "Repetir disco", true)->setIcon(btn_repeat_off)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnRandom", GUIBUTTON, 0,0,0,0, "Aleatorio", true)->setIcon(btn_random_off)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnEqualizer", GUIBUTTON, 0,0,0,0, "Mostrar Ecualizador", true)->setIcon(control_equalizer)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnSwitchEq", GUIBUTTON, 0,0,0,0, "Ecualizador On/Off", true)->setIcon(btn_on)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnResetEq", GUIBUTTON, 0,0,0,0, "Resetear Ecualizador", true)->setIcon(btn_reset_eq)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnLetras",  GUIBUTTON, 0,0,0,0, "Letra de la canciÛn", true)->setIcon(fontIco)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnLetras",  GUIBUTTON, 0,0,0,0, "Letra de la canci√≥n", true)->setIcon(fontIco)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setVisible(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnResetEq")->setVisible(false);
 
@@ -219,7 +219,7 @@ void Iofrontend::initUIObjs(){
 
     UIPopupMenu * popup1 = addPopup(PANTALLAREPRODUCTOR, "popupAlbum", "albumList");
     if (popup1 != NULL){
-        popup1->addElemLista("Eliminar ¡lbum", "delete", controller);
+        popup1->addElemLista("Eliminar √Ålbum", "delete", controller);
     }
 
     UIPopupMenu * popup2 = addPopup(PANTALLAREPRODUCTOR, "popupUpload", "btnAddContent");
@@ -230,10 +230,10 @@ void Iofrontend::initUIObjs(){
 
 
     vector <ListGroupCol *> miCabecera;
-    miCabecera.push_back(new ListGroupCol("CanciÛn", ""));
+    miCabecera.push_back(new ListGroupCol("Canci√≥n", ""));
     miCabecera.push_back(new ListGroupCol("Artista", ""));
     miCabecera.push_back(new ListGroupCol("Album", ""));
-    miCabecera.push_back(new ListGroupCol("DuraciÛn", ""));
+    miCabecera.push_back(new ListGroupCol("Duraci√≥n", ""));
     playList->setHeaderLista(miCabecera);
     playList->adjustToHeader(false);
     playList->addHeaderWith(100);
@@ -961,7 +961,7 @@ void Iofrontend::comprobarUnicode(int menu){
 
 /**
 * Establece el nombre del fichero o directorio seleccionado por el explorador de
-* ficheros, en el contenido un campo especificado por par·metro
+* ficheros, en el contenido un campo especificado por par√°metro
 */
 void Iofrontend::setTextFromExplorador(tEvento *evento, UIInput *objCampoEdit){
     try{
@@ -1795,18 +1795,18 @@ int Iofrontend::AddServer(tEvento *evento){
 
     //Si despues de autenticarse, no se ha podido obtener el access token, lo obtenemos manualmente
     if (someErrorToken != MAXSERVERS){
-        string mensaje = "Para usar la aplicaciÛn debes dar permisos desde tu cuenta de Google o Dropbox. ";
-        mensaje.append("A continuaciÛn se abrir· un explorador. Debes logarte en Dropbox o Google y pulsar el botÛn de \"PERMITIR\".");
-        mensaje.append("Seguidamente deber·s copiar el cÛdigo obtenido y pegarlo en la ventana de Onmusik que aparecer· a continuaciÛn.");
+        string mensaje = "Para usar la aplicaci√≥n debes dar permisos desde tu cuenta de Google o Dropbox. ";
+        mensaje.append("A continuaci√≥n se abrir√° un explorador. Debes logarte en Dropbox o Google y pulsar el bot√≥n de \"PERMITIR\".");
+        mensaje.append("Seguidamente deber√°s copiar el c√≥digo obtenido y pegarlo en la ventana de Onmusik que aparecer√° a continuaci√≥n.");
 
-        int serverSelected = casoPANTALLALOGIN("Autorizar aplicaciÛn", mensaje);
+        int serverSelected = casoPANTALLALOGIN("Autorizar aplicaci√≥n", mensaje);
         if (serverSelected < MAXSERVERS){
             string tmpClient = juke->getServerCloud(serverSelected)->getClientid();
             string tmpSecret = juke->getServerCloud(serverSelected)->getSecret();
             strNameServer = arrNameServers[serverSelected];
 
             juke->getServerCloud(serverSelected)->launchAuthorize(tmpClient);
-            string code = casoPANTALLAPREGUNTA("Autorizar aplicaciÛn", "Introduce el campo obtenido de la p·gina de "
+            string code = casoPANTALLAPREGUNTA("Autorizar aplicaci√≥n", "Introduce el campo obtenido de la p√°gina de "
                                                + strNameServer + " (CTRL+V)");
             if (!code.empty()){
                 clearScr(cGrisOscuro);
@@ -2326,7 +2326,7 @@ void Iofrontend::refrescarAlbums(){
 
     clearScr();
     procesarControles(obj, &eventoNull, NULL);
-    drawTextCent("Obteniendo ·lbums. Espere...",0,-70,true,true, cBlanco);
+    drawTextCent("Obteniendo √°lbums. Espere...",0,-70,true,true, cBlanco);
     flipScr();
     pintarIconoProcesando(true);
     thread->start();
@@ -2434,18 +2434,18 @@ int Iofrontend::selectAlbum(tEvento *evento){
 //        }
 //        procesarControles(obj, &evento, NULL);
 //
-//        string mensaje = "Para usar la aplicaciÛn debes dar permisos desde tu cuenta de dropbox. ";
-//        mensaje.append("A continuaciÛn se abrir· un explorador. Debes logarte en Dropbox y pulsar el botÛn de \"PERMITIR\".");
-//        mensaje.append("Seguidamente deber·s copiar el cÛdigo obtenido y pegarlo en la ventana de Onmusik que aparecer· a continuaciÛn.");
+//        string mensaje = "Para usar la aplicaci√≥n debes dar permisos desde tu cuenta de dropbox. ";
+//        mensaje.append("A continuaci√≥n se abrir√° un explorador. Debes logarte en Dropbox y pulsar el bot√≥n de \"PERMITIR\".");
+//        mensaje.append("Seguidamente deber√°s copiar el c√≥digo obtenido y pegarlo en la ventana de Onmusik que aparecer√° a continuaci√≥n.");
 //
 //        if (thread->getExitCode() != ERRORCONNECT){
 //            this->accessToken = dropbox->getAccessToken();
 //            //Si despues de autenticarse, no se ha podido obtener el access token, lo obtenemos manualmente
 //            if (this->accessToken.empty()){
-//                bool permiso = casoPANTALLACONFIRMAR("Autorizar aplicaciÛn", mensaje);
+//                bool permiso = casoPANTALLACONFIRMAR("Autorizar aplicaci√≥n", mensaje);
 //                if (permiso){
 //                    dropbox->launchAuthorize(cliendid);
-//                    string code = casoPANTALLAPREGUNTA("Autorizar aplicaciÛn", "Introduce el campo obtenido de la p·gina de dropbox (CTRL+V)");
+//                    string code = casoPANTALLAPREGUNTA("Autorizar aplicaci√≥n", "Introduce el campo obtenido de la p√°gina de dropbox (CTRL+V)");
 //                    if (!code.empty()){
 //                        clearScr(cGrisOscuro);
 //                        procesarControles(obj, &evento, NULL);
@@ -2455,7 +2455,7 @@ int Iofrontend::selectAlbum(tEvento *evento){
 //                }
 //            }
 //        } else {
-//            showMessage("No se ha podido autenticar en dropbox. Revise su conexiÛn o especifique datos de proxy", 4000);
+//            showMessage("No se ha podido autenticar en dropbox. Revise su conexi√≥n o especifique datos de proxy", 4000);
 //        }
 //        delete thread;
 //        delete dropbox;
@@ -2620,15 +2620,15 @@ int Iofrontend::uploadToServer(tEvento *evento, int idServer){
 
             bool continuar = true;
             if (nFiles[0] > 5 || nFiles[1] > 30){
-                string msg = "øEst·s seguro de subir " + Constant::TipoToStr(nFiles[0]);
-                msg.append(" ·lbums y " + Constant::TipoToStr(nFiles[1]) + " canciones?");
+                string msg = "¬øEst√°s seguro de subir " + Constant::TipoToStr(nFiles[0]);
+                msg.append(" √°lbums y " + Constant::TipoToStr(nFiles[1]) + " canciones?");
                 continuar = casoPANTALLACONFIRMAR("Advertencia", msg);
             }
 
             if (continuar){
-                string msg = "La ruta seleccionada tiene subdirectorios. øDeseas concatenar el";
+                string msg = "La ruta seleccionada tiene subdirectorios. ¬øDeseas concatenar el";
                 msg.append(" nombre del directorio seleccionado \"" + dirSelected + "\"");
-                msg.append(" al nombre de los discos que se subir·n?\nPrevisualizaciÛn:");
+                msg.append(" al nombre de los discos que se subir√°n?\nPrevisualizaci√≥n:");
                 int maxElements = nFiles[1] > 30 ? 30 : nFiles[1];
 
                 for (int i=0; i < maxElements; i++){
@@ -2677,16 +2677,16 @@ int Iofrontend::accionAlbumPopup(tEvento *evento){
                 bool confirm = false;
 
                 if (idservidor == DROPBOXSERVER){
-                    confirm = casoPANTALLACONFIRMAR("Borrar ¡lbum", "øEst· seguro de que desea eliminar: " + borrar + "?");
+                    confirm = casoPANTALLACONFIRMAR("Borrar √Ålbum", "¬øEst√° seguro de que desea eliminar: " + borrar + "?");
                 } else if (idservidor == GOOGLEDRIVESERVER){
-                    confirm = casoPANTALLACONFIRMAR("Borrar ¡lbum", "øEst· seguro de que desea eliminar: " + text + "?");
+                    confirm = casoPANTALLACONFIRMAR("Borrar √Ålbum", "¬øEst√° seguro de que desea eliminar: " + text + "?");
                 }
 
                 if (confirm){
                     IOauth2 *server = juke->getServerCloud(idservidor);
                     bool res = server->deleteFiles(Constant::uencodeUTF8(borrar), server->getAccessToken());
                     if (res){
-                        showMessage("¡lbum eliminado correctamente", 2000);
+                        showMessage("√Ålbum eliminado correctamente", 2000);
                         tEvento askEvento;
                         this->clearScr(cGrisOscuro);
                         clearEvento(&askEvento);
@@ -2695,7 +2695,7 @@ int Iofrontend::accionAlbumPopup(tEvento *evento){
                         autenticateAndRefresh();
                     }
                     else
-                        showMessage("Error al eliminar el ·lbum", 2000);
+                        showMessage("Error al eliminar el √°lbum", 2000);
                 }
             }
         }
@@ -2813,7 +2813,7 @@ void Iofrontend::bienvenida(){
         //objMenu->getObjByName("borde")->setLabel(titulo);
 
         string txtDetalle = "Que emocionante! Parece que es la primera vez que accedes a Onmusik!\n";
-        txtDetalle.append("Empieza subiendo tus canciones haciendo click en el botÛn indicado con la flecha\n\n");
+        txtDetalle.append("Empieza subiendo tus canciones haciendo click en el bot√≥n indicado con la flecha\n\n");
         txtDetalle.append("Para subir cada disco, puedes seleccionar la carpeta que contiene todas las canciones");
         txtDetalle.append("o alguna de las canciones contenidas en la carpeta\n");
 
