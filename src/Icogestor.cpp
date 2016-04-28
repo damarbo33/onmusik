@@ -104,6 +104,7 @@ void IcoGestor::cargarIconos(){
     cargarIcono("Dropbox.png");
     cargarIcono("Google-Drive-icon.png");
     cargarIcono("boton_disabled.png");
+    cargarIcono("server_add.png");
 
 }
 

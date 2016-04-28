@@ -68,7 +68,7 @@ int main(int argc, char *argv[]){
             Traza::print("Parameter: " + fichParm, W_DEBUG);
         } else {
             ioFront->actualizaciones();
-            ioFront->refreshAlbumAndPlaylist();
+            ioFront->autenticateAndRefresh();
             tEvento evento;
             ioFront->drawMenu(evento);
             ioFront->bienvenida();

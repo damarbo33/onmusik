@@ -132,6 +132,10 @@ class Iofrontend : public Ioutil{
         int accionesSwitchFiltros(tEvento *evento);
         int accionesLetras(tEvento *evento);
         int openLocalDisc(tEvento *evento);
+        int AddServer(tEvento *evento);
+        int btnActionAddServer(tEvento *evento);
+        bool errorTokenServidor(int servidor);
+        void refrescarAlbums();
 
         string showExplorador(tEvento *);
         void cargaMenuFromLista(UIListCommon *, tEvento *);
@@ -183,7 +187,7 @@ class Iofrontend : public Ioutil{
         void setSelMenu(int var){comprobarUnicode(var); selMenu = var;}
         int getSelMenu(){ return selMenu;}
         int accionCopiarTextoPopup(tEvento *evento);
-        void refreshAlbumAndPlaylist();
+        void autenticateAndRefresh();
         int autenticarServicios();
         int fillAlbumLocal(string ruta, bool updateId3tags);
         void bienvenida();

@@ -167,7 +167,9 @@ DWORD Jukebox::refreshAlbumAndPlaylist(){
     return 0;
 }
 
-
+/**
+*
+*/
 DWORD Jukebox::refreshPlaylist(){
     Traza::print("Jukebox::refreshPlaylist", W_DEBUG);
     Dirutil dir;
@@ -498,12 +500,16 @@ void Jukebox::abortDownload(){
     }
 }
 
+/**
+*
+*/
 void Jukebox::abortServers(){
     for (int i=0; i < MAXSERVERS; i++){
         arrCloud[i]->abortDownload();
     }
     aborted = true;
 }
+
 /**
 *
 */
