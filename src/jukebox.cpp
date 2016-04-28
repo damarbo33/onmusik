@@ -20,6 +20,7 @@ Jukebox::Jukebox(){
     arrCloud[DROPBOXSERVER] = new Dropbox();
     arrCloud[GOOGLEDRIVESERVER] = new GoogleDrive();
     serverSelected = DROPBOXSERVER;
+    aborted = false;
 }
 
 /**
@@ -155,7 +156,7 @@ DWORD Jukebox::uploadMusicToDropbox(){
 *
 */
 DWORD Jukebox::refreshAlbumAndPlaylist(){
-
+    aborted = false;
     refreshAlbum();
     UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
     if (albumList->getSize() > 0){
@@ -168,7 +169,6 @@ DWORD Jukebox::refreshAlbumAndPlaylist(){
 
 
 DWORD Jukebox::refreshPlaylist(){
-
     Traza::print("Jukebox::refreshPlaylist", W_DEBUG);
     Dirutil dir;
     CloudFiles files;
@@ -190,74 +190,76 @@ DWORD Jukebox::refreshPlaylist(){
         //Descargando fichero con metadatos
         string metadataCloud;
 
-        if (this->getServerSelected() == GOOGLEDRIVESERVER){
-            metadataCloud = ((GoogleDrive *)server)->fileExist("metadata.txt",albumSelec, server->getAccessToken());
-        } else {
-            metadataCloud = albumSelec + "/" + "metadata.txt";
-        }
-
-        Traza::print("Jukebox::refreshPlaylist. Descargando metadatos: " + metadataCloud, W_DEBUG);
-        server->getFile(metadataLocal,
-                        metadataCloud,
-                        server->getAccessToken());
-
-        map<string, string> metadatos;
-        Traza::print("Jukebox::refreshPlaylist. Generando Hashmap", W_DEBUG);
-        hashMapMetadatos(&metadatos, metadataLocal);
-        string strSeconds;
-        unsigned long ulongSeconds = 0;
-        string metaKeyTime;
-        string metaKeyArtist;
-        string metaKeyAlbum;
-        string metaKeyTitle;
-        string fichero;
-
-        Traza::print("Jukebox::refreshPlaylist. Rellenando metadatos para cada cancion", W_DEBUG);
-        string idFile;
-        for (int i=0; i < files.fileList.size(); i++){
-            ruta = files.fileList.at(i)->path;
-            filename = ruta.substr(ruta.find_last_of("/")+1);
-
+        if (!aborted){
             if (this->getServerSelected() == GOOGLEDRIVESERVER){
-                idFile = files.fileList.at(i)->strHash;
+                metadataCloud = ((GoogleDrive *)server)->fileExist("metadata.txt",albumSelec, server->getAccessToken());
             } else {
-                idFile = ruta;
+                metadataCloud = albumSelec + "/" + "metadata.txt";
             }
 
-//            cout << filename  << "; " << dir.getExtension(filename) << endl;
-            if (!files.fileList.at(i)->isDir && filtroOGG.find(dir.getExtension(filename)) != string::npos){
-                fichero = dir.getFileNameNoExt(filename);
-                Traza::print(ruta, W_PARANOIC);
-                //Miramos en la hashmap si existe nuestra clave
-                metaKeyTime = fichero + arrTags[tagDuration];
-                if (metadatos.count(metaKeyTime) > 0){
-                    //cout << "Buscando tiempo para: " << metaKeyTime << endl;
-                    strSeconds = metadatos.at(metaKeyTime);
-                    ulongSeconds = floor(Constant::strToTipo<double>(strSeconds));
+            Traza::print("Jukebox::refreshPlaylist. Descargando metadatos: " + metadataCloud, W_DEBUG);
+            server->getFile(metadataLocal,
+                            metadataCloud,
+                            server->getAccessToken());
+
+            map<string, string> metadatos;
+            Traza::print("Jukebox::refreshPlaylist. Generando Hashmap", W_DEBUG);
+            hashMapMetadatos(&metadatos, metadataLocal);
+            string strSeconds;
+            unsigned long ulongSeconds = 0;
+            string metaKeyTime;
+            string metaKeyArtist;
+            string metaKeyAlbum;
+            string metaKeyTitle;
+            string fichero;
+
+            Traza::print("Jukebox::refreshPlaylist. Rellenando metadatos para cada cancion", W_DEBUG);
+            string idFile;
+            for (int i=0; i < files.fileList.size(); i++){
+                ruta = files.fileList.at(i)->path;
+                filename = ruta.substr(ruta.find_last_of("/")+1);
+
+                if (this->getServerSelected() == GOOGLEDRIVESERVER){
+                    idFile = files.fileList.at(i)->strHash;
                 } else {
-                    strSeconds = "";
-                    ulongSeconds = 0;
+                    idFile = ruta;
                 }
 
-                metaKeyArtist = getMetadatos(&metadatos, fichero + arrTags[tagArtist]);
-                metaKeyAlbum = getMetadatos(&metadatos, fichero + arrTags[tagAlbum]);
-                metaKeyTitle = getMetadatos(&metadatos, fichero + arrTags[tagTitle]);
+    //            cout << filename  << "; " << dir.getExtension(filename) << endl;
+                if (!files.fileList.at(i)->isDir && filtroOGG.find(dir.getExtension(filename)) != string::npos){
+                    fichero = dir.getFileNameNoExt(filename);
+                    Traza::print(ruta, W_PARANOIC);
+                    //Miramos en la hashmap si existe nuestra clave
+                    metaKeyTime = fichero + arrTags[tagDuration];
+                    if (metadatos.count(metaKeyTime) > 0){
+                        //cout << "Buscando tiempo para: " << metaKeyTime << endl;
+                        strSeconds = metadatos.at(metaKeyTime);
+                        ulongSeconds = floor(Constant::strToTipo<double>(strSeconds));
+                    } else {
+                        strSeconds = "";
+                        ulongSeconds = 0;
+                    }
 
-                Traza::print("Jukebox::refreshPlaylist. Album: " + metaKeyAlbum, W_DEBUG);
-                Traza::print("Jukebox::refreshPlaylist. Title: " + metaKeyTitle, W_DEBUG);
+                    metaKeyArtist = getMetadatos(&metadatos, fichero + arrTags[tagArtist]);
+                    metaKeyAlbum = getMetadatos(&metadatos, fichero + arrTags[tagAlbum]);
+                    metaKeyTitle = getMetadatos(&metadatos, fichero + arrTags[tagTitle]);
 
-                metaKeyAlbum = Constant::udecodeUTF8(metaKeyAlbum);
-                metaKeyTitle = Constant::udecodeUTF8(metaKeyTitle);
+                    Traza::print("Jukebox::refreshPlaylist. Album: " + metaKeyAlbum, W_DEBUG);
+                    Traza::print("Jukebox::refreshPlaylist. Title: " + metaKeyTitle, W_DEBUG);
 
-                Traza::print("Jukebox::refreshPlaylist. Album: " + metaKeyAlbum, W_DEBUG);
-                Traza::print("Jukebox::refreshPlaylist. Title: " + metaKeyTitle, W_DEBUG);
+                    metaKeyAlbum = Constant::udecodeUTF8(metaKeyAlbum);
+                    metaKeyTitle = Constant::udecodeUTF8(metaKeyTitle);
 
-                vector <ListGroupCol *> miFila;
-                miFila.push_back(new ListGroupCol(metaKeyTitle.empty() ? dir.getFileNameNoExt(filename) : metaKeyTitle, idFile));
-                miFila.push_back(new ListGroupCol(metaKeyArtist, metaKeyArtist));
-                miFila.push_back(new ListGroupCol(metaKeyAlbum, metaKeyAlbum));
-                miFila.push_back(new ListGroupCol(Constant::timeFormat(ulongSeconds), strSeconds));
-                playList->addElemLista(miFila);
+                    Traza::print("Jukebox::refreshPlaylist. Album: " + metaKeyAlbum, W_DEBUG);
+                    Traza::print("Jukebox::refreshPlaylist. Title: " + metaKeyTitle, W_DEBUG);
+
+                    vector <ListGroupCol *> miFila;
+                    miFila.push_back(new ListGroupCol(metaKeyTitle.empty() ? dir.getFileNameNoExt(filename) : metaKeyTitle, idFile));
+                    miFila.push_back(new ListGroupCol(metaKeyArtist, metaKeyArtist));
+                    miFila.push_back(new ListGroupCol(metaKeyAlbum, metaKeyAlbum));
+                    miFila.push_back(new ListGroupCol(Constant::timeFormat(ulongSeconds), strSeconds));
+                    playList->addElemLista(miFila);
+                }
             }
         }
         playList->setImgDrawed(false);
@@ -496,6 +498,12 @@ void Jukebox::abortDownload(){
     }
 }
 
+void Jukebox::abortServers(){
+    for (int i=0; i < MAXSERVERS; i++){
+        arrCloud[i]->abortDownload();
+    }
+    aborted = true;
+}
 /**
 *
 */
@@ -626,7 +634,7 @@ DWORD Jukebox::refreshAlbum(){
     string ruta;
     string idRuta;
 
-    for (int serverID=0; serverID < MAXSERVERS; serverID++){
+    for (int serverID=0; serverID < MAXSERVERS && !aborted; serverID++){
         IOauth2 *server = this->getServerCloud(serverID);
 
         if (serverID == GOOGLEDRIVESERVER){

@@ -1031,7 +1031,7 @@
 	"biquad.h"
 	"statevar.h"
 
-1461236828 c:\github\externallibs\uiobjects\src\constant.h
+1461565302 c:\github\externallibs\uiobjects\src\constant.h
 	<fstream>
 	<sstream>
 	<string.h>
@@ -1074,7 +1074,7 @@
 	"SDL/SDL_image.h"
 	"SDL/SDL_rotozoom.h"
 
-1458654032 c:\github\externallibs\uiobjects\src\dirutil.h
+1461569588 c:\github\externallibs\uiobjects\src\dirutil.h
 	"fileprops.h"
 	<dirent.h>
 	<sys/stat.h>
@@ -1113,13 +1113,13 @@
 	"Excepcion.h"
 	"Traza.h"
 
-1461327477 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
+1461596988 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
 	"uilistcommon.h"
 
-1461252881 c:\github\proyectos\onmusik\src\iofrontend.h
+1461565276 c:\github\proyectos\onmusik\src\iofrontend.h
 	<string>
 	<vector>
 	"Ioutil.h"
@@ -1142,7 +1142,7 @@
 	"scrapper/scrapper.h"
 	"updater/updater.h"
 
-1461219674 c:\github\proyectos\onmusik\src\ioutil.h
+1461570028 c:\github\proyectos\onmusik\src\ioutil.h
 	<iostream>
 	<map>
 	<cmath>
@@ -1277,7 +1277,7 @@
 	<iostream>
 	<vector>
 
-1460374765 c:\github\externallibs\uiobjects\src\uitextelementsarea.h
+1461570845 c:\github\externallibs\uiobjects\src\uitextelementsarea.h
 	<object.h>
 
 1460557828 c:\github\externallibs\uiobjects\src\uispectrum.h
@@ -1296,7 +1296,7 @@
 1461135462 c:\github\externallibs\uiobjects\src\listaini.h
 	"ListaSimple.h"
 
-1461309530 c:\github\proyectos\onmusik\src\jukebox.h
+1461576822 c:\github\proyectos\onmusik\src\jukebox.h
 	"Launcher.h"
 	"Menuobject.h"
 	"servers/dropbox.h"
@@ -1369,7 +1369,7 @@
 	"Dirutil.h"
 	"thread.h"
 
-1461307290 c:\github\proyectos\httpcurl\httpcurl\src\util\constant.h
+1461565293 c:\github\proyectos\httpcurl\httpcurl\src\util\constant.h
 	<sstream>
 	<string.h>
 	<vector>
@@ -1500,7 +1500,7 @@
 	<iostream>
 	"Constant.h"
 
-1461251388 source:c:\github\proyectos\onmusik\src\ioutil.cpp
+1461573262 source:c:\github\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"
@@ -1509,10 +1509,10 @@
 
 1455209140 c:\github\externallibs\uiobjects\src\font\arimo_regular.ttf.h
 
-1461327972 source:c:\github\proyectos\onmusik\src\jukebox.cpp
+1461577666 source:c:\github\proyectos\onmusik\src\jukebox.cpp
 	"jukebox.h"
 
-1460527847 source:c:\github\proyectos\onmusik\src\main.cpp
+1461565276 source:c:\github\proyectos\onmusik\src\main.cpp
 	"main.h"
 	"Dirutil.h"
 	<iostream>
@@ -2871,13 +2871,13 @@
 	<fstream>
 	<map>
 
-1460527847 c:\github\proyectos\onmusik\src\updater\updater.h
+1461575806 c:\github\proyectos\onmusik\src\updater\updater.h
 	"Constant.h"
 	"Dirutil.h"
 	"unzip/unziptool.h"
 	"httputil.h"
 
-1460533494 source:c:\github\proyectos\onmusik\src\updater\updater.cpp
+1461575858 source:c:\github\proyectos\onmusik\src\updater\updater.cpp
 	"updater.h"
 
 1461322438 c:\github\proyectos\httpcurl\httpcurl\src\servers\dropbox.h
@@ -2897,7 +2897,7 @@
 	"thread.h"
 	"ioauth2.h"
 
-1461314486 c:\github\proyectos\httpcurl\httpcurl\src\servers\ioauth2.h
+1461565293 c:\github\proyectos\httpcurl\httpcurl\src\servers\ioauth2.h
 	"Constant.h"
 	"httputil.h"
 	"Dirutil.h"
@@ -2905,7 +2905,7 @@
 	"json/json.h"
 	"listaIni.h"
 
-1461254366 c:\github\proyectos\httpcurl\httpcurl\src\servers\googledrive.h
+1461565293 c:\github\proyectos\httpcurl\httpcurl\src\servers\googledrive.h
 	"ioauth2.h"
 
 1461321039 c:\github\externallibs\uiobjects\src\unzip\gziphelper.h

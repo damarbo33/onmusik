@@ -87,7 +87,7 @@
             void marcarPos(int x, int y);
             void drawUIListGroupBox(Object *obj);
             void drawListGroupContent(Object *obj, int x, int y, int w, int h);
-            void drawScrollBar(UIListCommon *obj);
+            void drawScrollBar(Object *obj);
             void drawUITextElementsArea(Object *obj);
             void drawUISpectrum(Object *obj);
             void drawUISlider(Object *obj, tEvento *evento);

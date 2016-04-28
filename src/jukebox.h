@@ -59,6 +59,7 @@ class Jukebox
 //        void refreshPlaylist(string rutaAlbumDropbox);
         void downloadFile(string ruta);
         void abortDownload();
+        void abortServers();
         void addLocalAlbum(string ruta);
         void setRutaInfoId3(string var){rutaInfoId3 = var;}
         bool isCanPlay(){return canPlay;}
@@ -100,6 +101,7 @@ class Jukebox
         string generarNombreAlbum(FileProps *file, string ruta);
         string generarDirGoogleDrive(string nombreAlbum);
         void subirMetadatos(string nombreAlbum, string rutaUpload, string rutaMetadata);
+        bool aborted;
 
 };
 

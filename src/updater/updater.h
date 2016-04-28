@@ -15,9 +15,12 @@ class Updater
         DWORD updates();
         setRuta(string var) {ruta = var;}
         bool needUpdate(string ruta);
+        void abort();
 
     protected:
         string ruta;
+        HttpUtil *utilHttp;
+        bool aborted;
 
     private:
 };

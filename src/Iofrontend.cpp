@@ -2253,6 +2253,7 @@ void Iofrontend::refreshAlbumAndPlaylist(){
     Traza::print("Iofrontend::refreshAlbumAndPlaylist", W_INFO);
 
     int errorServers = autenticarServicios();
+
     if (errorServers == MAXSERVERS){
         showMessage("No se ha podido conectar a los servidores", 2000);
     } else {
@@ -2261,20 +2262,29 @@ void Iofrontend::refreshAlbumAndPlaylist(){
 
         Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshAlbumAndPlaylist);
         tEvento evento;
+        tEvento eventoNull;
 
         clearScr();
-        procesarControles(obj, &evento, NULL);
+        procesarControles(obj, &eventoNull, NULL);
         drawTextCent("Obteniendo álbums. Espere...",0,-70,true,true, cBlanco);
         flipScr();
-
         pintarIconoProcesando(true);
-
         thread->start();
-        while (thread->isRunning()){
+        clearEvento(&evento);
+        clearEvento(&eventoNull);
+
+        while (thread->isRunning() && evento.key != SDLK_ESCAPE && !evento.quit){
             evento = WaitForKey();
-            procesarControles(obj, &evento, NULL);
+            procesarControles(obj, &eventoNull, NULL);
             pintarIconoProcesando(false);
         }
+
+        if (evento.key == SDLK_ESCAPE || evento.quit){
+            juke->abortServers();
+            thread->join();
+            WaitForKey();
+        }
+
         delete thread;
 
         ((UIListGroup *)obj->getObjByName("playLists"))->setImgDrawed(false);
@@ -2406,24 +2416,34 @@ int Iofrontend::autenticarServicios(){
 
     Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::authenticateServers);
 
+    //Realizamos la conexion de prueba a google y a dropbox
     if (thread->start())
-        //Realizamos la conexion de prueba a google y a dropbox
         Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
-        tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
-        tEvento evento;
-        clearScr();
-        procesarControles(obj, &evento, NULL);
-        drawTextCent("Conectando a servicios. Espere...", 0, -70,true,true, cBlanco);
-        flipScr();
 
-        pintarIconoProcesando(true);
-        thread->start();
-        while (thread->isRunning()){
-            WaitForKey();
-            procesarControles(obj, &evento, NULL);
-            pintarIconoProcesando(false);
-        }
-        procesarControles(obj, &evento, NULL);
+    tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+    tEvento evento;
+    tEvento eventoNull;
+    clearScr();
+    procesarControles(obj, &eventoNull, NULL);
+    drawTextCent("Conectando a servicios. Espere...", 0, -70,true,true, cBlanco);
+    flipScr();
+
+    pintarIconoProcesando(true);
+    thread->start();
+    while (thread->isRunning() && evento.key != SDLK_ESCAPE && !evento.quit){
+        WaitForKey();
+        procesarControles(obj, &eventoNull, NULL);
+        pintarIconoProcesando(false);
+    }
+
+    procesarControles(obj, &eventoNull, NULL);
+
+    if (evento.key == SDLK_ESCAPE || evento.quit){
+        juke->abortServers();
+        thread->join();
+        WaitForKey();
+        someErrorToken = MAXSERVERS;
+    } else {
         //Comprobamos si ha habido algun error en la obtencion del accesstoken
         someErrorToken = comprobarTokenServidores();
         bool salir = false;
@@ -2460,7 +2480,7 @@ int Iofrontend::autenticarServicios(){
 //        else {
 //            showMessage("No se ha podido autenticar en los servidores. Revise su conexión o especifique datos de proxy", 4000);
 //        }
-
+    }
     return someErrorToken;
 }
 
@@ -2557,7 +2577,9 @@ int Iofrontend::uploadToServer(tEvento *evento, int idServer){
                 string msg = "La ruta seleccionada tiene subdirectorios. ¿Deseas concatenar el";
                 msg.append(" nombre del directorio seleccionado \"" + dirSelected + "\"");
                 msg.append(" al nombre de los discos que se subirán?\nPrevisualización:");
-                for (int i=0; i < dirs.size(); i++){
+                int maxElements = nFiles[1] > 30 ? 30 : nFiles[1];
+
+                for (int i=0; i < maxElements; i++){
                     msg.append("\n- " + dirSelected + " " + dirs.at(i) );
                 }
 
@@ -2680,15 +2702,25 @@ void Iofrontend::actualizaciones(){
         flipScr();
         threadUpdate->start();
 
+        tEvento eventoNulo;
         tEvento evento;
-        while (threadUpdate->isRunning()){
-            WaitForKey();
-            procesarControles(ObjectsMenu[PANTALLAREPRODUCTOR], &evento, NULL);
+        clearEvento(&evento);
+
+        while (threadUpdate->isRunning() && evento.key != SDLK_ESCAPE && !evento.quit ){
+            procesarControles(ObjectsMenu[PANTALLAREPRODUCTOR], &eventoNulo, NULL);
             pintarIconoProcesando(false);
+            evento = WaitForKey();
         }
+
+        if (evento.key == SDLK_ESCAPE || evento.quit){
+            updater->abort();
+            threadUpdate->join();
+            WaitForKey();
+        }
+
         delete threadUpdate;
         clearScr();
-        procesarControles(ObjectsMenu[PANTALLAREPRODUCTOR], &evento, NULL);
+        procesarControles(ObjectsMenu[PANTALLAREPRODUCTOR], &eventoNulo, NULL);
         flipScr();
     }
     delete updater;

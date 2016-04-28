@@ -1363,7 +1363,6 @@ void Ioutil::cachearObjeto(Object *obj){
     if (obj->isVisible()){
         int borde = 0;
 
-
         if (obj->showShadow() && obj->isVerContenedor()){
             borde += BORDERSELECTION;
         } else if (obj->isVerContenedor()){
@@ -1787,14 +1786,14 @@ void Ioutil::drawListGroupContent(Object *obj, int x, int y, int w, int h){
                             drawTextInArea(listObj->getCol(i,contCol)->getTexto().c_str() , x + sepGrupos, centeredY + posObjY, colorText, &textArea);
                         }
 
-                        //Se pinta el triangulo superior
-                        if (listObj->getPosIniLista() > 0){
-                            pintarTriangulo (listObj->getX() + listObj->getW() - 6, listObj->getY() + INPUTCONTENT + Constant::getMENUSPACE(), TRISCROLLBARTAM, TRISCROLLBARTAM, true, colorText);
-                        }
-                        //Se pinta el triangulo inferior
-                        if (listObj->getPosFinLista() + 1 < (unsigned int)listObj->getSize()){
-                            pintarTriangulo (listObj->getX() + listObj->getW() - 6, listObj->getY() + listObj->getH() - INPUTCONTENT, TRISCROLLBARTAM, TRISCROLLBARTAM, false, colorText);
-                        }
+//                        //Se pinta el triangulo superior
+//                        if (listObj->getPosIniLista() > 0){
+//                            pintarTriangulo (listObj->getX() + listObj->getW() - 6, listObj->getY() + INPUTCONTENT + Constant::getMENUSPACE(), TRISCROLLBARTAM, TRISCROLLBARTAM, true, colorText);
+//                        }
+//                        //Se pinta el triangulo inferior
+//                        if (listObj->getPosFinLista() + 1 < (unsigned int)listObj->getSize()){
+//                            pintarTriangulo (listObj->getX() + listObj->getW() - 6, listObj->getY() + listObj->getH() - INPUTCONTENT, TRISCROLLBARTAM, TRISCROLLBARTAM, false, colorText);
+//                        }
                     }
                     sepGrupos += listObj->getHeaderWith(contCol) + INPUTCONTENT;
                 }
@@ -3108,7 +3107,7 @@ void Ioutil::pintarDegradado(int x1, int y1, int x2, int y2, int lineas, int gra
 /**
 *
 */
-void Ioutil::drawScrollBar(UIListCommon *obj){
+void Ioutil::drawScrollBar(Object *obj){
     //Tamanyo por defecto minimo de la barra de desplazamiento
     int scrollbarHeight = MINSCROLLBARHEIGHT;
     //Variable para almacenar el incremento de la posicion de la barra de desplazamiento
@@ -3117,14 +3116,19 @@ void Ioutil::drawScrollBar(UIListCommon *obj){
     bool allElementsVisible = false;
 
 
-    int minY = obj->getY() + INPUTCONTENT + Constant::getMENUSPACE() + TRISCROLLBARTAM;
+    int minY = obj->getY() + INPUTCONTENT + TRISCROLLBARTAM;
     int maxY = obj->getY() + obj->getH() - INPUTCONTENT - TRISCROLLBARTAM;
     int maxScrollBarY = maxY;
+    bool drawScroll = false;
 
-    if (obj->getSize() > 0){
-        if (obj->getSize() > obj->getElemVisibles()){
+
+    if (obj->getObjectType() == GUILISTBOX || obj->getObjectType() == GUILISTGROUPBOX){
+        UIListCommon *objList = (UIListCommon *)obj;
+        minY += Constant::getMENUSPACE();
+
+        if (objList->getSize() > objList->getElemVisibles()){
             //Cuantos mas elementos haya en la lista, mas pequenya sera la barra de desplazamiento
-            scrollbarHeight = (maxY - minY) * obj->getElemVisibles() / (float) obj->getSize();
+            scrollbarHeight = (maxY - minY) * objList->getElemVisibles() / (float) objList->getSize();
         } else {
             //Si no hay suficientes elementos en la lista para que se supere el maximo que se
             //puede mostrar por pantalla, se pinta la barra entera
@@ -3134,20 +3138,59 @@ void Ioutil::drawScrollBar(UIListCommon *obj){
         //Comprobamos que la barra tenga un tamanyo minimo
         scrollbarHeight = scrollbarHeight < MINSCROLLBARHEIGHT ? MINSCROLLBARHEIGHT : scrollbarHeight;
 
-        if (obj->getSize() > obj->getElemVisibles()){
+        if (objList->getSize() > objList->getElemVisibles()){
             //Calculamos la posicion Y que se tendra que agregar a la minima posicion Y desde la que
             //partira la barra
-            posRelativa = (maxY - minY - scrollbarHeight) * obj->getPosActualLista() / (float) obj->getSize();
+            posRelativa = (maxY - minY - scrollbarHeight) * objList->getPosActualLista() / (float) objList->getSize();
+        }
+        drawScroll = objList->isShowScrollbar() && ((allElementsVisible && objList->isShowScrollbarAlways()) || !allElementsVisible) ;
+
+        //Se pinta el triangulo superior
+        if (objList->getPosIniLista() > 0){
+            pintarTriangulo (obj->getX() + obj->getW() - 6, obj->getY() + INPUTCONTENT + Constant::getMENUSPACE(), TRISCROLLBARTAM, TRISCROLLBARTAM, true, obj->getTextColor());
+        }
+        //Se pinta el triangulo inferior
+        if (objList->getPosFinLista() + 1 < (unsigned int)objList->getSize()){
+            pintarTriangulo (obj->getX() + obj->getW() - 6, obj->getY() + obj->getH() - INPUTCONTENT, TRISCROLLBARTAM, TRISCROLLBARTAM, false, obj->getTextColor());
+        }
+
+    } else if(obj->getObjectType() == GUITEXTELEMENTSAREA) {
+        UITextElementsArea *objText = (UITextElementsArea *)obj;
+
+        if ( objText->getMaxOffsetY() > objText->getH()){
+            scrollbarHeight = (maxY - minY) * objText->getH() / (float) objText->getMaxOffsetY();
+        } else {
+            scrollbarHeight = (maxY - minY);
+            allElementsVisible = true;
+        }
+
+        posRelativa = -1 * (maxY - minY - scrollbarHeight) * objText->getOffsetDesplazamiento() / (float) objText->getMaxOffsetY();
+        drawScroll = true;
+        int offDesp = objText->getOffsetDesplazamiento();
+        int maxOffDesp = objText->getMaxOffsetY();
+
+        //Se pinta el triangulo superior
+        if (abs(objText->getOffsetDesplazamiento()) > 0){
+            pintarTriangulo (obj->getX() + obj->getW() - 6, obj->getY() + INPUTCONTENT
+                             , TRISCROLLBARTAM, TRISCROLLBARTAM, true, obj->getTextColor());
+        }
+        //Se pinta el triangulo inferior
+        if (abs(objText->getOffsetDesplazamiento()) < abs(objText->getMaxOffsetY())){
+            pintarTriangulo (obj->getX() + obj->getW() - 6, obj->getY() + obj->getH()
+                             , TRISCROLLBARTAM, TRISCROLLBARTAM, false, obj->getTextColor());
         }
     }
 
-    if (obj->isShowScrollbar() && ((allElementsVisible && obj->isShowScrollbarAlways()) || !allElementsVisible) ){
+    if (drawScroll){
         //Dibujamos la barra de scroll
         drawRectLine(obj->getX() + obj->getW() - SCROLLBARWIDTH - INPUTCONTENT + 1,
              minY + posRelativa,
              SCROLLBARWIDTH, scrollbarHeight,
-             1, cNegro);
+             1, obj->getTextColor());
     }
+
+
+
 
 }
 
@@ -3253,6 +3296,7 @@ void Ioutil::drawTextInsideArea( string dato, int x, int y, Object *obj, SDL_Rec
         const short int maxLineaPx = textLocation->w - ( x );
         short int offsetY = 0;
         bool retorno = false;
+        int objPosY = obj->getY();
 
         for (int i = 0; i < vtexto.size(); i++){
             tmpStr = vtexto.at(i);
@@ -3268,7 +3312,8 @@ void Ioutil::drawTextInsideArea( string dato, int x, int y, Object *obj, SDL_Rec
                 SDL_Rect screenLocation = { (short int)textLocation->x + x + acumLinePx,
                                             (short int)textLocation->y + y + offsetY, 0, 0 };
 
-                if (screenLocation.y < obj->getY() + obj->getH() - Constant::getMENUSPACE()){
+                if (screenLocation.y < obj->getY() + obj->getH() - Constant::getMENUSPACE()
+                    && screenLocation.y >= obj->getY() ){
                     SDL_Surface* textSurface =  TTF_RenderText_Blended(font, tmpStr.c_str(), foregroundColor);
                     SDL_BlitSurface(textSurface, NULL, screen, &screenLocation);
                     SDL_FreeSurface(textSurface);
@@ -3279,6 +3324,11 @@ void Ioutil::drawTextInsideArea( string dato, int x, int y, Object *obj, SDL_Rec
                 acumLinePx += tamPalabra;
             }
         }
+
+        UITextElementsArea *objText = (UITextElementsArea *)obj;
+        objText->setMaxOffsetY(offsetY);
+        drawScrollBar(obj);
+
     } else {
         Traza::print("Fallo en drawTextInArea: La fuente es NULL", W_ERROR);
     }
