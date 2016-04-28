@@ -1768,8 +1768,9 @@ int Iofrontend::openLocalDisc(tEvento *evento){
 
 int Iofrontend::btnActionAddServer(tEvento *evento){
     Traza::print("Iofrontend::btnActionAddServer", W_INFO);
-    AddServer(evento);
-    autenticateAndRefresh();
+    if (AddServer(evento) != MAXSERVERS){
+        autenticateAndRefresh();
+    }
 }
 
 /**
@@ -1811,10 +1812,11 @@ int Iofrontend::AddServer(tEvento *evento){
                 clearScr(cGrisOscuro);
                 juke->getServerCloud(serverSelected)->storeAccessToken(tmpClient, tmpSecret, code, false);
             }
+            someErrorToken = comprobarTokenServidores();
         } else {
             someErrorToken = MAXSERVERS;
         }
-        someErrorToken = comprobarTokenServidores();
+
     }
     return someErrorToken;
 }
@@ -2574,8 +2576,9 @@ int Iofrontend::accionUploadPopup(tEvento *evento){
             objsMenu->setFirstFocus();
             Traza::print("Subiendo para el servidor: " + selected, W_DEBUG);
             if (errorTokenServidor(servidor)){
-                AddServer(evento);
-                refrescarAlbums();
+                if (AddServer(evento) != MAXSERVERS){
+                    refrescarAlbums();
+                }
             } else {
                 uploadToServer(evento, servidor);
             }
