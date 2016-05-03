@@ -292,7 +292,12 @@ void Ioutil::drawObject(Object *obj, tEvento *evento){
             drawUIProgressBar(obj, evento);
             break;
         case GUISPECTRUM:
-            drawUISpectrum(obj);
+            if (((UISpectrum *)obj)->getSpectrumVisualizer() == WAVESPECTRUM){
+                drawUISpectrum(obj);
+            } else if (((UISpectrum *)obj)->getSpectrumVisualizer() == BARSPECTRUM){
+                drawUISpectrumFft(obj);
+            }
+
             break;
         case GUISLIDER:
             //Traza::print("evento.mouse_x: ",evento->mouse_x, W_DEBUG);
@@ -735,7 +740,7 @@ void Ioutil::drawText( const char* dato, int x, int y, t_color color){
 void Ioutil::drawTextInArea( const char* dato, int x, int y, t_color color, SDL_Rect *textLocation){
     if (font != NULL){
         SDL_Color foregroundColor = { (unsigned char)color.r, (unsigned char)color.g, (unsigned char)color.b };
-        SDL_Surface* textSurface =  TTF_RenderText_Blended(font,dato, foregroundColor);
+        SDL_Surface* textSurface =  TTF_RenderText_Blended(font, dato, foregroundColor);
         SDL_Rect screenLocation = { (short int)x, (short int)y, 0, 0 };
         SDL_BlitSurface(textSurface, textLocation, screen, &screenLocation);
         SDL_FreeSurface(textSurface);
@@ -1272,6 +1277,7 @@ void Ioutil::drawUIPicture(Object *obj){
         }
     }
 }
+
 /**
 *
 */
@@ -1332,8 +1338,98 @@ void Ioutil::drawUISpectrum(Object *obj){
         } else {
             cachearObjeto(obj);
         }
+    }
+}
 
-        cout << "";
+t_color Ioutil::MapColor (int s){
+
+    int totalColores = sizeof (ColorScaleFFT) / sizeof(t_color);
+
+    s = (s / (double)MAXVALUEFFT) * totalColores;
+
+	if (s > totalColores - 1)
+		s = totalColores - 1;
+	return ColorScaleFFT [s];
+}
+
+/**
+*
+*/
+void Ioutil::drawUISpectrumFft(Object *obj){
+    const int margenBarras = 20;
+    const int sepBarras = 3;
+    const int numCeils = 10;
+    const int x_ = obj->getX();
+    const int y_ = obj->getY();
+    const int w_ = obj->getW();
+    const int h_ = obj->getH();
+    const int W=w_-2*INPUTBORDER;
+    const int H=h_-2*INPUTBORDER;
+    const int hBarCeil = floor( (H - margenBarras) / (double)numCeils);
+    const int barWidth = W /(double)NBIQUADFILTERS;
+    int valueFreq = 0;
+    double percent = 0;
+    int barHeight = 0;
+    t_color barColor;
+    SDL_Rect labelLocation;
+    labelLocation.x = x_;
+    labelLocation.y = y_ + H - margenBarras;
+    labelLocation.w = x_ + W;
+    labelLocation.h = fontHeight;
+    int tmpFontSize = FONTSIZE;
+
+    if (obj->isVisible()){
+        if (!obj->getImgDrawed()){
+            pintarContenedor(x_,y_,w_,h_,obj->isFocus() && obj->isEnabled(), obj, obj->getColor());
+            UISpectrum *objspectrum = (UISpectrum *)obj;
+
+            if (objspectrum->isEnabled() && objspectrum->arrFreqVis != NULL){
+                SDL_LockSurface(screen);
+                for (int i=0; i < NBIQUADFILTERS; i++){
+                    //Obtenemos el valor de la frecuencia
+                    valueFreq = objspectrum->arrFreqVis[i] > MAXVALUEFFT ? MAXVALUEFFT : objspectrum->arrFreqVis[i];
+                    //Obtenemos el color y el tamanyo de la barra a pintar
+                    barColor = MapColor(valueFreq);
+                    percent = valueFreq / (double) MAXVALUEFFT;
+                    barHeight = (H - margenBarras) * percent;
+
+                    if (barHeight > hBarCeil)
+                        barHeight -= (barHeight % hBarCeil);
+
+                    //Pintamos las barras que indican las componentes en frecuencia
+                    SDL_Rect r={x_ + i * barWidth, y_ + H - barHeight - margenBarras - sepBarras * 2, x_ + barWidth, barHeight};
+                    SDL_FillRect(screen, &r, SDL_MapRGB(screen->format,barColor.r,barColor.g,barColor.b));
+                    //Pintamos las barras verticales de separacion entre bandas
+                    SDL_Rect sepRect={x_ + i * barWidth, y_ + INPUTBORDER, sepBarras, H};
+                    SDL_FillRect(screen, &sepRect, SDL_MapRGB(screen->format, obj->getColor().r,obj->getColor().g,obj->getColor().b));
+                }
+
+                SDL_Rect sepRect={x_ + INPUTBORDER,
+                                  y_,
+                                  x_ + W,
+                                  sepBarras};
+
+                for (int i=0; i < numCeils; i++){
+                    sepRect.y += hBarCeil;
+                    SDL_FillRect(screen, &sepRect, SDL_MapRGB(screen->format, obj->getColor().r,obj->getColor().g,obj->getColor().b));
+                }
+                SDL_UnlockSurface(screen);
+            }
+
+            if (!obj->isOtherDrawed()){
+                loadFont(9);
+                for (int i=0; i < NBIQUADFILTERS; i++){
+                    drawText(frecsEQStr[i], x_ + i * barWidth + barWidth / 4, labelLocation.y + 5, cBlanco);
+                }
+                cachearPosicion(obj,&labelLocation);
+                loadFont(tmpFontSize);
+            } else {
+                cachearPosicion(obj,&labelLocation);
+            }
+            cachearObjeto(obj);
+        } else {
+            cachearObjeto(obj);
+        }
     }
 }
 

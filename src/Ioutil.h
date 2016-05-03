@@ -51,6 +51,29 @@
             MAXMENU
     } enumMenus;
 
+
+
+    static const t_color ColorScaleFFT [] =
+    {
+        cAzulOscuro, // dk blue
+        cAzulTotal, // lt blue
+        cVerde, // lt green
+        cVerde,
+        cVerde,
+        cVerde,
+        cVerde,
+        cAmarillo,  // lt yellow
+        cAmarillo,
+        cAmarillo,
+        cAmarillo,
+        cAmarillo,
+        cNaranja,   // orange
+        cNaranja,
+        cNaranja,
+        cNaranja,
+        cRojo // lt red
+    };
+
     class Ioutil : public Fileio{
         public:
             Ioutil();
@@ -90,6 +113,8 @@
             void drawScrollBar(Object *obj);
             void drawUITextElementsArea(Object *obj);
             void drawUISpectrum(Object *obj);
+            t_color MapColor (int s);
+            void drawUISpectrumFft(Object *obj);
             void drawUISlider(Object *obj, tEvento *evento);
             void drawIco(int , int , int , int , int );
             void drawIco(int numIco, int angle, int x, int y, int w, int h);

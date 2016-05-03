@@ -2067,7 +2067,6 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
             }
         }
     } while (player->getStatus() != STOPED && playList->getPosActualLista() < playList->getSize());
-    accionesMediaStop(NULL);
 
     return 0;
 }
@@ -2242,7 +2241,6 @@ bool Iofrontend::bucleReproductor(){
     } catch (Excepcion &e){
         Traza::print("Excepcion en bucle de reproductor: " + string(e.getMessage()), W_ERROR);
     }
-
     return true;
 }
 
@@ -2718,6 +2716,8 @@ void Iofrontend::refreshSpectrum(AudioPlayer *player){
         streamData->canUpdateBuffer = false;
         //Copiamos el puntero con la informacion de los datos de audio
         obj->buf = streamData->stream[streamData->which];
+
+        obj->arrFreqVis = streamData->arrFreqVis;
         //De forma alternativa, podemos copiar el buffer entero en lugar de
         //usar un puntero a memoria
 //        if (obj->buf == NULL)

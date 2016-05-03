@@ -1031,7 +1031,7 @@
 	"biquad.h"
 	"statevar.h"
 
-1461852276 c:\github\externallibs\uiobjects\src\constant.h
+1462282953 c:\github\externallibs\uiobjects\src\constant.h
 	<fstream>
 	<sstream>
 	<string.h>
@@ -1113,7 +1113,7 @@
 	"Excepcion.h"
 	"Traza.h"
 
-1461858685 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
+1462289939 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
@@ -1142,7 +1142,7 @@
 	"scrapper/scrapper.h"
 	"updater/updater.h"
 
-1461570028 c:\github\proyectos\onmusik\src\ioutil.h
+1462289752 c:\github\proyectos\onmusik\src\ioutil.h
 	<iostream>
 	<map>
 	<cmath>
@@ -1280,7 +1280,7 @@
 1461570845 c:\github\externallibs\uiobjects\src\uitextelementsarea.h
 	<object.h>
 
-1460557828 c:\github\externallibs\uiobjects\src\uispectrum.h
+1462280727 c:\github\externallibs\uiobjects\src\uispectrum.h
 	<object.h>
 
 1458551372 c:\github\externallibs\uiobjects\src\thread.h
@@ -1500,7 +1500,7 @@
 	<iostream>
 	"Constant.h"
 
-1461573262 source:c:\github\proyectos\onmusik\src\ioutil.cpp
+1462290998 source:c:\github\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"
@@ -1509,7 +1509,7 @@
 
 1455209140 c:\github\externallibs\uiobjects\src\font\arimo_regular.ttf.h
 
-1461851174 source:c:\github\proyectos\onmusik\src\jukebox.cpp
+1462290500 source:c:\github\proyectos\onmusik\src\jukebox.cpp
 	"jukebox.h"
 
 1461858578 source:c:\github\proyectos\onmusik\src\main.cpp
@@ -2965,4 +2965,45 @@
 
 1461354668 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\servers\googledrive.h
 	"ioauth2.h"
+
+1462275021 source:c:\github\proyectos\mp3play\src\audioplayer.cpp
+	"audioplayer.h"
+	"Constant.h"
+
+1462282932 c:\github\proyectos\mp3play\src\audioplayer.h
+	<iostream>
+	<fstream>
+	<stdio.h>
+	<string.h>
+	<sstream>
+	<cstdlib>
+	<SDL/SDL.h>
+	<SDL/SDL_mixer.h>
+	"SDL/SDL_ttf.h"
+	"Constant.h"
+	"math.h"
+	"Traza.h"
+	"gmutex.h"
+	"Dirutil.h"
+	"Menuobject.h"
+	"biquad.h"
+	"fft/Fft.h"
+
+1459963133 c:\github\proyectos\mp3play\src\biquad.h
+
+1459802728 source:c:\github\proyectos\mp3play\src\biquad.cpp
+	<math.h>
+	"Biquad.h"
+
+1462264392 c:\github\proyectos\mp3play\src\fft\fft.h
+	"complex.h"
+	"assert.h"
+	<stdio.h>
+	<string.h>
+
+918291456 c:\github\proyectos\mp3play\src\fft\complex.h
+	<math.h>
+
+1462268103 source:c:\github\proyectos\mp3play\src\fft\fft.cpp
+	"fft.h"
 
