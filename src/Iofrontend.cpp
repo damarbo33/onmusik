@@ -90,12 +90,12 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAPREGUNTA]->getObjByName("valor")->setColor(cBlanco);
 
 
-    ObjectsMenu[PANTALLACONFIRMAR]->add("borde", GUIPANELBORDER,0,0,0,0, "Seleccione una opcion", false);
+    ObjectsMenu[PANTALLACONFIRMAR]->add("borde", GUIPANELBORDER,0,0,0,0, Constant::toAnsiString("Seleccione una opción"), false);
     ObjectsMenu[PANTALLACONFIRMAR]->add("textosBox", GUITEXTELEMENTSAREA, 0, -50 * zoomText, getWidth()-50, 120, "", true)->setVerContenedor(false);
     ObjectsMenu[PANTALLACONFIRMAR]->add("btnSiConfirma", GUIBUTTON, -(BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
     ObjectsMenu[PANTALLACONFIRMAR]->add("btnNoConfirma", GUIBUTTON, (BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
 
-    ObjectsMenu[PANTALLALOGIN]->add("borde", GUIPANELBORDER,0,0,0,0, "Seleccione una opcion", false);
+    ObjectsMenu[PANTALLALOGIN]->add("borde", GUIPANELBORDER,0,0,0,0, Constant::toAnsiString("Seleccione una opcion"), false);
     ObjectsMenu[PANTALLALOGIN]->add("textosBox", GUITEXTELEMENTSAREA, 0, -40 * zoomText, getWidth()-50, 70, "", true)->setVerContenedor(false);
     ObjectsMenu[PANTALLALOGIN]->add("btnGoogle", GUIBUTTON, -(BUTTONSERVERW/2 + 5)*2, 30,BUTTONSERVERW,BUTTONH, "Google", true)->setIcon(google_png);
     ObjectsMenu[PANTALLALOGIN]->add("btnDropbox", GUIBUTTON, 0, 30,BUTTONSERVERW,BUTTONH, "Dropbox", true)->setIcon(dropbox_png);
@@ -114,7 +114,7 @@ void Iofrontend::initUIObjs(){
 
 
     //2, 2, FAMFAMICONW, FAMFAMICONH
-    ObjectsMenu[PANTALLABIENVENIDA]->add("borde", GUIPANEL, 2 + FAMFAMICONW, 2 + FAMFAMICONH,getWidth(),getHeight(), "Bienvenido!", false)->setEnabled(false);;
+    ObjectsMenu[PANTALLABIENVENIDA]->add("borde", GUIPANEL, 2 + FAMFAMICONW, 2 + FAMFAMICONH,getWidth(),getHeight(), Constant::toAnsiString("Bienvenido!"), false)->setEnabled(false);;
     ObjectsMenu[PANTALLABIENVENIDA]->add("textosBox", GUITEXTELEMENTSAREA, 80,50,getWidth() - 80,150, "", false)->setVerContenedor(false);
     ObjectsMenu[PANTALLABIENVENIDA]->add("btnSiConfirma", GUIBUTTON, 80, 200, BUTTONW,BUTTONH, "Entendido!", false)->setIcon(tick);
     ObjectsMenu[PANTALLABIENVENIDA]->add("ImgFlecha", GUIBUTTON, 2 + FAMFAMICONW, 0, 50,50, "Ajustar volumen", false)->setIcon(FlechaEsquinaSupIzq)->setVerContenedor(false);
@@ -133,7 +133,7 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLABROWSER2]->add(OBJLISTABROWSER2, GUILISTBOX, 0, 0, 0, 0, "LISTADODIR", false)->setVerContenedor(false)->setShadow(false);
     ObjectsMenu[PANTALLABROWSER2]->add(BTNACEPTARBROWSER, GUIBUTTON, -(BUTTONW/2 + 5), 0, BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
     ObjectsMenu[PANTALLABROWSER2]->add(BTNCANCELARBROWSER, GUIBUTTON, (BUTTONW/2 + 5), 0, BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
-    ObjectsMenu[PANTALLABROWSER2]->add(ARTDIRBROWSER, GUIARTSURFACE, 0, 0, INPUTW, Constant::getINPUTH(), "Direccion Browser", false)->setEnabled(false);
+    ObjectsMenu[PANTALLABROWSER2]->add(ARTDIRBROWSER, GUIARTSURFACE, 0, 0, INPUTW, Constant::getINPUTH(), Constant::toAnsiString("Dirección Browser"), false)->setEnabled(false);
     ObjectsMenu[PANTALLABROWSER2]->add("comboBrowser", GUICOMBOBOX, 0, 0, 0, 0, "", false);
 
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("panelMedia", GUIPANEL, 0,0,0,0, "", true)->setEnabled(false);
@@ -151,16 +151,16 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("progressBarMedia", GUIPROGRESSBAR, 0,0,0,0, "", true)->setShadow(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("progressBarVolumen", GUIPROGRESSBAR, 0,0,0,0, "", true)->setShadow(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("ImgVol", GUIBUTTON, 0,0,0,0, "Ajustar volumen", true)->setIcon(sound)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnBackward", GUIBUTTON, 0,0,0,0, "Saltar a canción anterior", true)->setIcon(control_rewind)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnBackward", GUIBUTTON, 0,0,0,0, Constant::toAnsiString("Saltar a canción anterior"), true)->setIcon(control_rewind)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnPlay",     GUIBUTTON, 0,0,0,0, "Reproducir", true)->setIcon(control_play)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnStop",     GUIBUTTON, 0,0,0,0, "Parar", true)->setIcon(control_stop)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnForward",  GUIBUTTON, 0,0,0,0, "Saltar a canción siguiente", true)->setIcon(control_fastforward)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnForward",  GUIBUTTON, 0,0,0,0, Constant::toAnsiString("Saltar a canción siguiente"), true)->setIcon(control_fastforward)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnRepeat", GUIBUTTON, 0,0,0,0, "Repetir disco", true)->setIcon(btn_repeat_off)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnRandom", GUIBUTTON, 0,0,0,0, "Aleatorio", true)->setIcon(btn_random_off)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnEqualizer", GUIBUTTON, 0,0,0,0, "Mostrar Ecualizador", true)->setIcon(control_equalizer)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnSwitchEq", GUIBUTTON, 0,0,0,0, "Ecualizador On/Off", true)->setIcon(btn_on)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnResetEq", GUIBUTTON, 0,0,0,0, "Resetear Ecualizador", true)->setIcon(btn_reset_eq)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnLetras",  GUIBUTTON, 0,0,0,0, "Letra de la canción", true)->setIcon(fontIco)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnLetras",  GUIBUTTON, 0,0,0,0, Constant::toAnsiString("Letra de la canción"), true)->setIcon(fontIco)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setVisible(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnResetEq")->setVisible(false);
 
@@ -230,10 +230,10 @@ void Iofrontend::initUIObjs(){
 
 
     vector <ListGroupCol *> miCabecera;
-    miCabecera.push_back(new ListGroupCol("Canción", ""));
+    miCabecera.push_back(new ListGroupCol(Constant::toAnsiString("Canción"), ""));
     miCabecera.push_back(new ListGroupCol("Artista", ""));
-    miCabecera.push_back(new ListGroupCol("Album", ""));
-    miCabecera.push_back(new ListGroupCol("Duración", ""));
+    miCabecera.push_back(new ListGroupCol(Constant::toAnsiString("Álbum"), ""));
+    miCabecera.push_back(new ListGroupCol(Constant::toAnsiString("Duración"), ""));
     playList->setHeaderLista(miCabecera);
     playList->adjustToHeader(false);
     playList->addHeaderWith(100);
@@ -1684,6 +1684,7 @@ int Iofrontend::accionesEqualizer(tEvento *evento){
         }
         objSpectrum->setEnabled(true);
         player->setViewSpectrum(true);
+
     } else {
         //Debemos dibujar el equalizador
         player->setViewSpectrum(false);
@@ -1799,15 +1800,15 @@ int Iofrontend::AddServer(tEvento *evento){
         mensaje.append("A continuación se abrirá un explorador. Debes logarte en Dropbox o Google y pulsar el botón de \"PERMITIR\".");
         mensaje.append("Seguidamente deberás copiar el código obtenido y pegarlo en la ventana de Onmusik que aparecerá a continuación.");
 
-        int serverSelected = casoPANTALLALOGIN("Autorizar aplicación", mensaje);
+        int serverSelected = casoPANTALLALOGIN(Constant::toAnsiString("Autorizar aplicación"), Constant::toAnsiString(mensaje));
         if (serverSelected < MAXSERVERS){
             string tmpClient = juke->getServerCloud(serverSelected)->getClientid();
             string tmpSecret = juke->getServerCloud(serverSelected)->getSecret();
             strNameServer = arrNameServers[serverSelected];
 
             juke->getServerCloud(serverSelected)->launchAuthorize(tmpClient);
-            string code = casoPANTALLAPREGUNTA("Autorizar aplicación", "Introduce el campo obtenido de la página de "
-                                               + strNameServer + " (CTRL+V)");
+            string code = casoPANTALLAPREGUNTA(Constant::toAnsiString("Autorizar aplicación"), Constant::toAnsiString("Introduce el campo obtenido de la página de "
+                                               + strNameServer + " (CTRL+V)"));
             if (!code.empty()){
                 clearScr(cGrisOscuro);
                 juke->getServerCloud(serverSelected)->storeAccessToken(tmpClient, tmpSecret, code, false);
@@ -2324,7 +2325,7 @@ void Iofrontend::refrescarAlbums(){
 
     clearScr();
     procesarControles(obj, &eventoNull, NULL);
-    drawTextCent("Obteniendo álbums. Espere...",0,-70,true,true, cBlanco);
+    drawTextCent(Constant::toAnsiString("Obteniendo álbums. Espere...").c_str(),0,-70,true,true, cBlanco);
     flipScr();
     pintarIconoProcesando(true);
     thread->start();

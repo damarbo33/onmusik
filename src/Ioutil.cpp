@@ -750,6 +750,7 @@ void Ioutil::drawTextInArea( const char* dato, int x, int y, t_color color, SDL_
 }
 
 
+
 /**
 */
 void Ioutil::drawTextInt(int number, int x, int y, t_color color){
@@ -1394,10 +1395,13 @@ void Ioutil::drawUISpectrumFft(Object *obj){
                     barHeight = (H - margenBarras) * percent;
 
                     if (barHeight > hBarCeil)
-                        barHeight -= (barHeight % hBarCeil);
-
+                    {
+//                        barHeight -= (barHeight % hBarCeil);
+                        int ceils = barHeight / hBarCeil;
+                        barHeight = hBarCeil * ceils - sepBarras;
+                    }
                     //Pintamos las barras que indican las componentes en frecuencia
-                    SDL_Rect r={x_ + i * barWidth, y_ + H - barHeight - margenBarras - sepBarras * 2, x_ + barWidth, barHeight};
+                    SDL_Rect r={x_ + i * barWidth, y_ + H - barHeight - margenBarras, x_ + barWidth, barHeight};
                     SDL_FillRect(screen, &r, SDL_MapRGB(screen->format,barColor.r,barColor.g,barColor.b));
                     //Pintamos las barras verticales de separacion entre bandas
                     SDL_Rect sepRect={x_ + i * barWidth, y_ + INPUTBORDER, sepBarras, H};
@@ -1405,28 +1409,29 @@ void Ioutil::drawUISpectrumFft(Object *obj){
                 }
 
                 SDL_Rect sepRect={x_ + INPUTBORDER,
-                                  y_,
+                                  y_ + H - margenBarras,
                                   x_ + W,
                                   sepBarras};
 
                 for (int i=0; i < numCeils; i++){
-                    sepRect.y += hBarCeil;
+                    sepRect.y -= hBarCeil;
                     SDL_FillRect(screen, &sepRect, SDL_MapRGB(screen->format, obj->getColor().r,obj->getColor().g,obj->getColor().b));
                 }
-                SDL_UnlockSurface(screen);
-            }
 
-            if (!obj->isOtherDrawed()){
-                loadFont(9);
-                for (int i=0; i < NBIQUADFILTERS; i++){
-                    drawText(frecsEQStr[i], x_ + i * barWidth + barWidth / 4, labelLocation.y + 5, cBlanco);
+                SDL_UnlockSurface(screen);
+
+                if (!obj->isOtherDrawed()){
+                    loadFont(9);
+                    for (int i=0; i < NBIQUADFILTERS; i++){
+                        drawText(frecsEQStr[i], x_ + i * barWidth + barWidth / 4, labelLocation.y + 5, cBlanco);
+                    }
+                    cachearPosicion(obj,&labelLocation);
+                    loadFont(tmpFontSize);
+                } else {
+                    cachearPosicion(obj,&labelLocation);
                 }
-                cachearPosicion(obj,&labelLocation);
-                loadFont(tmpFontSize);
-            } else {
-                cachearPosicion(obj,&labelLocation);
+                cachearObjeto(obj);
             }
-            cachearObjeto(obj);
         } else {
             cachearObjeto(obj);
         }
