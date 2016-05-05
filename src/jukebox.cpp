@@ -361,7 +361,6 @@ void Jukebox::convertir(string ruta){
                 }
                 Traza::print("Tags id3 obtenidos para: " + file.filename, W_DEBUG);
                 //Generating metadata with time info for each song
-                //songFileName = Constant::removeEspecialChars(dir.getFileNameNoExt(file.filename));
                 songFileName = Constant::uencodeUTF8(dir.getFileNameNoExt(file.filename));
                 Traza::print("songFileName", W_DEBUG);
                 root[songFileName]["album"] = Constant::uencodeUTF8(id3Tags.album);
@@ -809,57 +808,114 @@ void Jukebox::subirMetadatos(string nombreAlbum, string rutaUpload, string rutaM
 */
 int Jukebox::extraerCD(string cdDrive, string extractionPath){
     CAudioCD AudioCD;
-    string rutaRip = extractionPath + Constant::getFileSep() + "rip" + Constant::getFileSep() + "CDEX";
-    Traza::print("Iofrontend::extraerCD. Extrayendo CD a la ruta: " + rutaRip, W_DEBUG);
     Dirutil dir;
+    string msg;
+    int i=0;
+    CdTrackInfo cdTrack;
+    int padSize = 0;
 
-    if (!existe(extractionPath)){
-        ObjectsMenu->getObjByName("statusMessage")->setLabel("No se puede acceder al directorio " + extractionPath);
-        return 0;
-    }
-
-    dir.mkpath((extractionPath + Constant::getFileSep() + "rip").c_str(), S_IRWXU);
-    dir.mkpath(rutaRip.c_str(), S_IRWXU);
-
+    //Abrimos el CD de audio
     if ( ! AudioCD.Open( cdDrive.at(0) ) ){
-        Traza::print("No se puede abrir la unidad " + cdDrive, W_DEBUG);
+        Traza::print("Jukebox::extraerCD No se puede abrir la unidad " + cdDrive, W_DEBUG);
         ObjectsMenu->getObjByName("statusMessage")->setLabel("No se puede abrir la unidad " + cdDrive);
         return 0;
     }
 
-    Traza::print("Disc ID: " + AudioCD.getCddbID(), W_DEBUG);
+    //Obtenemos el numero de pistas
     ULONG TrackCount = AudioCD.GetTrackCount();
-    Traza::print("Numero de pistas", TrackCount, W_DEBUG);
     ObjectsMenu->getObjByName("statusMessage")->setLabel("Extrayendo " + Constant::TipoToStr(TrackCount) + " pistas");
+    padSize = Constant::TipoToStr(TrackCount).length();
+    Traza::print("Jukebox::extraerCD Disc ID: " + AudioCD.getCddbID(), W_DEBUG);
+    Traza::print("Jukebox::extraerCD Numero de pistas", TrackCount, W_DEBUG);
 
-    int padSize = Constant::TipoToStr(TrackCount).length();
-    string msg;
-    int i=0;
+    //Obtenemos informacion del cd
+    getCddb(&AudioCD, &cdTrack);
+
+    string albumName = Constant::removeEspecialChars(cdTrack.albumName);
+    if (albumName.empty()){
+        albumName = "rip_" + Constant::replaceAll(Constant::fecha(), ":", "_");
+    }
+
+    string rutaRip = extractionPath + FILE_SEPARATOR + "rip"
+                    + FILE_SEPARATOR
+                    + albumName;
+
+    Traza::print("Iofrontend::extraerCD. Extrayendo CD a la ruta: "+ rutaRip, W_DEBUG);
+    if (!existe(extractionPath)){
+        ObjectsMenu->getObjByName("statusMessage")->setLabel("No se puede acceder al directorio " + extractionPath);
+        return 0;
+    }
+//    dir.createDir(extractionPath + "\\" + "rip");
+//    dir.createDir(rutaRip);
+    dir.mkpath(rutaRip.c_str(), 0777);
 
     for (i=0; i<TrackCount; i++ ){
         ULONG Time = AudioCD.GetTrackTime( i );
         //printf( "Track %i: %i:%.2i;  %i bytes of size\n", i+1, Time/60, Time%60, AudioCD.GetTrackSize(i) );
 
-        msg = "Track " + Constant::TipoToStr(i+1) + " " + Constant::TipoToStr(Time/60) + ":"
-             + Constant::TipoToStr(Time%60) + Constant::TipoToStr(AudioCD.GetTrackSize(i)) + " bytes of size";
+        msg = "Track " + Constant::TipoToStr(i+1) + " Tiempo: " + Constant::TipoToStr(Time/60) + ":"
+             + Constant::TipoToStr(Time%60) + " Tamaño: "
+             + Constant::TipoToStr(ceil (AudioCD.GetTrackSize(i) / double( pow(1024, 2)))) + " MB";
 
         ObjectsMenu->getObjByName("statusMessage")->setLabel(msg);
 
-        string songName = rutaRip + FILE_SEPARATOR +  "Track "
-                    + Constant::pad(Constant::TipoToStr(i+1), padSize, '0') +  ".wav";
+        string songName;
+
+        if (cdTrack.titleList.size() > 0 && i < cdTrack.titleList.size()){
+            songName = rutaRip + FILE_SEPARATOR + Constant::pad(Constant::TipoToStr(i+1), padSize, '0')
+                       + " - " + cdTrack.titleList.at(i) + ".wav";
+        } else {
+            songName = rutaRip + FILE_SEPARATOR +  "Track "
+                    + Constant::pad(Constant::TipoToStr(i+1), padSize, '0') + ".wav";
+        }
 
         // Save track-data to file...
         if ( ! AudioCD.ExtractTrack( i, songName.c_str() ) ){
             ObjectsMenu->getObjByName("statusMessage")->setLabel("No se puede extraer la pista " + Constant::TipoToStr(i));
             Traza::print("No se puede extraer la pista", i, W_DEBUG);
         }
-
         // ... or just get the data into memory
 //        CBuf<char> Buf;
 //        if ( ! AudioCD.ReadTrack(i, &Buf) )
 //            printf( "Cannot read track!\n" );
     }
+
+
     return i;
+}
+
+/**
+*
+*/
+void Jukebox::getCddb(CAudioCD *audioCD, CdTrackInfo *cdTrack){
+    Freedb cddb;
+    FreedbQuery query;
+    query.discId = audioCD->getCddbID();
+    query.username = "dani";
+    query.hostname = "dani.web.com";
+    query.clientname = "dani";
+    query.version = "1";
+//    query.categ = "rock";
+    query.totalSeconds = audioCD->getDiscSeconds();
+
+    std::vector<CDTRACK> *cdInfo = audioCD->getCdInfo();
+    for (int i=0; i < cdInfo->size(); i++){
+        query.offsets.push_back(cdInfo->at(i).Offset);
+    }
+    //int code = cddb.getCdInfo(&query, cdTrack);
+    vector<CdTrackInfo *> cdTrackList;
+    int code = cddb.searchCd(&query, &cdTrackList);
+    Traza::print("Codigo", code, W_DEBUG);
+
+//    for (int i=0; i < cdTrackList.size(); i++){
+//        Traza::print(cdTrackList.at(i)->albumName, W_DEBUG);
+//    }
+    if (cdTrackList.size() > 0){
+        query.categ = cdTrackList.at(0)->genre;
+        query.discId = cdTrackList.at(0)->discId;
+        code = cddb.getCdInfo(&query, cdTrack);
+    }
+
 }
 
 

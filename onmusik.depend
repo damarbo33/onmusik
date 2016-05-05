@@ -1548,7 +1548,7 @@
 	"biquad.h"
 	"statevar.h"
 
-1461863619 d:\github\codeblocks\externallibs\uiobjects\src\constant.h
+1462468341 d:\github\codeblocks\externallibs\uiobjects\src\constant.h
 	<fstream>
 	<sstream>
 	<string.h>
@@ -1578,7 +1578,7 @@
 	<pthread.h>
 	<pthread.h>
 
-1461863619 d:\github\codeblocks\externallibs\uiobjects\src\dirutil.h
+1462468341 d:\github\codeblocks\externallibs\uiobjects\src\dirutil.h
 	"fileprops.h"
 	<dirent.h>
 	<sys/stat.h>
@@ -1729,14 +1729,14 @@
 1461863619 d:\github\codeblocks\externallibs\uiobjects\src\uitextelementsarea.h
 	<object.h>
 
-1461349467 d:\github\codeblocks\externallibs\uiobjects\src\uispectrum.h
+1462295578 d:\github\codeblocks\externallibs\uiobjects\src\uispectrum.h
 	<object.h>
 
 1461346316 d:\github\codeblocks\proyectos\mp3play\biquad.h
 
 1461863528 source:d:\github\codeblocks\proyectos\onmusik\resource.rc
 
-1461863528 source:d:\github\codeblocks\proyectos\onmusik\src\icogestor.cpp
+1462468465 source:d:\github\codeblocks\proyectos\onmusik\src\icogestor.cpp
 	"Icogestor.h"
 
 1461863528 d:\github\codeblocks\proyectos\onmusik\src\icogestor.h
@@ -1747,13 +1747,13 @@
 	"SDL/SDL_image.h"
 	"SDL/SDL_rotozoom.h"
 
-1461864647 source:d:\github\codeblocks\proyectos\onmusik\src\iofrontend.cpp
+1462468465 source:d:\github\codeblocks\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
 	"uilistcommon.h"
 
-1461863528 d:\github\codeblocks\proyectos\onmusik\src\iofrontend.h
+1462468465 d:\github\codeblocks\proyectos\onmusik\src\iofrontend.h
 	<string>
 	<vector>
 	"Ioutil.h"
@@ -1776,7 +1776,7 @@
 	"scrapper/scrapper.h"
 	"updater/updater.h"
 
-1461863528 d:\github\codeblocks\proyectos\onmusik\src\ioutil.h
+1462295564 d:\github\codeblocks\proyectos\onmusik\src\ioutil.h
 	<iostream>
 	<map>
 	<cmath>
@@ -1815,13 +1815,15 @@
 1461349467 d:\github\codeblocks\externallibs\uiobjects\src\listaini.h
 	"ListaSimple.h"
 
-1461863484 d:\github\codeblocks\proyectos\onmusik\src\jukebox.h
+1462482539 d:\github\codeblocks\proyectos\onmusik\src\jukebox.h
 	"Launcher.h"
 	"Menuobject.h"
 	"servers/dropbox.h"
 	"servers/googledrive.h"
 	"listaIni.h"
 	"thread.h"
+	"audiocd/CAudioCD.h"
+	"cddb/freedb.h"
 
 1461349467 d:\github\codeblocks\externallibs\uiobjects\src\launcher.h
 	<string.h>
@@ -2019,7 +2021,7 @@
 	<iostream>
 	"Constant.h"
 
-1461863528 source:d:\github\codeblocks\proyectos\onmusik\src\ioutil.cpp
+1462468465 source:d:\github\codeblocks\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"
@@ -2028,10 +2030,10 @@
 
 1461349467 d:\github\codeblocks\externallibs\uiobjects\src\font\arimo_regular.ttf.h
 
-1461863484 source:d:\github\codeblocks\proyectos\onmusik\src\jukebox.cpp
+1462493942 source:d:\github\codeblocks\proyectos\onmusik\src\jukebox.cpp
 	"jukebox.h"
 
-1461863528 source:d:\github\codeblocks\proyectos\onmusik\src\main.cpp
+1462468465 source:d:\github\codeblocks\proyectos\onmusik\src\main.cpp
 	"main.h"
 	"Dirutil.h"
 	<iostream>
@@ -3030,4 +3032,73 @@
 1159218806 c:\github\proyectos\mp3play\src\audiocd\cbuf.h
 	<windows.h>
 	<malloc.h>
+
+1462468421 source:d:\github\codeblocks\proyectos\mp3play\src\audiocd\audiocd_helpers.cpp
+	"AudioCD_Helpers.h"
+
+1462468421 d:\github\codeblocks\proyectos\mp3play\src\audiocd\audiocd_helpers.h
+	<windows.h>
+
+1462481448 source:d:\github\codeblocks\proyectos\mp3play\src\audiocd\caudiocd.cpp
+	"CAudioCD.h"
+	"AudioCD_Helpers.h"
+
+1462481438 d:\github\codeblocks\proyectos\mp3play\src\audiocd\caudiocd.h
+	<windows.h>
+	<vector>
+	"CBuf.h"
+	<winioctl.h>
+	<math.h>
+	<string>
+	<stdio.h>
+
+1462468421 d:\github\codeblocks\proyectos\mp3play\src\audiocd\cbuf.h
+	<windows.h>
+	<malloc.h>
+
+1462295571 source:d:\github\codeblocks\proyectos\mp3play\src\audioplayer.cpp
+	"audioplayer.h"
+	"Constant.h"
+
+1462295571 d:\github\codeblocks\proyectos\mp3play\src\audioplayer.h
+	<iostream>
+	<fstream>
+	<stdio.h>
+	<string.h>
+	<sstream>
+	<cstdlib>
+	<SDL/SDL.h>
+	<SDL/SDL_mixer.h>
+	"SDL/SDL_ttf.h"
+	"Constant.h"
+	"math.h"
+	"Traza.h"
+	"gmutex.h"
+	"Dirutil.h"
+	"Menuobject.h"
+	"biquad.h"
+	"fft/Fft.h"
+
+1462295571 d:\github\codeblocks\proyectos\mp3play\src\biquad.h
+
+1462295571 d:\github\codeblocks\proyectos\mp3play\src\fft\fft.h
+	"complex.h"
+	"assert.h"
+	<stdio.h>
+	<string.h>
+
+1462295571 d:\github\codeblocks\proyectos\mp3play\src\fft\complex.h
+	<math.h>
+
+1462295571 source:d:\github\codeblocks\proyectos\mp3play\src\biquad.cpp
+	<math.h>
+	"Biquad.h"
+
+1462295571 source:d:\github\codeblocks\proyectos\mp3play\src\fft\fft.cpp
+	"fft.h"
+
+1462485986 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\cddb\freedb.h
+	"httputil.h"
+	"htmlparser.h"
+	"util/Constant.h"
 

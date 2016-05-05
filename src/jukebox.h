@@ -8,6 +8,7 @@
 #include "listaIni.h"
 #include "thread.h"
 #include "audiocd/CAudioCD.h"
+#include "cddb/freedb.h"
 
 using namespace std;
 
@@ -85,6 +86,7 @@ class Jukebox{
         }
 
         int extraerCD(string cdDrive, string extractionPath);
+        void getCddb(CAudioCD *audioCD, CdTrackInfo *cdTrack);
 
     protected:
 
