@@ -105,6 +105,13 @@ void IcoGestor::cargarIconos(){
     cargarIcono("Google-Drive-icon.png");
     cargarIcono("boton_disabled.png");
     cargarIcono("server_add.png");
+    cargarIcono("cd_add.png");
+    cargarIcono("cd.png");
+    cargarIcono("drive.png");
+    cargarIcono("drive_cd.png");
+    cargarIcono("drive_disk.png");
+    cargarIcono("drive_network.png");
+
 
 }
 

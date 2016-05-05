@@ -1031,7 +1031,7 @@
 	"biquad.h"
 	"statevar.h"
 
-1462370576 c:\github\externallibs\uiobjects\src\constant.h
+1462446972 c:\github\externallibs\uiobjects\src\constant.h
 	<fstream>
 	<sstream>
 	<string.h>
@@ -1063,7 +1063,7 @@
 
 1458251728 source:c:\github\proyectos\onmusik\resource.rc
 
-1461852263 source:c:\github\proyectos\onmusik\src\icogestor.cpp
+1462437242 source:c:\github\proyectos\onmusik\src\icogestor.cpp
 	"Icogestor.h"
 
 1393499909 c:\github\proyectos\onmusik\src\icogestor.h
@@ -1074,7 +1074,7 @@
 	"SDL/SDL_image.h"
 	"SDL/SDL_rotozoom.h"
 
-1461569588 c:\github\externallibs\uiobjects\src\dirutil.h
+1462436944 c:\github\externallibs\uiobjects\src\dirutil.h
 	"fileprops.h"
 	<dirent.h>
 	<sys/stat.h>
@@ -1113,13 +1113,13 @@
 	"Excepcion.h"
 	"Traza.h"
 
-1462372858 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
+1462453405 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
 	"uilistcommon.h"
 
-1461858536 c:\github\proyectos\onmusik\src\iofrontend.h
+1462440379 c:\github\proyectos\onmusik\src\iofrontend.h
 	<string>
 	<vector>
 	"Ioutil.h"
@@ -1296,13 +1296,14 @@
 1461135462 c:\github\externallibs\uiobjects\src\listaini.h
 	"ListaSimple.h"
 
-1461576822 c:\github\proyectos\onmusik\src\jukebox.h
+1462447732 c:\github\proyectos\onmusik\src\jukebox.h
 	"Launcher.h"
 	"Menuobject.h"
 	"servers/dropbox.h"
 	"servers/googledrive.h"
 	"listaIni.h"
 	"thread.h"
+	"audiocd/CAudioCD.h"
 
 1457027851 c:\github\externallibs\uiobjects\src\launcher.h
 	<string.h>
@@ -1500,7 +1501,7 @@
 	<iostream>
 	"Constant.h"
 
-1462376514 source:c:\github\proyectos\onmusik\src\ioutil.cpp
+1462447919 source:c:\github\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"
@@ -1509,10 +1510,10 @@
 
 1455209140 c:\github\externallibs\uiobjects\src\font\arimo_regular.ttf.h
 
-1462290500 source:c:\github\proyectos\onmusik\src\jukebox.cpp
+1462463538 source:c:\github\proyectos\onmusik\src\jukebox.cpp
 	"jukebox.h"
 
-1461858578 source:c:\github\proyectos\onmusik\src\main.cpp
+1462442856 source:c:\github\proyectos\onmusik\src\main.cpp
 	"main.h"
 	"Dirutil.h"
 	<iostream>
@@ -3006,4 +3007,27 @@
 
 1462268103 source:c:\github\proyectos\mp3play\src\fft\fft.cpp
 	"fft.h"
+
+1159274752 source:c:\github\proyectos\mp3play\src\audiocd\audiocd_helpers.cpp
+	"AudioCD_Helpers.h"
+
+1159274722 c:\github\proyectos\mp3play\src\audiocd\audiocd_helpers.h
+	<windows.h>
+
+1462463660 source:c:\github\proyectos\mp3play\src\audiocd\caudiocd.cpp
+	"CAudioCD.h"
+	"AudioCD_Helpers.h"
+
+1462463621 c:\github\proyectos\mp3play\src\audiocd\caudiocd.h
+	<windows.h>
+	<vector>
+	"CBuf.h"
+	<winioctl.h>
+	<math.h>
+	<string>
+	<stdio.h>
+
+1159218806 c:\github\proyectos\mp3play\src\audiocd\cbuf.h
+	<windows.h>
+	<malloc.h>
 

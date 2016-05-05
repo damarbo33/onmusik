@@ -136,6 +136,11 @@
 		<Compiler>
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="../MP3Play/src/audiocd/AudioCD_Helpers.cpp" />
+		<Unit filename="../MP3Play/src/audiocd/AudioCD_Helpers.h" />
+		<Unit filename="../MP3Play/src/audiocd/CAudioCD.cpp" />
+		<Unit filename="../MP3Play/src/audiocd/CAudioCD.h" />
+		<Unit filename="../MP3Play/src/audiocd/CBuf.h" />
 		<Unit filename="../MP3Play/src/audioplayer.cpp" />
 		<Unit filename="../MP3Play/src/audioplayer.h" />
 		<Unit filename="../MP3Play/src/biquad.cpp" />

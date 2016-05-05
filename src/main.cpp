@@ -35,6 +35,7 @@ int main(int argc, char *argv[]){
         if (pos == string::npos){
             FILE_SEPARATOR = FILE_SEPARATOR_UNIX;
             pos = appDir.rfind(FILE_SEPARATOR);
+            tempFileSep[0] = FILE_SEPARATOR;
         }
         appDir = appDir.substr(0, pos);
         if (appDir[appDir.length()-1] == '.'){

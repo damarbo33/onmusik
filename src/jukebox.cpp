@@ -21,6 +21,8 @@ Jukebox::Jukebox(){
     arrCloud[GOOGLEDRIVESERVER] = new GoogleDrive();
     serverSelected = DROPBOXSERVER;
     aborted = false;
+    cdDrive = "";
+    extractionPath = "";
 }
 
 /**
@@ -133,7 +135,7 @@ TID3Tags Jukebox::getSongInfo(string filepath){
 */
 DWORD Jukebox::convertir(){
     convertir(dirToUpload);
-    uploadMusicToDropbox(dirToUpload);
+    uploadMusicToServer(dirToUpload);
     return 0;
 }
 
@@ -148,10 +150,28 @@ DWORD Jukebox::downloadFile(){
 /**
 *
 */
-DWORD Jukebox::uploadMusicToDropbox(){
-    uploadMusicToDropbox(dirToUpload);
+DWORD Jukebox::uploadMusicToServer(){
+    uploadMusicToServer(dirToUpload);
     return 0;
 }
+
+/**
+*
+*/
+DWORD Jukebox::extraerCD(){
+    if (!cdDrive.empty() && !extractionPath.empty()){
+        int res = extraerCD(cdDrive, extractionPath);
+        if (res > 0){
+            string rutaRip = extractionPath + Constant::getFileSep() + "rip";
+            setDirToUpload(rutaRip);
+            convertir(rutaRip);
+            uploadMusicToServer(rutaRip);
+        }
+    }
+
+    return 0;
+}
+
 /**
 *
 */
@@ -321,7 +341,7 @@ void Jukebox::convertir(string ruta){
 
                 //Counter for the codification progress message
                 countFile++;
-                int percent = (countFile/(float)(filelist->size()-1))*100;
+                int percent = (countFile/(float)(filelist->size()))*100;
                 ObjectsMenu->getObjByName("statusMessage")->setLabel("Recodificando "
                             + Constant::TipoToStr(percent) + "% "
                             + " " + file.filename);
@@ -674,7 +694,7 @@ DWORD Jukebox::refreshAlbum(){
 /**
 *
 */
-void Jukebox::uploadMusicToDropbox(string ruta){
+void Jukebox::uploadMusicToServer(string ruta){
     string rutaMetadata = ruta + tempFileSep + fileMetadata;
     Dirutil dir;
     vector<FileProps> *filelist = new vector<FileProps>();
@@ -753,6 +773,9 @@ string Jukebox::generarNombreAlbum(FileProps *file, string ruta){
     return nombreAlbum;
 }
 
+/**
+*
+*/
 string Jukebox::generarDirGoogleDrive(string nombreAlbum){
     IOauth2 *server = this->getServerCloud(this->getServerSelected());
     string idMusic = ((GoogleDrive *)server)->fileExist("Music","", server->getAccessToken());
@@ -767,6 +790,9 @@ string Jukebox::generarDirGoogleDrive(string nombreAlbum){
     return idRutaUpload;
 }
 
+/**
+*
+*/
 void Jukebox::subirMetadatos(string nombreAlbum, string rutaUpload, string rutaMetadata){
     IOauth2 *server = this->getServerCloud(this->getServerSelected());
     ObjectsMenu->getObjByName("statusMessage")->setLabel("Subiendo " + fileMetadata);
@@ -778,8 +804,102 @@ void Jukebox::subirMetadatos(string nombreAlbum, string rutaUpload, string rutaM
     server->chunckedUpload(rutaMetadata, rutaUpload, server->getAccessToken());
 }
 
+/**
+*
+*/
+int Jukebox::extraerCD(string cdDrive, string extractionPath){
+    CAudioCD AudioCD;
+    string rutaRip = extractionPath + Constant::getFileSep() + "rip" + Constant::getFileSep() + "CDEX";
+    Traza::print("Iofrontend::extraerCD. Extrayendo CD a la ruta: " + rutaRip, W_DEBUG);
+    Dirutil dir;
+
+    if (!existe(extractionPath)){
+        ObjectsMenu->getObjByName("statusMessage")->setLabel("No se puede acceder al directorio " + extractionPath);
+        return 0;
+    }
+
+    dir.mkpath((extractionPath + Constant::getFileSep() + "rip").c_str(), S_IRWXU);
+    dir.mkpath(rutaRip.c_str(), S_IRWXU);
+
+    if ( ! AudioCD.Open( cdDrive.at(0) ) ){
+        Traza::print("No se puede abrir la unidad " + cdDrive, W_DEBUG);
+        ObjectsMenu->getObjByName("statusMessage")->setLabel("No se puede abrir la unidad " + cdDrive);
+        return 0;
+    }
+
+    Traza::print("Disc ID: " + AudioCD.getCddbID(), W_DEBUG);
+    ULONG TrackCount = AudioCD.GetTrackCount();
+    Traza::print("Numero de pistas", TrackCount, W_DEBUG);
+    ObjectsMenu->getObjByName("statusMessage")->setLabel("Extrayendo " + Constant::TipoToStr(TrackCount) + " pistas");
+
+    int padSize = Constant::TipoToStr(TrackCount).length();
+    string msg;
+    int i=0;
+
+    for (i=0; i<TrackCount; i++ ){
+        ULONG Time = AudioCD.GetTrackTime( i );
+        //printf( "Track %i: %i:%.2i;  %i bytes of size\n", i+1, Time/60, Time%60, AudioCD.GetTrackSize(i) );
+
+        msg = "Track " + Constant::TipoToStr(i+1) + " " + Constant::TipoToStr(Time/60) + ":"
+             + Constant::TipoToStr(Time%60) + Constant::TipoToStr(AudioCD.GetTrackSize(i)) + " bytes of size";
+
+        ObjectsMenu->getObjByName("statusMessage")->setLabel(msg);
+
+        string songName = rutaRip + FILE_SEPARATOR +  "Track "
+                    + Constant::pad(Constant::TipoToStr(i+1), padSize, '0') +  ".wav";
+
+        // Save track-data to file...
+        if ( ! AudioCD.ExtractTrack( i, songName.c_str() ) ){
+            ObjectsMenu->getObjByName("statusMessage")->setLabel("No se puede extraer la pista " + Constant::TipoToStr(i));
+            Traza::print("No se puede extraer la pista", i, W_DEBUG);
+        }
+
+        // ... or just get the data into memory
+//        CBuf<char> Buf;
+//        if ( ! AudioCD.ReadTrack(i, &Buf) )
+//            printf( "Cannot read track!\n" );
+    }
+    return i;
+}
 
 
+/**
+* Comprueba si existe el directorio o fichero pasado por parámetro
+*/
+bool Jukebox::existe(string ruta){
+    Traza::print("Jukebox::existe " + ruta, W_DEBUG);
+    if(isDir(ruta)){
+         Traza::print("El directorio existe", W_DEBUG);
+        return true;
+    } else {
+        FILE *archivo = fopen(ruta.c_str(), "r");
+        if (archivo != NULL) {
+            fclose(archivo);
+            Traza::print("El fichero existe", W_DEBUG);
+            return true; //TRUE
+        } else {
+            Traza::print("El fichero no existe", W_DEBUG);
+            return false; //FALSE
+        }
+    }
+}
+
+/**
+*
+*/
+bool Jukebox::isDir(string ruta){
+    struct stat info;
+    stat(ruta.c_str(), &info);
+
+    if(S_ISDIR(info.st_mode)){
+        Traza::print("Fichero es un directorio", W_DEBUG);
+        return true;
+    } else {
+        Traza::print("Fichero no es un directorio", W_DEBUG);
+        return false;
+    }
+
+}
 
 
 

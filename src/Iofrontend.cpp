@@ -146,6 +146,7 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnAddContent",  GUIBUTTON, 0,0,0,0, "Subir nuevo disco", true)->setIcon(add)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnOpenLocal",  GUIBUTTON, 0,0,0,0, "Abrir fichero local", true)->setIcon(folder)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnAddServer",  GUIBUTTON, 0,0,0,0, "Conectar a Google, Dropbox...", true)->setIcon(server_add)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnAddCD",  GUIBUTTON, 0,0,0,0, "Convertir y subir CD", true)->setIcon(cd_add)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("mediaTimerTotal",  GUILABEL,  0,0,0,0, "0:00:00", false)->setEnabled(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("mediaTimer",  GUILABEL,  0,0,0,0, "0:00:00", false)->setEnabled(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("progressBarMedia", GUIPROGRESSBAR, 0,0,0,0, "", true)->setShadow(false);
@@ -219,7 +220,7 @@ void Iofrontend::initUIObjs(){
 
     UIPopupMenu * popup1 = addPopup(PANTALLAREPRODUCTOR, "popupAlbum", "albumList");
     if (popup1 != NULL){
-        popup1->addElemLista("Eliminar Álbum", "delete", controller);
+        popup1->addElemLista(Constant::toAnsiString("Eliminar Álbum"), "delete", controller);
     }
 
     UIPopupMenu * popup2 = addPopup(PANTALLAREPRODUCTOR, "popupUpload", "btnAddContent");
@@ -228,6 +229,8 @@ void Iofrontend::initUIObjs(){
         popup2->addElemLista("Subir a Google", "google", google_png, GOOGLEDRIVESERVER);
     }
 
+    UIPopupMenu * popup3 = addPopup(PANTALLAREPRODUCTOR, "popupUploadCD", "btnAddCD");
+    loadComboUnidades("popupUploadCD", PANTALLAREPRODUCTOR, DRIVE_CDROM);
 
     vector <ListGroupCol *> miCabecera;
     miCabecera.push_back(new ListGroupCol(Constant::toAnsiString("Canción"), ""));
@@ -269,12 +272,14 @@ void Iofrontend::initUIObjs(){
     addEvent("btnBackward",  &Iofrontend::accionesMediaRetroceder);
     addEvent("progressBarMedia", &Iofrontend::mediaClicked);
     addEvent("btnAddContent", &Iofrontend::showPopupUpload);
+    addEvent("btnAddCD", &Iofrontend::showPopupUploadCD);
     addEvent("btnOpenLocal", &Iofrontend::openLocalDisc);
     addEvent("btnAddServer", &Iofrontend::btnActionAddServer);
     addEvent("albumList", &Iofrontend::selectAlbum);
     addEvent("playLists", &Iofrontend::accionesPlaylist);
     addEvent("popupAlbum", &Iofrontend::accionAlbumPopup);
     addEvent("popupUpload", &Iofrontend::accionUploadPopup);
+    addEvent("popupUploadCD", &Iofrontend::accionUploadCDPopup);
     addEvent("progressBarVolumen", &Iofrontend::accionVolumen);
     addEvent("ImgVol", &Iofrontend::accionVolumenMute);
     addEvent("btnRepeat", &Iofrontend::accionRepeat);
@@ -739,7 +744,7 @@ void Iofrontend::setDinamicSizeObjects(){
         //Redimension para el browser de directorios2
 
         ObjectsMenu[PANTALLABROWSER2]->getObjByName(OBJLISTABROWSER2)->setTam(0, Constant::getINPUTH() + COMBOHEIGHT + 4,this->getWidth(), this->getHeight() - BUTTONH - Constant::getINPUTH() - COMBOHEIGHT - 10 - 4);
-        ObjectsMenu[PANTALLABROWSER2]->getObjByName("comboBrowser")->setTam(1, Constant::getINPUTH() + 4, 100, 150);
+        ObjectsMenu[PANTALLABROWSER2]->getObjByName("comboBrowser")->setTam(1, Constant::getINPUTH() + 4, 130, 150);
         ObjectsMenu[PANTALLABROWSER2]->getObjByName(BTNACEPTARBROWSER)->setTam( (this->getWidth() / 2) -(BUTTONW + 5), this->getHeight() - BUTTONH - 5, BUTTONW,BUTTONH);
         ObjectsMenu[PANTALLABROWSER2]->getObjByName(BTNCANCELARBROWSER)->setTam( (this->getWidth() / 2) + 5, this->getHeight() - BUTTONH - 5, BUTTONW,BUTTONH);
         ObjectsMenu[PANTALLABROWSER2]->getObjByName(ARTDIRBROWSER)->setTam( 0, 0, this->getWidth(), Constant::getINPUTH());
@@ -764,6 +769,7 @@ void Iofrontend::setDinamicSizeObjects(){
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnLetras")->setTam(FAMFAMICONW * 2 + 4, 2, FAMFAMICONW, FAMFAMICONH);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnOpenLocal")->setTam(FAMFAMICONW * 3 + 4, 2, FAMFAMICONW, FAMFAMICONH);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnAddServer")->setTam(FAMFAMICONW * 4 + 4, 2, FAMFAMICONW, FAMFAMICONH);
+        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnAddCD")->setTam(FAMFAMICONW * 5 + 4, 2, FAMFAMICONW, FAMFAMICONH);
 
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarMedia")->setTam( TIMEW + SEPTIMER, bottom - PROGRESSSEPBOTTOM, this->getWidth() - TIMEW*2 - SEPTIMER*2, PROGRESSHEIGHT);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimer")->setTam(SEPTIMER, bottom - PROGRESSSEPBOTTOM, TIMEW, FAMFAMICONH);
@@ -1007,7 +1013,7 @@ string Iofrontend::showExplorador(tEvento *evento){
     static string lastDirOpened;
 
     try{
-        loadComboUnidades();
+        loadComboUnidades("comboBrowser", PANTALLABROWSER2, -1);
         obj = (UIList *)objMenu->getObjByName(OBJLISTABROWSER2);
         obj->setFocus(true);
         obj->setTag("");
@@ -1179,12 +1185,12 @@ int Iofrontend::accionesListaExplorador(tEvento *evento){
 /**
 *
 */
-void Iofrontend::loadComboUnidades(){
+void Iofrontend::loadComboUnidades(string objName, int pantalla, int types){
     Traza::print("Iofrontend::loadComboUnidades", W_INFO);
-    UIComboBox *combo = (UIComboBox *)ObjectsMenu[PANTALLABROWSER2]->getObjByName("comboBrowser");
+    UIList *combo = (UIList *)ObjectsMenu[pantalla]->getObjByName(objName);
     combo->clearLista();
     combo->setPosActualLista(0);
-    vector<string> drives;
+    vector<t_drive *> drives;
 
     Dirutil dir;
     dir.getDrives(&drives);
@@ -1192,9 +1198,11 @@ void Iofrontend::loadComboUnidades(){
     string actualDir = dir.getDirActual();
 
     for (int i=0; i < drives.size(); i++){
-        combo->addElemLista(drives.at(i),drives.at(i));
-        if (actualDir.find(drives.at(i)) != string::npos){
-            actualDrive = i;
+        if (types == -1 || types == drives.at(i)->driveType){
+            combo->addElemLista(drives.at(i)->drive.substr(0,2) + " (" + drives.at(i)->driveTypeString + ")", drives.at(i)->drive, drives.at(i)->ico);
+            if (actualDir.find(drives.at(i)->drive) != string::npos){
+                actualDrive = i;
+            }
         }
     }
     combo->setPosActualLista(actualDrive);
@@ -1261,7 +1269,7 @@ UIPopupMenu * Iofrontend::addPopup(int pantalla, string popupName, string caller
     try{
         tmenu_gestor_objects *objMenu = ObjectsMenu[pantalla];
         objMenu->getObjByName(callerName)->setPopupName(popupName);
-        ObjectsMenu[pantalla]->add(popupName, GUIPOPUPMENU, 0, 0, 100, 100, popupName, false)->setVisible(false);
+        ObjectsMenu[pantalla]->add(popupName, GUIPOPUPMENU, 0, 0, 150, 100, popupName, false)->setVisible(false);
         popup1 = (UIPopupMenu *) objMenu->getObjByName(popupName);
         popup1->setFont(getFont());
         popup1->setAutosize(true);
@@ -2676,16 +2684,18 @@ int Iofrontend::accionAlbumPopup(tEvento *evento){
                 bool confirm = false;
 
                 if (idservidor == DROPBOXSERVER){
-                    confirm = casoPANTALLACONFIRMAR("Borrar Álbum", "¿Está seguro de que desea eliminar: " + borrar + "?");
+                    confirm = casoPANTALLACONFIRMAR(Constant::toAnsiString("Borrar Álbum"),
+                                    Constant::toAnsiString("¿Está seguro de que desea eliminar: " + borrar + "?"));
                 } else if (idservidor == GOOGLEDRIVESERVER){
-                    confirm = casoPANTALLACONFIRMAR("Borrar Álbum", "¿Está seguro de que desea eliminar: " + text + "?");
+                    confirm = casoPANTALLACONFIRMAR(Constant::toAnsiString("Borrar Álbum"),
+                                    Constant::toAnsiString("¿Está seguro de que desea eliminar: " + text + "?"));
                 }
 
                 if (confirm){
                     IOauth2 *server = juke->getServerCloud(idservidor);
                     bool res = server->deleteFiles(Constant::uencodeUTF8(borrar), server->getAccessToken());
                     if (res){
-                        showMessage("Álbum eliminado correctamente", 2000);
+                        showMessage(Constant::toAnsiString("Álbum eliminado correctamente"), 2000);
                         tEvento askEvento;
                         this->clearScr(cGrisOscuro);
                         clearEvento(&askEvento);
@@ -2694,7 +2704,7 @@ int Iofrontend::accionAlbumPopup(tEvento *evento){
                         autenticateAndRefresh();
                     }
                     else
-                        showMessage("Error al eliminar el álbum", 2000);
+                        showMessage(Constant::toAnsiString("Error al eliminar el álbum"), 2000);
                 }
             }
         }
@@ -2966,3 +2976,62 @@ int Iofrontend::casoPANTALLALOGIN(string titulo, string txtDetalle){
     setSelMenu(menuInicial);
     return salida;
 }
+
+/**
+*
+*/
+int Iofrontend::showPopupUploadCD(tEvento *evento){
+    ObjectsMenu[PANTALLAREPRODUCTOR]->setFocus("btnAddCD");
+    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnAddCD")->setPopup(true);
+    procesarPopups(ObjectsMenu[PANTALLAREPRODUCTOR], evento);
+    return 0;
+}
+
+/**
+*
+*/
+int Iofrontend::accionUploadCDPopup(tEvento *evento){
+    Traza::print("Iofrontend::accionUploadCDPopup", W_INFO);
+    //Se obtiene el objeto menupopup que en principio esta seleccionado
+    int menu = this->getSelMenu();
+    tmenu_gestor_objects *objsMenu = ObjectsMenu[menu];
+    Object *obj = objsMenu->getObjByPos(objsMenu->getFocus());
+    //Comprobamos que efectivamente, el elemento es un popup
+    if (obj->getObjectType() == GUIPOPUPMENU){
+        UIPopupMenu *objPopup = (UIPopupMenu *)obj;
+        //Obtenemos el valor del elemento seleccionado en el popup
+        string selected = objPopup->getListValues()->get(objPopup->getPosActualLista());
+        int servidor = objPopup->getListDestinos()->get(objPopup->getPosActualLista());
+
+        if (objPopup->getCallerPopup() != NULL){
+            objsMenu->setFirstFocus();
+            Traza::print("Extrayendo cd de la unidad: " + selected, W_DEBUG);
+
+            string mensaje = "Selecciona si quieres subir el CD a una cuenta de Google o Dropbox. ";
+            int serverSelected = casoPANTALLALOGIN(Constant::toAnsiString("Seleccionar cuenta"), Constant::toAnsiString(mensaje));
+            if (serverSelected < MAXSERVERS){
+                tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+                juke->setObjectsMenu(obj);
+                juke->setCdDrive(selected);
+                juke->setExtractionPath(Constant::getAppDir());
+                juke->setServerSelected(serverSelected);
+                Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::extraerCD);
+                thread->start();
+            }
+        }
+    }
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

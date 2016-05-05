@@ -29,6 +29,7 @@
 #include "scrapper/scrapper.h"
 #include "updater/updater.h"
 
+
 const unsigned int MAXSONG_REPEAT_AVOID = 20;
 
 class SongsReproduced{
@@ -155,18 +156,21 @@ class Iofrontend : public Ioutil{
         void showMenuEmergente(int menu, string objImagenFondo);
         bool cargarOpcionesGenerales();
         int showPopupUpload(tEvento *evento);
+        int showPopupUploadCD(tEvento *evento);
         int startSongPlaylist(tEvento *evento);
         int selectAlbum(tEvento *evento);
         int accionAlbumPopup(tEvento *evento);
         void refreshSpectrum(AudioPlayer *player);
 
-        void loadComboUnidades();
+        void loadComboUnidades(string objName, int pantalla,  int types);
         void reloadSong(int posAlbumSelected, int posSongSelected);
         void getLyricsFromActualSong();
         int casoPANTALLALOGIN(string titulo, string txtDetalle);
         int accionUploadPopup(tEvento *evento);
+        int accionUploadCDPopup(tEvento *evento);
         int uploadToServer(tEvento *evento, int idServer);
         int comprobarTokenServidores();
+
 
     public :
         Iofrontend();

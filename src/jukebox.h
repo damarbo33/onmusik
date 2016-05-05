@@ -7,6 +7,7 @@
 #include "servers/googledrive.h"
 #include "listaIni.h"
 #include "thread.h"
+#include "audiocd/CAudioCD.h"
 
 using namespace std;
 
@@ -33,8 +34,8 @@ typedef enum{tagAlbum, tagTitle, tagDuration,tagTrack,tagGenre,tagPublisher,tagC
 typedef enum{DROPBOXSERVER, GOOGLEDRIVESERVER, MAXSERVERS} cloudServers;
 const char arrNameServers[3][20] = {{"Drobox"},{"Google"},{"undefined"}};
 
-class Jukebox
-{
+class Jukebox{
+
     public:
         Jukebox();
         virtual ~Jukebox();
@@ -42,7 +43,7 @@ class Jukebox
         TID3Tags getSongInfo(string filepath);
         void convertir(string ruta);
         DWORD convertir();
-        DWORD uploadMusicToDropbox();
+        DWORD uploadMusicToServer();
         DWORD refreshAlbumAndPlaylist();
         DWORD refreshPlaylist();
         DWORD downloadFile();
@@ -50,12 +51,16 @@ class Jukebox
         DWORD refreshPlayListMetadata();
         DWORD refreshPlayListMetadataFromId3Dir();
         DWORD authenticateServers();
-
+        DWORD extraerCD();
 
         void setObjectsMenu(tmenu_gestor_objects *var){ObjectsMenu = var;}
         void setDirToUpload(string var){dirToUpload = var;}
         void setFileToDownload(string var){fileToDownload = var;}
-        void uploadMusicToDropbox(string ruta);
+        void uploadMusicToServer(string ruta);
+
+        void setCdDrive(string var){cdDrive = var;}
+        void setExtractionPath(string var){extractionPath = var;}
+
 //        void refreshPlaylist(string rutaAlbumDropbox);
         void downloadFile(string ruta);
         void abortDownload();
@@ -79,6 +84,8 @@ class Jukebox
                 return NULL;
         }
 
+        int extraerCD(string cdDrive, string extractionPath);
+
     protected:
 
     private:
@@ -88,6 +95,8 @@ class Jukebox
         int serverSelected;
         string albumSelected;
         bool concatNameFolder;
+        string cdDrive;
+        string extractionPath;
 
         void hashMapMetadatos(map<string, string> *metadatos, string ruta);
 //        Dropbox dropboxDownloader;
@@ -102,6 +111,8 @@ class Jukebox
         string generarDirGoogleDrive(string nombreAlbum);
         void subirMetadatos(string nombreAlbum, string rutaUpload, string rutaMetadata);
         bool aborted;
+        bool isDir(string ruta);
+        bool existe(string ruta);
 
 };
 
