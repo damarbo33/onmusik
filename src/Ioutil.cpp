@@ -183,6 +183,7 @@ void Ioutil::initSDL(bool calcFS){
             bpp = 16;
         }
 
+        SDL_putenv("SDL_VIDEO_CENTERED=center"); //Center the game Window
         //Finalmente establecemos el modo del video
         screen = SDL_SetVideoMode(this->w, this->h, bpp, this->fullsflags);
         if(!screen){
@@ -334,13 +335,15 @@ void Ioutil::toggleFullScreen(){
         tempbpp = SCREEN_BITS_FULLSCREEN;
     }
 
-    screen = SDL_SetVideoMode(tempw, temph, tempbpp, screen->flags ^ SDL_FULLSCREEN); /*Toggles FullScreen Mode */
+    /*Toggles FullScreen Mode */
+    screen = SDL_SetVideoMode(tempw, temph, tempbpp, screen->flags ^ SDL_FULLSCREEN);
     this->fullsflags = screen->flags;
     this->w = tempw;
 	this->h = temph;
-
-    if(screen == NULL) screen = SDL_SetVideoMode(Constant::getWINDOW_WIDTH(), Constant::getWINDOW_HEIGHT(), SCREEN_BITS, flags); /* If toggle FullScreen failed, then switch back */
-    if(screen == NULL) exit(1); /* If you can't switch back for some reason, then epic fail */
+    /* If toggle FullScreen failed, then switch back */
+    if(screen == NULL) screen = SDL_SetVideoMode(Constant::getWINDOW_WIDTH(), Constant::getWINDOW_HEIGHT(), SCREEN_BITS, flags);
+    /* If you can't switch back for some reason, then epic fail */
+    if(screen == NULL) exit(1);
 }
 
 /**

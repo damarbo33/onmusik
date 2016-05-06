@@ -1074,7 +1074,7 @@
 	"SDL/SDL_image.h"
 	"SDL/SDL_rotozoom.h"
 
-1462436944 c:\github\externallibs\uiobjects\src\dirutil.h
+1462536181 c:\github\externallibs\uiobjects\src\dirutil.h
 	"fileprops.h"
 	<dirent.h>
 	<sys/stat.h>
@@ -1113,13 +1113,13 @@
 	"Excepcion.h"
 	"Traza.h"
 
-1462453405 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
+1462536944 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
 	"uilistcommon.h"
 
-1462440379 c:\github\proyectos\onmusik\src\iofrontend.h
+1462526067 c:\github\proyectos\onmusik\src\iofrontend.h
 	<string>
 	<vector>
 	"Ioutil.h"
@@ -1296,7 +1296,7 @@
 1461135462 c:\github\externallibs\uiobjects\src\listaini.h
 	"ListaSimple.h"
 
-1462447732 c:\github\proyectos\onmusik\src\jukebox.h
+1462536513 c:\github\proyectos\onmusik\src\jukebox.h
 	"Launcher.h"
 	"Menuobject.h"
 	"servers/dropbox.h"
@@ -1304,6 +1304,7 @@
 	"listaIni.h"
 	"thread.h"
 	"audiocd/CAudioCD.h"
+	"cddb/freedb.h"
 
 1457027851 c:\github\externallibs\uiobjects\src\launcher.h
 	<string.h>
@@ -1501,7 +1502,7 @@
 	<iostream>
 	"Constant.h"
 
-1462447919 source:c:\github\proyectos\onmusik\src\ioutil.cpp
+1462537666 source:c:\github\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"
@@ -1510,7 +1511,7 @@
 
 1455209140 c:\github\externallibs\uiobjects\src\font\arimo_regular.ttf.h
 
-1462463538 source:c:\github\proyectos\onmusik\src\jukebox.cpp
+1462535769 source:c:\github\proyectos\onmusik\src\jukebox.cpp
 	"jukebox.h"
 
 1462442856 source:c:\github\proyectos\onmusik\src\main.cpp
@@ -3016,11 +3017,11 @@
 1159274722 c:\github\proyectos\mp3play\src\audiocd\audiocd_helpers.h
 	<windows.h>
 
-1462463660 source:c:\github\proyectos\mp3play\src\audiocd\caudiocd.cpp
+1462522522 source:c:\github\proyectos\mp3play\src\audiocd\caudiocd.cpp
 	"CAudioCD.h"
 	"AudioCD_Helpers.h"
 
-1462463621 c:\github\proyectos\mp3play\src\audiocd\caudiocd.h
+1462522522 c:\github\proyectos\mp3play\src\audiocd\caudiocd.h
 	<windows.h>
 	<vector>
 	"CBuf.h"
@@ -3098,6 +3099,11 @@
 	"fft.h"
 
 1462485986 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\cddb\freedb.h
+	"httputil.h"
+	"htmlparser.h"
+	"util/Constant.h"
+
+1462522541 c:\github\proyectos\httpcurl\httpcurl\src\cddb\freedb.h
 	"httputil.h"
 	"htmlparser.h"
 	"util/Constant.h"

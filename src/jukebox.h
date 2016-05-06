@@ -42,7 +42,7 @@ class Jukebox{
         virtual ~Jukebox();
 
         TID3Tags getSongInfo(string filepath);
-        void convertir(string ruta);
+        void convertir(string ruta, CdTrackInfo *cddbTrack);
         DWORD convertir();
         DWORD uploadMusicToServer();
         DWORD refreshAlbumAndPlaylist();
@@ -85,8 +85,8 @@ class Jukebox{
                 return NULL;
         }
 
-        int extraerCD(string cdDrive, string extractionPath);
-        void getCddb(CAudioCD *audioCD, CdTrackInfo *cdTrack);
+        int extraerCD(string cdDrive, string extractionPath, CdTrackInfo *cdTrack);
+        int getCddb(CAudioCD *audioCD, CdTrackInfo *cdTrack);
 
     protected:
 
@@ -115,6 +115,7 @@ class Jukebox{
         bool aborted;
         bool isDir(string ruta);
         bool existe(string ruta);
+        bool borrarArchivo(string ruta);
 
 };
 

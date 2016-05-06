@@ -11,6 +11,13 @@ bool Jukebox::canPlay;
 *
 */
 Jukebox::Jukebox(){
+
+    int pos = Constant::getAppDir().rfind(Constant::getFileSep());
+    if (pos == string::npos){
+        FILE_SEPARATOR = FILE_SEPARATOR_UNIX;
+        tempFileSep[0] = FILE_SEPARATOR;
+    }
+
     convertedFilesList = new listaSimple<string>();
     rutaInfoId3 = "";
     canPlay = false;
@@ -30,8 +37,8 @@ Jukebox::Jukebox(){
 */
 Jukebox::~Jukebox()
 {
-    string rutaMetadata = Constant::getAppDir() + tempFileSep + fileMetadata;
-    string tempFileDir = Constant::getAppDir() + tempFileSep + "temp.ogg";
+    string rutaMetadata = Constant::getAppDir() + FILE_SEPARATOR + fileMetadata;
+    string tempFileDir = Constant::getAppDir() + FILE_SEPARATOR + "temp.ogg";
 
     Dirutil dir;
     dir.borrarArchivo(rutaMetadata);
@@ -59,7 +66,7 @@ TID3Tags Jukebox::getSongInfo(string filepath){
         emulInfo.rutaroms = dir.getFolder(filepath);
         emulInfo.nombrerom = dir.getFileName(filepath);
         //Se especifica el ejecutable
-        emulInfo.rutaexe = dir.GetShortUtilName(Constant::getAppDir()) + tempFileSep + "rsc";
+        emulInfo.rutaexe = dir.GetShortUtilName(Constant::getAppDir()) + FILE_SEPARATOR + "rsc";
         emulInfo.fileexe = "ffprobe.exe";
 
         emulInfo.parmsexe = "-i \"%ROMFULLPATH%\" -show_entries format_tags=";
@@ -77,7 +84,7 @@ TID3Tags Jukebox::getSongInfo(string filepath){
 //        }
         //Cargamos la salida de la ejecucion del programa anterior
         listaSimple<string> *lista = new listaSimple<string>();
-        lista->loadStringsFromFile(Constant::getAppDir() + tempFileSep + "out.log");
+        lista->loadStringsFromFile(Constant::getAppDir() + FILE_SEPARATOR + "out.log");
 
         size_t  pos = 0;
         string line;
@@ -134,7 +141,7 @@ TID3Tags Jukebox::getSongInfo(string filepath){
 *
 */
 DWORD Jukebox::convertir(){
-    convertir(dirToUpload);
+    convertir(dirToUpload, NULL);
     uploadMusicToServer(dirToUpload);
     return 0;
 }
@@ -160,12 +167,39 @@ DWORD Jukebox::uploadMusicToServer(){
 */
 DWORD Jukebox::extraerCD(){
     if (!cdDrive.empty() && !extractionPath.empty()){
-        int res = extraerCD(cdDrive, extractionPath);
+        CdTrackInfo cddbTrack;
+        int res = extraerCD(cdDrive, extractionPath, &cddbTrack);
         if (res > 0){
-            string rutaRip = extractionPath + Constant::getFileSep() + "rip";
-            setDirToUpload(rutaRip);
-            convertir(rutaRip);
-            uploadMusicToServer(rutaRip);
+            string ruta = extractionPath + FILE_SEPARATOR + "rip";
+            Dirutil dir;
+
+            listaSimple<FileProps> *filelist = new listaSimple<FileProps>();
+            dir.listarDir(ruta.c_str(), filelist);
+
+            if (filelist->getSize() > 0){
+                int i=0;
+                bool dirFound = false;
+                string rutaRip;
+                while (i < filelist->getSize() && !dirFound){
+                    if (filelist->get(i).filetype == TIPODIRECTORIO && filelist->get(i).filename.compare(".") != 0
+                        && filelist->get(i).filename.compare("..") != 0)
+                    {
+                            dirFound = true;
+                            rutaRip = filelist->get(i).dir + FILE_SEPARATOR + filelist->get(i).filename;
+                    } else {
+                        i++;
+                    }
+                }
+
+                Traza::print("Jukebox::extraerCD. Subiendo desde: " + rutaRip, W_DEBUG);
+                setDirToUpload(rutaRip);
+                convertir(rutaRip, &cddbTrack);
+                uploadMusicToServer(rutaRip);
+                if (dirFound && !rutaRip.empty()){
+                    dir.borrarDir(rutaRip);
+                }
+            }
+            delete filelist;
         }
     }
 
@@ -206,7 +240,7 @@ DWORD Jukebox::refreshPlaylist(){
         Traza::print("Jukebox::refreshPlaylist. ListFiles: " + albumSelec, W_DEBUG);
         server->listFiles(albumSelec, server->getAccessToken(), &files);
         string filename;
-        string metadataLocal = Constant::getAppDir() + tempFileSep + "metadata.txt";
+        string metadataLocal = Constant::getAppDir() + FILE_SEPARATOR + "metadata.txt";
 
         Traza::print("Jukebox::refreshPlaylist. Descargando Metadatos: " + metadataLocal, W_DEBUG);
         //Descargando fichero con metadatos
@@ -297,7 +331,7 @@ DWORD Jukebox::refreshPlaylist(){
 * especificado por parametro. Tambien genera el fichero de metadatos con la informacion
 * de cada cancion
 */
-void Jukebox::convertir(string ruta){
+void Jukebox::convertir(string ruta, CdTrackInfo *cddbTrack){
     Dirutil dir;
     vector <FileProps> *filelist = new vector <FileProps>();
     Traza::print("Jukebox::convertir", W_DEBUG);
@@ -310,18 +344,18 @@ void Jukebox::convertir(string ruta){
         Launcher lanzador;
         FileLaunch emulInfo;
         bool resultado = false;
-        emulInfo.rutaexe = dir.GetShortUtilName(Constant::getAppDir()) + tempFileSep + "rsc";
+        emulInfo.rutaexe = dir.GetShortUtilName(Constant::getAppDir()) + FILE_SEPARATOR + "rsc";
         emulInfo.fileexe = "ffmpeg.exe";
         //Conversion OGG
         emulInfo.parmsexe = string("-loglevel quiet -y -i \"%ROMFULLPATH%\" -map_metadata 0 -acodec libvorbis ") +
                             string("-id3v2_version 3 -write_id3v1 1 -ac 2 -b:a 128k ") +
-                            string("\"%ROMPATH%") + tempFileSep + string("%ROMNAME%.ogg\"");
+                            string("\"%ROMPATH%") + FILE_SEPARATOR + string("%ROMNAME%.ogg\"");
         //Conversion MP3
     //    emulInfo.parmsexe = string("-y -i \"%ROMFULLPATH%\" -map_metadata 0 -acodec libmp3lame -id3v2_version 3 -write_id3v1 1 -ac 2 -b:a 128k ") +
     //                        string("\"%ROMPATH%\\%ROMNAME%.mp3\"");
         Fileio fichero;
         string metadata = "";
-        string rutaMetadata = ruta + tempFileSep + fileMetadata;
+        string rutaMetadata = ruta + FILE_SEPARATOR + fileMetadata;
         dir.borrarArchivo(rutaMetadata);
         Constant::setExecMethod(launch_create_process);
 
@@ -337,24 +371,55 @@ void Jukebox::convertir(string ruta){
         for (int i=0; i < filelist->size(); i++){
             file = filelist->at(i);
             if (filtroFicheros.find(dir.getExtension(file.filename)) != string::npos && file.filename.compare("..") != 0){
-                rutaFicheroOgg = file.dir + tempFileSep + dir.getFileNameNoExt(file.filename) + ".ogg";
+                rutaFicheroOgg = file.dir + FILE_SEPARATOR + dir.getFileNameNoExt(file.filename) + ".ogg";
 
                 //Counter for the codification progress message
                 countFile++;
                 int percent = (countFile/(float)(filelist->size()))*100;
-                ObjectsMenu->getObjByName("statusMessage")->setLabel("Recodificando "
-                            + Constant::TipoToStr(percent) + "% "
-                            + " " + file.filename);
+                ObjectsMenu->getObjByName("statusMessage")->setLabel("Recodificando " + Constant::TipoToStr(percent) + "% " + " " + file.filename);
 
                 //Si no existe fichero ogg, debemos recodificar
                 if (!dir.existe(rutaFicheroOgg)){
-                    id3Tags = getSongInfo(file.dir + tempFileSep + file.filename);
                     //Launching the coding in ogg format
                     emulInfo.rutaroms = file.dir;
                     emulInfo.nombrerom = file.filename;
+                    //Si tenemos informacion del cd, generamos sus id3_tags
+                    if (cddbTrack != NULL && i < cddbTrack->titleList.size() ){
+
+                        int pos;
+                        string album = cddbTrack->albumName;
+                        string artist = cddbTrack->albumName;
+                        if ((pos = cddbTrack->albumName.find("/")) != string::npos ){
+                            artist = cddbTrack->albumName.substr(0, pos);
+                            album = cddbTrack->albumName.substr(pos + 1);
+                        }
+
+                        emulInfo.parmsexe = string("-loglevel quiet -y -i \"%ROMFULLPATH%\"") +
+                            + " -metadata title=\"" + cddbTrack->titleList.at(i) + "\""
+                            + " -metadata album=\"" + album + "\""
+                            + " -metadata artist=\"" + artist + "\""
+                            + " -metadata album_artist=\"" + artist + "\""
+                            + " -metadata date=\"" + cddbTrack->year + "\""
+                            + " -metadata genre=\"" + cddbTrack->genre + "\""
+                            + " -metadata track=\"" + Constant::TipoToStr(i+1) + "/" + Constant::TipoToStr(cddbTrack->titleList.size()) + "\"" +
+                            string(" -acodec libvorbis ") +
+                            string("-id3v2_version 3 -write_id3v1 1 -ac 2 -b:a 128k ") +
+                            string("\"%ROMPATH%") + FILE_SEPARATOR + string("%ROMNAME%.ogg\"");
+                    }
                     //Como no es un fichero ogg, necesitamos recodificar
                     resultado = lanzador.lanzarProgramaUNIXFork(&emulInfo);
+                    //Anyadimos el fichero convertido
                     convertedFilesList->add(rutaFicheroOgg);
+
+                    if (cddbTrack != NULL){
+                        if (!dir.isDir(file.dir + FILE_SEPARATOR + file.filename)){
+                            dir.borrarArchivo(file.dir + FILE_SEPARATOR + file.filename);
+                        }
+                        id3Tags = getSongInfo(rutaFicheroOgg);
+                    } else {
+                        id3Tags = getSongInfo(file.dir + FILE_SEPARATOR + file.filename);
+                    }
+
                 } else {
                     //El fichero es ogg. No necesitamos recodificar y solo obtenemos info de la cancion
                     id3Tags = getSongInfo(rutaFicheroOgg);
@@ -451,7 +516,7 @@ void Jukebox::hashMapMetadatos(map<string, string> *metadatos, string ruta){
 */
 DWORD Jukebox::refreshPlayListMetadata(){
     UIListGroup *playList = ((UIListGroup *)ObjectsMenu->getObjByName("playLists"));
-    string file = Constant::getAppDir() + tempFileSep + "temp.ogg";
+    string file = Constant::getAppDir() + FILE_SEPARATOR + "temp.ogg";
     unsigned int posSongSelected = playList->getLastSelectedPos();
     Traza::print("Obteniendo datos de la cancion: " + file, W_DEBUG);
     TID3Tags songTags = getSongInfo(file);
@@ -484,7 +549,7 @@ DWORD Jukebox::refreshPlayListMetadata(){
 */
 void Jukebox::downloadFile(string ruta){
     Dirutil dir;
-    string tempFileDir = Constant::getAppDir() + tempFileSep + "temp.ogg";
+    string tempFileDir = Constant::getAppDir() + FILE_SEPARATOR + "temp.ogg";
     Traza::print("Jukebox::downloadFile. Descargando fichero " + ruta, W_DEBUG);
 
     //Creamos el servidor de descarga y damos valor a sus propiedades
@@ -537,7 +602,7 @@ void Jukebox::addLocalAlbum(string ruta){
     UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
     Dirutil dir;
     string nombreAlbum = dir.getFolder(ruta);
-    nombreAlbum = nombreAlbum.substr(nombreAlbum.find_last_of(Constant::getFileSep())+1);
+    nombreAlbum = nombreAlbum.substr(nombreAlbum.find_last_of(FILE_SEPARATOR)+1);
 
     if (dir.existe(ruta)){
         Traza::print("Jukebox::addLocalAlbum anyadiendo: " + ruta, W_DEBUG);
@@ -573,12 +638,12 @@ DWORD Jukebox::refreshPlayListMetadataFromId3Dir(){
             file = filelist->at(i);
             if (filtroFicherosReproducibles.find(dir.getExtension(file.filename)) != string::npos ){
                 vector <ListGroupCol *> miFila;
-                miFila.push_back(new ListGroupCol(file.filename, file.dir + Constant::getFileSep() + file.filename));
+                miFila.push_back(new ListGroupCol(file.filename, file.dir + FILE_SEPARATOR + file.filename));
                 miFila.push_back(new ListGroupCol("",""));
                 miFila.push_back(new ListGroupCol("",""));
                 miFila.push_back(new ListGroupCol(Constant::timeFormat(0), "0"));
                 playList->addElemLista(miFila);
-                if (rutaInfoId3.compare(file.dir + Constant::getFileSep() + file.filename) == 0){
+                if (rutaInfoId3.compare(file.dir + FILE_SEPARATOR + file.filename) == 0){
                     posFound = pos;
                 }
                 pos++;
@@ -694,7 +759,7 @@ DWORD Jukebox::refreshAlbum(){
 *
 */
 void Jukebox::uploadMusicToServer(string ruta){
-    string rutaMetadata = ruta + tempFileSep + fileMetadata;
+    string rutaMetadata = ruta + FILE_SEPARATOR + fileMetadata;
     Dirutil dir;
     vector<FileProps> *filelist = new vector<FileProps>();
     dir.listarDirRecursivo(ruta, filelist, filtroOGG);
@@ -710,7 +775,7 @@ void Jukebox::uploadMusicToServer(string ruta){
 
         for (int i=0; i < filelist->size(); i++){
             file = filelist->at(i);
-            rutaLocal = file.dir + tempFileSep + file.filename;
+            rutaLocal = file.dir + FILE_SEPARATOR + file.filename;
             nombreAlbum = generarNombreAlbum(&file, ruta);
 
             if (lastNombreAlbum.compare(nombreAlbum) != 0 && !lastNombreAlbum.empty()){
@@ -760,13 +825,13 @@ string Jukebox::generarNombreAlbum(FileProps *file, string ruta){
     //Comprobamos si la ruta indicada tiene subdirectorios
     if (nombreAlbum.empty() || !concatNameFolder){
         //No hay subdirectorios. Suponemos que el nombre del disco esta indicado en la carpeta
-        nombreAlbum = file->dir.substr(file->dir.find_last_of(tempFileSep) + 1);
+        nombreAlbum = file->dir.substr(file->dir.find_last_of(FILE_SEPARATOR) + 1);
     } else {
         //Hay subdirectorios, obtenemos el nombre del directorio de la ruta actual
         //y le concatenamos el subdirectorio entero
-        nombreAlbum = ruta.substr(ruta.find_last_of(tempFileSep) + 1);
-        string subdir = file->dir.substr(file->dir.find_last_of(tempFileSep) + 1);
-        subdir = Constant::replaceAll(subdir, Constant::getFileSep(), "_");
+        nombreAlbum = ruta.substr(ruta.find_last_of(FILE_SEPARATOR) + 1);
+        string subdir = file->dir.substr(file->dir.find_last_of(FILE_SEPARATOR) + 1);
+        subdir = Constant::replaceAll(subdir, tempFileSep, "_");
         nombreAlbum += " " + subdir;
     }
     return nombreAlbum;
@@ -806,32 +871,31 @@ void Jukebox::subirMetadatos(string nombreAlbum, string rutaUpload, string rutaM
 /**
 *
 */
-int Jukebox::extraerCD(string cdDrive, string extractionPath){
-    CAudioCD AudioCD;
+int Jukebox::extraerCD(string cdDrive, string extractionPath, CdTrackInfo *cdTrack){
     Dirutil dir;
     string msg;
     int i=0;
-    CdTrackInfo cdTrack;
     int padSize = 0;
+    CAudioCD audioCD;
 
     //Abrimos el CD de audio
-    if ( ! AudioCD.Open( cdDrive.at(0) ) ){
+    if ( ! audioCD.Open( cdDrive.at(0) ) ){
         Traza::print("Jukebox::extraerCD No se puede abrir la unidad " + cdDrive, W_DEBUG);
         ObjectsMenu->getObjByName("statusMessage")->setLabel("No se puede abrir la unidad " + cdDrive);
         return 0;
     }
 
     //Obtenemos el numero de pistas
-    ULONG TrackCount = AudioCD.GetTrackCount();
+    ULONG TrackCount = audioCD.GetTrackCount();
+    Traza::print("Jukebox::extraerCD Disc ID: " + audioCD.getCddbID() + ", Numero de pistas: " + Constant::TipoToStr(TrackCount), W_DEBUG);
     ObjectsMenu->getObjByName("statusMessage")->setLabel("Extrayendo " + Constant::TipoToStr(TrackCount) + " pistas");
+
     padSize = Constant::TipoToStr(TrackCount).length();
-    Traza::print("Jukebox::extraerCD Disc ID: " + AudioCD.getCddbID(), W_DEBUG);
-    Traza::print("Jukebox::extraerCD Numero de pistas", TrackCount, W_DEBUG);
-
     //Obtenemos informacion del cd
-    getCddb(&AudioCD, &cdTrack);
+    getCddb(&audioCD, cdTrack);
 
-    string albumName = Constant::removeEspecialChars(cdTrack.albumName);
+    string albumName = Constant::removeEspecialChars(Constant::replaceAll(cdTrack->albumName, "/", "-"));
+
     if (albumName.empty()){
         albumName = "rip_" + Constant::replaceAll(Constant::fecha(), ":", "_");
     }
@@ -845,32 +909,30 @@ int Jukebox::extraerCD(string cdDrive, string extractionPath){
         ObjectsMenu->getObjByName("statusMessage")->setLabel("No se puede acceder al directorio " + extractionPath);
         return 0;
     }
-//    dir.createDir(extractionPath + "\\" + "rip");
-//    dir.createDir(rutaRip);
+    dir.mkpath(string(extractionPath + FILE_SEPARATOR + "rip").c_str(), 0777);
     dir.mkpath(rutaRip.c_str(), 0777);
 
     for (i=0; i<TrackCount; i++ ){
-        ULONG Time = AudioCD.GetTrackTime( i );
-        //printf( "Track %i: %i:%.2i;  %i bytes of size\n", i+1, Time/60, Time%60, AudioCD.GetTrackSize(i) );
+        ULONG Time = audioCD.GetTrackTime( i );
 
         msg = "Track " + Constant::TipoToStr(i+1) + " Tiempo: " + Constant::TipoToStr(Time/60) + ":"
              + Constant::TipoToStr(Time%60) + " Tamaño: "
-             + Constant::TipoToStr(ceil (AudioCD.GetTrackSize(i) / double( pow(1024, 2)))) + " MB";
+             + Constant::TipoToStr(ceil (audioCD.GetTrackSize(i) / double( pow(1024, 2)))) + " MB";
 
         ObjectsMenu->getObjByName("statusMessage")->setLabel(msg);
 
         string songName;
 
-        if (cdTrack.titleList.size() > 0 && i < cdTrack.titleList.size()){
+        if (cdTrack->titleList.size() > 0 && i < cdTrack->titleList.size()){
             songName = rutaRip + FILE_SEPARATOR + Constant::pad(Constant::TipoToStr(i+1), padSize, '0')
-                       + " - " + cdTrack.titleList.at(i) + ".wav";
+                       + " - " + cdTrack->titleList.at(i) + ".wav";
         } else {
             songName = rutaRip + FILE_SEPARATOR +  "Track "
                     + Constant::pad(Constant::TipoToStr(i+1), padSize, '0') + ".wav";
         }
 
         // Save track-data to file...
-        if ( ! AudioCD.ExtractTrack( i, songName.c_str() ) ){
+        if ( ! audioCD.ExtractTrack( i, songName.c_str() ) ){
             ObjectsMenu->getObjByName("statusMessage")->setLabel("No se puede extraer la pista " + Constant::TipoToStr(i));
             Traza::print("No se puede extraer la pista", i, W_DEBUG);
         }
@@ -887,34 +949,34 @@ int Jukebox::extraerCD(string cdDrive, string extractionPath){
 /**
 *
 */
-void Jukebox::getCddb(CAudioCD *audioCD, CdTrackInfo *cdTrack){
+int Jukebox::getCddb(CAudioCD *audioCD, CdTrackInfo *cdTrack){
     Freedb cddb;
     FreedbQuery query;
+    vector<CdTrackInfo *> cdTrackList;
     query.discId = audioCD->getCddbID();
     query.username = "dani";
     query.hostname = "dani.web.com";
     query.clientname = "dani";
     query.version = "1";
-//    query.categ = "rock";
     query.totalSeconds = audioCD->getDiscSeconds();
 
     std::vector<CDTRACK> *cdInfo = audioCD->getCdInfo();
     for (int i=0; i < cdInfo->size(); i++){
         query.offsets.push_back(cdInfo->at(i).Offset);
     }
-    //int code = cddb.getCdInfo(&query, cdTrack);
-    vector<CdTrackInfo *> cdTrackList;
+
+    //Buscamos el cd mediante la informacion de offsets obtenida
     int code = cddb.searchCd(&query, &cdTrackList);
     Traza::print("Codigo", code, W_DEBUG);
 
-//    for (int i=0; i < cdTrackList.size(); i++){
-//        Traza::print(cdTrackList.at(i)->albumName, W_DEBUG);
-//    }
     if (cdTrackList.size() > 0){
         query.categ = cdTrackList.at(0)->genre;
         query.discId = cdTrackList.at(0)->discId;
+        //Realizamos la llamada para obtener la informacion precisa del cd
         code = cddb.getCdInfo(&query, cdTrack);
     }
+
+    return code;
 
 }
 
@@ -956,8 +1018,4 @@ bool Jukebox::isDir(string ruta){
     }
 
 }
-
-
-
-
 

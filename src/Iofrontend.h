@@ -165,7 +165,7 @@ class Iofrontend : public Ioutil{
         void loadComboUnidades(string objName, int pantalla,  int types);
         void reloadSong(int posAlbumSelected, int posSongSelected);
         void getLyricsFromActualSong();
-        int casoPANTALLALOGIN(string titulo, string txtDetalle);
+        int casoPANTALLALOGIN(string titulo, string txtDetalle, bool allButtonsOn);
         int accionUploadPopup(tEvento *evento);
         int accionUploadCDPopup(tEvento *evento);
         int uploadToServer(tEvento *evento, int idServer);

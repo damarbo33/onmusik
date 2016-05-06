@@ -8,7 +8,6 @@
 //No deben ser de dominio publico
 const string cliendid="";
 const string secret="";
-
 const string googleClientId = "";
 const string googleSecret = "";
 
@@ -744,7 +743,7 @@ void Iofrontend::setDinamicSizeObjects(){
         //Redimension para el browser de directorios2
 
         ObjectsMenu[PANTALLABROWSER2]->getObjByName(OBJLISTABROWSER2)->setTam(0, Constant::getINPUTH() + COMBOHEIGHT + 4,this->getWidth(), this->getHeight() - BUTTONH - Constant::getINPUTH() - COMBOHEIGHT - 10 - 4);
-        ObjectsMenu[PANTALLABROWSER2]->getObjByName("comboBrowser")->setTam(1, Constant::getINPUTH() + 4, 130, 150);
+        ObjectsMenu[PANTALLABROWSER2]->getObjByName("comboBrowser")->setTam(1, Constant::getINPUTH() + 4, 160, 100);
         ObjectsMenu[PANTALLABROWSER2]->getObjByName(BTNACEPTARBROWSER)->setTam( (this->getWidth() / 2) -(BUTTONW + 5), this->getHeight() - BUTTONH - 5, BUTTONW,BUTTONH);
         ObjectsMenu[PANTALLABROWSER2]->getObjByName(BTNCANCELARBROWSER)->setTam( (this->getWidth() / 2) + 5, this->getHeight() - BUTTONH - 5, BUTTONW,BUTTONH);
         ObjectsMenu[PANTALLABROWSER2]->getObjByName(ARTDIRBROWSER)->setTam( 0, 0, this->getWidth(), Constant::getINPUTH());
@@ -1199,7 +1198,9 @@ void Iofrontend::loadComboUnidades(string objName, int pantalla, int types){
 
     for (int i=0; i < drives.size(); i++){
         if (types == -1 || types == drives.at(i)->driveType){
-            combo->addElemLista(drives.at(i)->drive.substr(0,2) + " (" + drives.at(i)->driveTypeString + ")", drives.at(i)->drive, drives.at(i)->ico);
+            combo->addElemLista(drives.at(i)->drive.substr(0,2)
+                                + " (" + drives.at(i)->driveTypeString + ") "
+                                + drives.at(i)->label, drives.at(i)->drive, drives.at(i)->ico);
             if (actualDir.find(drives.at(i)->drive) != string::npos){
                 actualDrive = i;
             }
@@ -1269,7 +1270,7 @@ UIPopupMenu * Iofrontend::addPopup(int pantalla, string popupName, string caller
     try{
         tmenu_gestor_objects *objMenu = ObjectsMenu[pantalla];
         objMenu->getObjByName(callerName)->setPopupName(popupName);
-        ObjectsMenu[pantalla]->add(popupName, GUIPOPUPMENU, 0, 0, 150, 100, popupName, false)->setVisible(false);
+        ObjectsMenu[pantalla]->add(popupName, GUIPOPUPMENU, 0, 0, 170, 100, popupName, false)->setVisible(false);
         popup1 = (UIPopupMenu *) objMenu->getObjByName(popupName);
         popup1->setFont(getFont());
         popup1->setAutosize(true);
@@ -1808,7 +1809,7 @@ int Iofrontend::AddServer(tEvento *evento){
         mensaje.append("A continuación se abrirá un explorador. Debes logarte en Dropbox o Google y pulsar el botón de \"PERMITIR\".");
         mensaje.append("Seguidamente deberás copiar el código obtenido y pegarlo en la ventana de Onmusik que aparecerá a continuación.");
 
-        int serverSelected = casoPANTALLALOGIN(Constant::toAnsiString("Autorizar aplicación"), Constant::toAnsiString(mensaje));
+        int serverSelected = casoPANTALLALOGIN(Constant::toAnsiString("Autorizar aplicación"), Constant::toAnsiString(mensaje), false);
         if (serverSelected < MAXSERVERS){
             string tmpClient = juke->getServerCloud(serverSelected)->getClientid();
             string tmpSecret = juke->getServerCloud(serverSelected)->getSecret();
@@ -2909,7 +2910,7 @@ void Iofrontend::addLocalAlbum(string ruta){
     }
 }
 
-int Iofrontend::casoPANTALLALOGIN(string titulo, string txtDetalle){
+int Iofrontend::casoPANTALLALOGIN(string titulo, string txtDetalle, bool allButtonsOn){
     ignoreButtonRepeats = true;
     Traza::print("casoPANTALLALOGIN: Inicio", W_INFO);
     bool salir = false;
@@ -2933,6 +2934,13 @@ int Iofrontend::casoPANTALLALOGIN(string titulo, string txtDetalle){
     UITextElementsArea *textElems = (UITextElementsArea *)objMenu->getObjByName("textosBox");
     textElems->setImgDrawed(false);
     textElems->setFieldText("labelDetalle", txtDetalle);
+
+    if (allButtonsOn){
+        objMenu->getObjByName("btnDropbox")->setEnabled(true);
+        objMenu->getObjByName("btnDropbox")->setImgDrawed(false);
+        objMenu->getObjByName("btnGoogle")->setEnabled(true);
+        objMenu->getObjByName("btnGoogle")->setImgDrawed(false);
+    }
 
     long delay = 0;
     unsigned long before = 0;
@@ -3008,7 +3016,7 @@ int Iofrontend::accionUploadCDPopup(tEvento *evento){
             Traza::print("Extrayendo cd de la unidad: " + selected, W_DEBUG);
 
             string mensaje = "Selecciona si quieres subir el CD a una cuenta de Google o Dropbox. ";
-            int serverSelected = casoPANTALLALOGIN(Constant::toAnsiString("Seleccionar cuenta"), Constant::toAnsiString(mensaje));
+            int serverSelected = casoPANTALLALOGIN(Constant::toAnsiString("Seleccionar cuenta"), Constant::toAnsiString(mensaje), true);
             if (serverSelected < MAXSERVERS){
                 tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
                 juke->setObjectsMenu(obj);
