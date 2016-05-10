@@ -58,6 +58,7 @@
 					<Add option="-lzdll" />
 					<Add option="-ltidy" />
 					<Add option="-lgumboParser" />
+					<Add option="-lws2_32" />
 					<Add library="../../ExternalLibs/libjpeg/bin/Release/libjpeg.a" />
 					<Add directory="../../ExternalLibs/UIObjects/bin/Release" />
 					<Add directory="../../ExternalLibs/zipUtils/bin/Release" />
@@ -73,7 +74,6 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
-				<Option parameters='&quot;C:\Johnny Cash Greatest CDS\02 I Just Thought You&apos;d Like to Know.ogg&quot;' />
 				<Compiler>
 					<Add option="-pg" />
 					<Add option="-g" />
@@ -122,6 +122,7 @@
 					<Add option="-lzdll" />
 					<Add option="-ltidy" />
 					<Add option="-lgumboParser" />
+					<Add option="-lws2_32" />
 					<Add library="../../ExternalLibs/libjpeg/bin/Release/libjpeg.a" />
 					<Add directory="../../ExternalLibs/UIObjects/bin/Release" />
 					<Add directory="../../ExternalLibs/zipUtils/bin/Release" />

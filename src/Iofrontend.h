@@ -170,7 +170,10 @@ class Iofrontend : public Ioutil{
         int accionUploadCDPopup(tEvento *evento);
         int uploadToServer(tEvento *evento, int idServer);
         int comprobarTokenServidores();
-
+        void waitJukebox( Thread<Jukebox> *var, int pantalla);
+        bool waitAceptCancel(string btnAceptar, string btnCancelar, int pantalla);
+        int accionesCddbAceptar(tEvento *evento);
+        void showCDDBMenuData();
 
     public :
         Iofrontend();
@@ -198,6 +201,7 @@ class Iofrontend : public Ioutil{
         void actualizaciones();
         Jukebox * getJuke(){return juke;}
         void addLocalAlbum(string ruta);
+        int accionesCddbCancelar(tEvento *evento);
 
 };
 #endif //Iofrontend_H

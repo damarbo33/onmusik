@@ -48,6 +48,8 @@
             PANTALLAPREGUNTA,
             PANTALLABIENVENIDA,
             PANTALLALOGIN,
+            PANTALLACDDB,
+            PANTALLACDDBDATA,
             MAXMENU
     } enumMenus;
 

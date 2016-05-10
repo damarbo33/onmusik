@@ -169,7 +169,8 @@ DWORD Jukebox::extraerCD(){
     if (!cdDrive.empty() && !extractionPath.empty()){
         CdTrackInfo cddbTrack;
         int res = extraerCD(cdDrive, extractionPath, &cddbTrack);
-        if (res > 0){
+
+        if (res > 0 && !extractionPath.empty()){
             string ruta = extractionPath + FILE_SEPARATOR + "rip";
             Dirutil dir;
 
@@ -284,7 +285,7 @@ DWORD Jukebox::refreshPlaylist(){
     //            cout << filename  << "; " << dir.getExtension(filename) << endl;
                 if (!files.fileList.at(i)->isDir && filtroOGG.find(dir.getExtension(filename)) != string::npos){
                     fichero = dir.getFileNameNoExt(filename);
-                    Traza::print(ruta, W_PARANOIC);
+                    Traza::print("fichero: " + fichero, W_DEBUG);
                     //Miramos en la hashmap si existe nuestra clave
                     metaKeyTime = fichero + arrTags[tagDuration];
                     if (metadatos.count(metaKeyTime) > 0){
@@ -299,16 +300,12 @@ DWORD Jukebox::refreshPlaylist(){
                     metaKeyArtist = getMetadatos(&metadatos, fichero + arrTags[tagArtist]);
                     metaKeyAlbum = getMetadatos(&metadatos, fichero + arrTags[tagAlbum]);
                     metaKeyTitle = getMetadatos(&metadatos, fichero + arrTags[tagTitle]);
-
                     Traza::print("Jukebox::refreshPlaylist. Album: " + metaKeyAlbum, W_DEBUG);
                     Traza::print("Jukebox::refreshPlaylist. Title: " + metaKeyTitle, W_DEBUG);
-
                     metaKeyAlbum = Constant::udecodeUTF8(metaKeyAlbum);
                     metaKeyTitle = Constant::udecodeUTF8(metaKeyTitle);
-
                     Traza::print("Jukebox::refreshPlaylist. Album: " + metaKeyAlbum, W_DEBUG);
                     Traza::print("Jukebox::refreshPlaylist. Title: " + metaKeyTitle, W_DEBUG);
-
                     vector <ListGroupCol *> miFila;
                     miFila.push_back(new ListGroupCol(metaKeyTitle.empty() ? dir.getFileNameNoExt(filename) : metaKeyTitle, idFile));
                     miFila.push_back(new ListGroupCol(metaKeyArtist, metaKeyArtist));
@@ -889,95 +886,122 @@ int Jukebox::extraerCD(string cdDrive, string extractionPath, CdTrackInfo *cdTra
     ULONG TrackCount = audioCD.GetTrackCount();
     Traza::print("Jukebox::extraerCD Disc ID: " + audioCD.getCddbID() + ", Numero de pistas: " + Constant::TipoToStr(TrackCount), W_DEBUG);
     ObjectsMenu->getObjByName("statusMessage")->setLabel("Extrayendo " + Constant::TipoToStr(TrackCount) + " pistas");
-
-    padSize = Constant::TipoToStr(TrackCount).length();
     //Obtenemos informacion del cd
-    getCddb(&audioCD, cdTrack);
+    this->getCddb(&audioCD, cdTrack);
 
-    string albumName = Constant::removeEspecialChars(Constant::replaceAll(cdTrack->albumName, "/", "-"));
+    if (!extractionPath.empty()){
+        string albumName = Constant::removeEspecialChars(
+                                Constant::replaceAll(
+                                Constant::toAnsiString(cdTrack->albumName), "/", "-"));
 
-    if (albumName.empty()){
-        albumName = "rip_" + Constant::replaceAll(Constant::fecha(), ":", "_");
-    }
+        padSize = Constant::TipoToStr(TrackCount).length();
 
-    string rutaRip = extractionPath + FILE_SEPARATOR + "rip"
-                    + FILE_SEPARATOR
-                    + albumName;
-
-    Traza::print("Iofrontend::extraerCD. Extrayendo CD a la ruta: "+ rutaRip, W_DEBUG);
-    if (!existe(extractionPath)){
-        ObjectsMenu->getObjByName("statusMessage")->setLabel("No se puede acceder al directorio " + extractionPath);
-        return 0;
-    }
-    dir.mkpath(string(extractionPath + FILE_SEPARATOR + "rip").c_str(), 0777);
-    dir.mkpath(rutaRip.c_str(), 0777);
-
-    for (i=0; i<TrackCount; i++ ){
-        ULONG Time = audioCD.GetTrackTime( i );
-
-        msg = "Track " + Constant::TipoToStr(i+1) + " Tiempo: " + Constant::TipoToStr(Time/60) + ":"
-             + Constant::TipoToStr(Time%60) + " Tamaño: "
-             + Constant::TipoToStr(ceil (audioCD.GetTrackSize(i) / double( pow(1024, 2)))) + " MB";
-
-        ObjectsMenu->getObjByName("statusMessage")->setLabel(msg);
-
-        string songName;
-
-        if (cdTrack->titleList.size() > 0 && i < cdTrack->titleList.size()){
-            songName = rutaRip + FILE_SEPARATOR + Constant::pad(Constant::TipoToStr(i+1), padSize, '0')
-                       + " - " + cdTrack->titleList.at(i) + ".wav";
-        } else {
-            songName = rutaRip + FILE_SEPARATOR +  "Track "
-                    + Constant::pad(Constant::TipoToStr(i+1), padSize, '0') + ".wav";
+        if (albumName.empty()){
+            albumName = "rip_" + Constant::replaceAll(Constant::fecha(), ":", "_");
         }
 
-        // Save track-data to file...
-        if ( ! audioCD.ExtractTrack( i, songName.c_str() ) ){
-            ObjectsMenu->getObjByName("statusMessage")->setLabel("No se puede extraer la pista " + Constant::TipoToStr(i));
-            Traza::print("No se puede extraer la pista", i, W_DEBUG);
+        string rutaRip = extractionPath + FILE_SEPARATOR + "rip"
+                        + FILE_SEPARATOR
+                        + albumName;
+
+        Traza::print("Iofrontend::extraerCD. Extrayendo CD a la ruta: "+ rutaRip, W_DEBUG);
+        if (!existe(extractionPath)){
+            ObjectsMenu->getObjByName("statusMessage")->setLabel("No se puede acceder al directorio " + extractionPath);
+            return 0;
         }
-        // ... or just get the data into memory
-//        CBuf<char> Buf;
-//        if ( ! AudioCD.ReadTrack(i, &Buf) )
-//            printf( "Cannot read track!\n" );
+        dir.mkpath(string(extractionPath + FILE_SEPARATOR + "rip").c_str(), 0777);
+        dir.mkpath(rutaRip.c_str(), 0777);
+
+        for (i=0; i<TrackCount; i++ ){
+            ULONG Time = audioCD.GetTrackTime( i );
+
+            msg = "Track " + Constant::TipoToStr(i+1) + " Tiempo: " + Constant::TipoToStr(Time/60) + ":"
+                 + Constant::TipoToStr(Time%60) + " Tamaño: "
+                 + Constant::TipoToStr(ceil (audioCD.GetTrackSize(i) / double( pow(1024, 2)))) + " MB";
+
+            ObjectsMenu->getObjByName("statusMessage")->setLabel(msg);
+
+            string songName;
+
+            if (cdTrack->titleList.size() > 0 && i < cdTrack->titleList.size()){
+                songName = rutaRip + FILE_SEPARATOR + Constant::pad(Constant::TipoToStr(i+1), padSize, '0')
+                           + " - " + cdTrack->titleList.at(i) + ".wav";
+            } else {
+                songName = rutaRip + FILE_SEPARATOR +  "Track "
+                        + Constant::pad(Constant::TipoToStr(i+1), padSize, '0') + ".wav";
+            }
+
+            // Save track-data to file...
+            if ( ! audioCD.ExtractTrack( i, songName.c_str() ) ){
+                ObjectsMenu->getObjByName("statusMessage")->setLabel("No se puede extraer la pista " + Constant::TipoToStr(i));
+                Traza::print("No se puede extraer la pista", i, W_DEBUG);
+            }
+            // ... or just get the data into memory
+    //        CBuf<char> Buf;
+    //        if ( ! AudioCD.ReadTrack(i, &Buf) )
+    //            printf( "Cannot read track!\n" );
+        }
+
     }
 
-
+    audioCD.Close();
     return i;
 }
 
 /**
-*
+* Obtiene la informacion exacta de cada cancion del disco. Es necesario que
+* ya se sepa el id del disco y su categoria. Ver la llamada a Jukebox::searchCddbAlbums
 */
 int Jukebox::getCddb(CAudioCD *audioCD, CdTrackInfo *cdTrack){
     Freedb cddb;
     FreedbQuery query;
     vector<CdTrackInfo *> cdTrackList;
-    query.discId = audioCD->getCddbID();
-    query.username = "dani";
-    query.hostname = "dani.web.com";
-    query.clientname = "dani";
-    query.version = "1";
-    query.totalSeconds = audioCD->getDiscSeconds();
+    query.discId = this->getIdSelected();
+    query.categ = this->getCategSelected();
+    loadConfigCDDB(&query);
+    int code = cddb.getCdInfo(&query, cdTrack);
+    return code;
+}
 
-    std::vector<CDTRACK> *cdInfo = audioCD->getCdInfo();
+/**
+*
+*/
+DWORD Jukebox::searchCddbAlbums(){
+    if (this->cdTrackList != NULL && !this->cdDrive.empty()){
+        this->cdTrackList->clear();
+        searchCddbAlbums(this->cdDrive, this->cdTrackList);
+    }
+    return 0;
+}
+
+/**
+*
+*/
+int Jukebox::searchCddbAlbums(string cdDrive, vector<CdTrackInfo *> *cdTrackList){
+
+    CAudioCD audioCD;
+    //Abrimos el CD de audio
+    if ( ! audioCD.Open( cdDrive.at(0) ) ){
+        return 0;
+    }
+    CdTrackInfo cddbTrack;
+
+    Freedb cddb;
+    FreedbQuery query;
+    query.discId = audioCD.getCddbID();
+    loadConfigCDDB(&query);
+    query.totalSeconds = audioCD.getDiscSeconds();
+
+    std::vector<CDTRACK> *cdInfo = audioCD.getCdInfo();
     for (int i=0; i < cdInfo->size(); i++){
         query.offsets.push_back(cdInfo->at(i).Offset);
     }
 
-    //Buscamos el cd mediante la informacion de offsets obtenida
-    int code = cddb.searchCd(&query, &cdTrackList);
+    //Listamos todos los posibles albums
+    int code = cddb.searchCd(&query, cdTrackList);
     Traza::print("Codigo", code, W_DEBUG);
-
-    if (cdTrackList.size() > 0){
-        query.categ = cdTrackList.at(0)->genre;
-        query.discId = cdTrackList.at(0)->discId;
-        //Realizamos la llamada para obtener la informacion precisa del cd
-        code = cddb.getCdInfo(&query, cdTrack);
-    }
-
-    return code;
-
+    audioCD.Close();
+    return cdTrackList->size();
 }
 
 
@@ -1017,5 +1041,18 @@ bool Jukebox::isDir(string ruta){
         return false;
     }
 
+}
+
+void Jukebox::loadConfigCDDB(FreedbQuery *query){
+    string configIniFile = Constant::getAppDir() + Constant::getFileSep() + "config.ini";
+    ListaIni<Data> *config = new ListaIni<Data>();
+    config->loadFromFile(configIniFile);
+    config->sort();
+
+    query->username =     config->find("cddbuser") >= 0 ? config->get(config->find("cddbuser")).getValue() : "";
+    query->hostname = config->find("cddbhostname") >= 0 ? config->get(config->find("cddbhostname")).getValue() : "";
+    query->clientname =     config->find("cddbclientname") >= 0 ? config->get(config->find("cddbclientname")).getValue() : "";
+    query->version =  config->find("cddbclientversion") >= 0 ? config->get(config->find("cddbclientversion")).getValue() : "";
+    delete config;
 }
 

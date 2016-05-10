@@ -11,6 +11,7 @@ const string secret="";
 const string googleClientId = "";
 const string googleSecret = "";
 
+
 bool Iofrontend::finishedDownload;
 const int MAXDBGAIN = 20;
 
@@ -164,7 +165,6 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setVisible(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnResetEq")->setVisible(false);
 
-
     for(int i=NBIQUADFILTERS - 1; i >= 0; i--){
         //Se anyade el slider
         ObjectsMenu[PANTALLAREPRODUCTOR]->add("filtroAudio" + Constant::TipoToStr(i), GUISLIDER, 0,0,0,0, frecsEQStr[i], true)->setShadow(false);
@@ -229,7 +229,7 @@ void Iofrontend::initUIObjs(){
     }
 
     UIPopupMenu * popup3 = addPopup(PANTALLAREPRODUCTOR, "popupUploadCD", "btnAddCD");
-    loadComboUnidades("popupUploadCD", PANTALLAREPRODUCTOR, DRIVE_CDROM);
+
 
     vector <ListGroupCol *> miCabecera;
     miCabecera.push_back(new ListGroupCol(Constant::toAnsiString("Canción"), ""));
@@ -247,6 +247,52 @@ void Iofrontend::initUIObjs(){
 
     ((UISpectrum *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum"))->calcZoom(ALBUMWIDTH);
 
+    ObjectsMenu[PANTALLACDDB]->add("listAlbumsCddb", GUILISTGROUPBOX, 0, 0, 0, 0, "LISTADODIR", false)->setVerContenedor(false)->setShadow(false);
+    ObjectsMenu[PANTALLACDDB]->add("aceptarCddb", GUIBUTTON, -(BUTTONW/2 + 5), 0, BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
+    ObjectsMenu[PANTALLACDDB]->add("cancelarCddb", GUIBUTTON, (BUTTONW/2 + 5), 0, BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
+    ObjectsMenu[PANTALLACDDB]->add("titleCddb", GUIARTSURFACE, 0, 0, INPUTW, Constant::getINPUTH(), Constant::toAnsiString("Más de una coincidencia encontrada. Seleccione un álbum"), false)->setEnabled(false);
+
+    UIListGroup *listAlbumsCddb = ((UIListGroup *)ObjectsMenu[PANTALLACDDB]->getObjByName("listAlbumsCddb"));
+
+    vector <ListGroupCol *> cabeceraAlbumscddb;
+    cabeceraAlbumscddb.push_back(new ListGroupCol(Constant::toAnsiString("Álbum"), ""));
+    cabeceraAlbumscddb.push_back(new ListGroupCol(Constant::toAnsiString("Año"), ""));
+    cabeceraAlbumscddb.push_back(new ListGroupCol(Constant::toAnsiString("Género"), ""));
+    cabeceraAlbumscddb.push_back(new ListGroupCol(Constant::toAnsiString("Id. Disco"), ""));
+    listAlbumsCddb->setHeaderLista(cabeceraAlbumscddb);
+    listAlbumsCddb->adjustToHeader(false);
+    listAlbumsCddb->addHeaderWith(420);
+    listAlbumsCddb->addHeaderWith(70);
+    listAlbumsCddb->addHeaderWith(70);
+    listAlbumsCddb->addHeaderWith(70);
+    listAlbumsCddb->setColor(cGrisOscuro);
+    listAlbumsCddb->setTextColor(cBlanco);
+
+
+    int desp = 110;
+    string msgLabel = Constant::toAnsiString(string("Especifique los datos siguientes para poder hacer una llamada ") +
+                     string("a la base de datos de cddb (freedb.org) mediante la que obtener los datos de los CD's que introduzca"));
+
+    ObjectsMenu[PANTALLACDDBDATA]->add("lblDataCDDB",  GUITEXTELEMENTSAREA,  0, -220 * zoomText + desp, INPUTW, Constant::getINPUTH()*5, "asdasd", true)->setEnabled(false);
+    ObjectsMenu[PANTALLACDDBDATA]->add("inputUsuario", GUIINPUTWIDE, 0, -140 * zoomText + desp, INPUTW, Constant::getINPUTH(), "Usuario:", true);
+    ObjectsMenu[PANTALLACDDBDATA]->add("inputHostname", GUIINPUTWIDE, 0, -100 * zoomText + desp, INPUTW, Constant::getINPUTH(), "Nombre PC:", true);
+    ObjectsMenu[PANTALLACDDBDATA]->add("btnAceptarCDDB", GUIBUTTON, -(BUTTONW/2 + 5), 30 + desp,BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
+    ObjectsMenu[PANTALLACDDBDATA]->add("btnCancelarCDDB", GUIBUTTON, (BUTTONW/2 + 5), 30 + desp,BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
+    ObjectsMenu[PANTALLACDDBDATA]->add("borde", GUIPANELBORDER,0,0,0,0, "Rellene el formulario", false);
+    ObjectsMenu[PANTALLACDDBDATA]->getObjByName("lblDataCDDB")->setTextColor(cBlanco);
+
+    UITextElementsArea *LetrasCDDB = (UITextElementsArea *)ObjectsMenu[PANTALLACDDBDATA]->getObjByName("lblDataCDDB");
+    t_element_style styleCddb;
+    t_posicion posLetrasCddb = {5,5,0,0};
+    styleCddb.pos = posLetrasCddb;
+    styleCddb.bold = false;
+    styleCddb.fontSize = 14;
+    LetrasCDDB->addField("msgWarning","",msgLabel,styleCddb, true);
+    LetrasCDDB->setTextColor(cBlanco);
+    LetrasCDDB->setVisible(true);
+    LetrasCDDB->setColor(cNegroClaro);
+    LetrasCDDB->setIntervalDespl(Constant::getMENUSPACE()*2);
+
 
     //Establecemos los elementos que se redimensionan
     setDinamicSizeObjects();
@@ -263,6 +309,8 @@ void Iofrontend::initUIObjs(){
     addEvent("btnGoogle", &Iofrontend::marcarBotonSeleccionado);
     addEvent("btnDropbox", &Iofrontend::marcarBotonSeleccionado);
     addEvent("btnLoginCancel", &Iofrontend::marcarBotonSeleccionado);
+    addEvent("aceptarCddb", &Iofrontend::marcarBotonSeleccionado);
+    addEvent("cancelarCddb", &Iofrontend::marcarBotonSeleccionado);
 
     //Botones para la pantalla de video
     addEvent("btnPlay",  &Iofrontend::accionesMediaPause);
@@ -297,7 +345,8 @@ void Iofrontend::initUIObjs(){
     addEvent("btnResetEq", &Iofrontend::accionesResetFiltros);
     addEvent("btnSwitchEq", &Iofrontend::accionesSwitchFiltros);
     addEvent("btnLetras", &Iofrontend::accionesLetras);
-
+    addEvent("btnAceptarCDDB", &Iofrontend::accionesCddbAceptar);
+    addEvent("btnCancelarCDDB", &Iofrontend::accionesCddbCancelar);
 }
 
 /**
@@ -741,13 +790,17 @@ void Iofrontend::setDinamicSizeObjects(){
         }
 
         //Redimension para el browser de directorios2
-
         ObjectsMenu[PANTALLABROWSER2]->getObjByName(OBJLISTABROWSER2)->setTam(0, Constant::getINPUTH() + COMBOHEIGHT + 4,this->getWidth(), this->getHeight() - BUTTONH - Constant::getINPUTH() - COMBOHEIGHT - 10 - 4);
         ObjectsMenu[PANTALLABROWSER2]->getObjByName("comboBrowser")->setTam(1, Constant::getINPUTH() + 4, 160, 100);
         ObjectsMenu[PANTALLABROWSER2]->getObjByName(BTNACEPTARBROWSER)->setTam( (this->getWidth() / 2) -(BUTTONW + 5), this->getHeight() - BUTTONH - 5, BUTTONW,BUTTONH);
         ObjectsMenu[PANTALLABROWSER2]->getObjByName(BTNCANCELARBROWSER)->setTam( (this->getWidth() / 2) + 5, this->getHeight() - BUTTONH - 5, BUTTONW,BUTTONH);
         ObjectsMenu[PANTALLABROWSER2]->getObjByName(ARTDIRBROWSER)->setTam( 0, 0, this->getWidth(), Constant::getINPUTH());
 
+
+        ObjectsMenu[PANTALLACDDB]->getObjByName("listAlbumsCddb")->setTam(0, Constant::getINPUTH() + COMBOHEIGHT + 4,this->getWidth(), this->getHeight() - BUTTONH - Constant::getINPUTH() - COMBOHEIGHT - 10 - 4);
+        ObjectsMenu[PANTALLACDDB]->getObjByName("aceptarCddb")->setTam( (this->getWidth() / 2) -(BUTTONW + 5), this->getHeight() - BUTTONH - 5, BUTTONW,BUTTONH);
+        ObjectsMenu[PANTALLACDDB]->getObjByName("cancelarCddb")->setTam( (this->getWidth() / 2) + 5, this->getHeight() - BUTTONH - 5, BUTTONW,BUTTONH);
+        ObjectsMenu[PANTALLACDDB]->getObjByName("titleCddb")->setTam( 0, 0, this->getWidth(), Constant::getINPUTH());
 
         //Redimension para la pantalla de videos multimedia
         int desp = (this->getWidth() / 2) - FAMFAMICONW*2 - BUTTONW/2;
@@ -813,6 +866,7 @@ bool Iofrontend::casoPANTALLACONFIRMAR(string titulo, string txtDetalle){
     procesarControles(ObjectsMenu[menuInicial], &askEvento, NULL);
     SDL_Rect iconRectFondo = {0, 0, this->getWidth(), this->getHeight()};
     SDL_Surface *mySurface = NULL;
+    drawRectAlpha(iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h , cNegro, 200);
     takeScreenShot(&mySurface, iconRectFondo);
 
     //Seguidamente cambiamos la pantalla a la de la confirmacion
@@ -844,7 +898,6 @@ bool Iofrontend::casoPANTALLACONFIRMAR(string titulo, string txtDetalle){
         askEvento = WaitForKey();
 //        clearScr(cBgScreen);
         printScreenShot(&mySurface, iconRectFondo);
-        drawRectAlpha(iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h , cNegro, 200);
 
         procesarControles(objMenu, &askEvento, NULL);
 
@@ -1648,6 +1701,8 @@ int Iofrontend::accionesLetras(tEvento *evento){
     }
     return 0;
 }
+
+
 
 /**
 *
@@ -2910,6 +2965,9 @@ void Iofrontend::addLocalAlbum(string ruta){
     }
 }
 
+/**
+*
+*/
 int Iofrontend::casoPANTALLALOGIN(string titulo, string txtDetalle, bool allButtonsOn){
     ignoreButtonRepeats = true;
     Traza::print("casoPANTALLALOGIN: Inicio", W_INFO);
@@ -2924,6 +2982,7 @@ int Iofrontend::casoPANTALLALOGIN(string titulo, string txtDetalle, bool allButt
     procesarControles(ObjectsMenu[menuInicial], &askEvento, NULL);
     SDL_Rect iconRectFondo = {0, 0, this->getWidth(), this->getHeight()};
     SDL_Surface *mySurface = NULL;
+    drawRectAlpha(iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h , cNegro, 200);
     takeScreenShot(&mySurface, iconRectFondo);
 
     //Seguidamente cambiamos la pantalla a la de la confirmacion
@@ -2951,7 +3010,7 @@ int Iofrontend::casoPANTALLALOGIN(string titulo, string txtDetalle, bool allButt
         askEvento = WaitForKey();
 //        clearScr(cBgScreen);
         printScreenShot(&mySurface, iconRectFondo);
-        drawRectAlpha(iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h , cNegro, 200);
+
 
         procesarControles(objMenu, &askEvento, NULL);
 
@@ -2989,6 +3048,13 @@ int Iofrontend::casoPANTALLALOGIN(string titulo, string txtDetalle, bool allButt
 *
 */
 int Iofrontend::showPopupUploadCD(tEvento *evento){
+
+    loadComboUnidades("popupUploadCD", PANTALLAREPRODUCTOR, DRIVE_CDROM);
+
+
+    UIList *combo = (UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("popupUploadCD");
+    combo->addElemLista("Opciones CDDB", "cddbopt", bullet_wrench);
+
     ObjectsMenu[PANTALLAREPRODUCTOR]->setFocus("btnAddCD");
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnAddCD")->setPopup(true);
     procesarPopups(ObjectsMenu[PANTALLAREPRODUCTOR], evento);
@@ -3011,18 +3077,67 @@ int Iofrontend::accionUploadCDPopup(tEvento *evento){
         string selected = objPopup->getListValues()->get(objPopup->getPosActualLista());
         int servidor = objPopup->getListDestinos()->get(objPopup->getPosActualLista());
 
-        if (objPopup->getCallerPopup() != NULL){
+        if (selected.compare("cddbopt") == 0){
+            showCDDBMenuData();
+        } else if (objPopup->getCallerPopup() != NULL){
             objsMenu->setFirstFocus();
             Traza::print("Extrayendo cd de la unidad: " + selected, W_DEBUG);
 
             string mensaje = "Selecciona si quieres subir el CD a una cuenta de Google o Dropbox. ";
             int serverSelected = casoPANTALLALOGIN(Constant::toAnsiString("Seleccionar cuenta"), Constant::toAnsiString(mensaje), true);
             if (serverSelected < MAXSERVERS){
+
+                vector<CdTrackInfo *> cdTrackList;
+                FreedbQuery query;
                 tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+
                 juke->setObjectsMenu(obj);
+                juke->setCdDrive(selected);
+                juke->setCdTrackList(&cdTrackList);
                 juke->setCdDrive(selected);
                 juke->setExtractionPath(Constant::getAppDir());
                 juke->setServerSelected(serverSelected);
+
+                Thread<Jukebox> *threadCD = new Thread<Jukebox>(juke, &Jukebox::searchCddbAlbums);
+                waitJukebox(threadCD, PANTALLAREPRODUCTOR);
+
+                string categAlbum;
+                string idAlbum;
+
+                if (cdTrackList.size() == 0){
+                    setSelMenu(PANTALLAREPRODUCTOR);
+//                    return 0;
+                } else if (cdTrackList.size() == 1){
+                    categAlbum = cdTrackList.at(0)->genre;
+                    idAlbum = cdTrackList.at(0)->discId;
+                } else {
+
+                    obj = ObjectsMenu[PANTALLACDDB];
+                    UIListGroup *listAlbumsCddb = ((UIListGroup *)obj->getObjByName("listAlbumsCddb"));
+
+                    for (int i=0; i < cdTrackList.size(); i++){
+                        vector <ListGroupCol *> miFila;
+                        miFila.push_back(new ListGroupCol(cdTrackList.at(i)->albumName, cdTrackList.at(i)->albumName));
+                        miFila.push_back(new ListGroupCol(cdTrackList.at(i)->year, cdTrackList.at(i)->year));
+                        miFila.push_back(new ListGroupCol(cdTrackList.at(i)->genre, cdTrackList.at(i)->genre));
+                        miFila.push_back(new ListGroupCol(cdTrackList.at(i)->discId, cdTrackList.at(i)->discId));
+                        listAlbumsCddb->addElemLista(miFila);
+                    }
+
+                    if (waitAceptCancel("aceptarCddb", "cancelarCddb", PANTALLACDDB)){
+                        setSelMenu(PANTALLAREPRODUCTOR);
+                        categAlbum = listAlbumsCddb->getCol(listAlbumsCddb->getPosActualLista(), 2)->getValor();
+                        idAlbum = listAlbumsCddb->getCol(listAlbumsCddb->getPosActualLista(), 3)->getValor();
+                    } else {
+                        setSelMenu(PANTALLAREPRODUCTOR);
+                        return 0;
+                    }
+                }
+
+                setSelMenu(PANTALLAREPRODUCTOR);
+                juke->setIdSelected(idAlbum);
+                juke->setCategSelected(categAlbum);
+                juke->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
                 Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::extraerCD);
                 thread->start();
             }
@@ -3031,11 +3146,178 @@ int Iofrontend::accionUploadCDPopup(tEvento *evento){
     return 0;
 }
 
+/**
+*
+*/
+void Iofrontend::waitJukebox( Thread<Jukebox> *var, int pantalla){
+    tmenu_gestor_objects *obj = ObjectsMenu[pantalla];
+    tEvento evento;
+    tEvento eventoNull;
+    clearScr();
+    procesarControles(obj, &eventoNull, NULL);
+    flipScr();
+    pintarIconoProcesando(true);
+    var->start();
+    clearEvento(&evento);
+    clearEvento(&eventoNull);
+
+    while (var->isRunning() && evento.key != SDLK_ESCAPE && !evento.quit){
+        evento = WaitForKey();
+        procesarControles(obj, &eventoNull, NULL);
+        pintarIconoProcesando(false);
+    }
+}
+
+/**
+*
+*/
+bool Iofrontend::waitAceptCancel(string btnAceptar, string btnCancelar, int pantalla){
+    int menuInicial = getSelMenu();
+    tEvento askEvento;
+    clearEvento(&askEvento);
+
+    SDL_Rect iconRectFondo = {0, 0, this->getWidth(), this->getHeight()};
+    SDL_Surface *mySurface = NULL;
+    clearScr();
+
+    procesarControles(ObjectsMenu[menuInicial], &askEvento, NULL);
+    drawRectAlpha(iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h , cNegro, 200);
+    takeScreenShot(&mySurface, iconRectFondo);
+
+    setSelMenu(pantalla);
+    tmenu_gestor_objects *obj = ObjectsMenu[pantalla];
+    long delay = 0;
+    unsigned long before = 0;
+    obj->setFocus(0);
+    bool salir = false;
+    bool salida = false;
+
+    for (int i=0; i < obj->getSize(); i++){
+        obj->getObjByPos(i)->setImgDrawed(false);
+    }
+    procesarControles(obj, &askEvento, NULL);
+    flipScr();
 
 
+    do{
+        before = SDL_GetTicks();
+        askEvento = WaitForKey();
+        printScreenShot(&mySurface, iconRectFondo);
 
+        procesarControles(obj, &askEvento, NULL);
+        flipScr();
+        salir = (askEvento.isJoy && askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_B)) ||
+        (askEvento.isKey && askEvento.key == SDLK_ESCAPE);
 
+        if (obj->getObjByName(btnAceptar)->getTag().compare("selected") == 0){
+            salir = true;
+            salida = true;
+            obj->getObjByName(btnAceptar)->setTag("");
+            Traza::print("Detectado SI pulsado", W_DEBUG);
+        } else if (obj->getObjByName(btnCancelar)->getTag().compare("selected") == 0){
+            salir = true;
+            salida = false;
+            obj->getObjByName(btnCancelar)->setTag("");
+            Traza::print("Detectado NO pulsado", W_DEBUG);
+        }
 
+        delay = before - SDL_GetTicks() + TIMETOLIMITFRAME;
+        if(delay > 0) SDL_Delay(delay);
+    } while (!salir);
+
+    setSelMenu(menuInicial);
+
+    return salida;
+}
+
+int Iofrontend::accionesCddbCancelar(tEvento *evento){
+    setSelMenu(PANTALLAREPRODUCTOR);
+    return 0;
+}
+
+/**
+*
+*/
+int Iofrontend::accionesCddbAceptar(tEvento *evento){
+    Traza::print("Iofrontend::accionesCddbAceptar", W_INFO);
+
+    string configIniFile = Constant::getAppDir() + Constant::getFileSep() + "config.ini";
+    tmenu_gestor_objects *obj = ObjectsMenu[PANTALLACDDBDATA];
+
+    string user =     ((UIInput *)obj->getObjByName("inputUsuario"))->getText();
+    string hostname = ((UIInput *)obj->getObjByName("inputHostname"))->getText();
+
+    if (user.empty() || hostname.empty()){
+        showMessage("Rellene correctamente todos los campos", 2000);
+    } else {
+
+        ListaIni<Data> *config = new ListaIni<Data>();
+        Traza::print("Cargando configuracion", W_DEBUG);
+        config->loadFromFile(configIniFile);
+        config->sort();
+
+        Data *dat;
+        int pos;
+
+        dat = new Data();
+        dat->setKeyValue("cddbuser",user);
+        if ((pos = config->find("cddbuser")) < 0){
+            config->add(*dat);
+        } else {
+            config->set(pos, dat);
+        }
+
+        dat = new Data();
+        dat->setKeyValue("cddbhostname",hostname);
+        if ((pos = config->find("cddbhostname")) < 0){
+            config->add(*dat);
+        } else {
+            config->set(pos, dat);
+        }
+
+        dat = new Data();
+        dat->setKeyValue("cddbclientname","ONMUSIK");
+        if ((pos = config->find("cddbclientname")) < 0){
+            config->add(*dat);
+        } else {
+            config->set(pos, dat);
+        }
+
+        dat = new Data();
+        dat->setKeyValue("cddbclientversion","1");
+        if ((pos = config->find("cddbclientversion")) < 0){
+            config->add(*dat);
+        } else {
+            config->set(pos, dat);
+        }
+
+        config->writeToFile(configIniFile);
+        delete config;
+        setSelMenu(PANTALLAREPRODUCTOR);
+    }
+
+    return 0;
+}
+
+/**
+*
+*/
+void Iofrontend::showCDDBMenuData(){
+    setSelMenu(PANTALLACDDBDATA);
+    ObjectsMenu[PANTALLACDDBDATA]->findNextFocus();
+    tmenu_gestor_objects *obj = ObjectsMenu[PANTALLACDDBDATA];
+
+    t_hostname structHostname;
+    Constant::getHostname("localhost", &structHostname);
+
+    FreedbQuery query;
+    juke->loadConfigCDDB(&query);
+    if (query.hostname.empty())
+        query.hostname = structHostname.hostname;
+
+    ((UIInput *)obj->getObjByName("inputUsuario"))->setText(query.username);
+    ((UIInput *)obj->getObjByName("inputHostname"))->setText(query.hostname);
+}
 
 
 
