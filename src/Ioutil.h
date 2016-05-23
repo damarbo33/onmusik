@@ -88,7 +88,7 @@
             void drawTextInt(int , int , int ,  t_color ); // Escribe un entero en la pantalla
             void drawTextCent( const char* , int , int , bool , bool , t_color );
             void drawTextInArea( const char*, int, int, t_color, SDL_Rect *);
-            void drawTextInsideArea( string dato, int x, int y, Object *obj, SDL_Rect *textLocation);
+            void drawTextInsideArea( int posArrayTexto, int x, int y, Object *obj, SDL_Rect *textLocation);
             void drawRect(int, int, int, int, t_color); //Dibuja un rectangulo rellenado
             void drawRectAlpha(int, int, int, int, t_color, int); //Dibuja un rectangulo rellenado con valor alpha de transparencia
             void drawRectLine(int , int , int , int , int , t_color);//Dibuja un rectangulo sin relleno del ancho especificado

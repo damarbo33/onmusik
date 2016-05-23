@@ -12,6 +12,7 @@ const string googleClientId = "";
 const string googleSecret = "";
 
 
+
 bool Iofrontend::finishedDownload;
 const int MAXDBGAIN = 20;
 
@@ -347,6 +348,7 @@ void Iofrontend::initUIObjs(){
     addEvent("btnLetras", &Iofrontend::accionesLetras);
     addEvent("btnAceptarCDDB", &Iofrontend::accionesCddbAceptar);
     addEvent("btnCancelarCDDB", &Iofrontend::accionesCddbCancelar);
+    addEvent("LetrasBox", &Iofrontend::accionesLetrasBox);
 }
 
 /**
@@ -473,6 +475,7 @@ bool Iofrontend::procesarControles(tmenu_gestor_objects *objMenu, tEvento *event
                         case GUIPOPUPMENU:
                         case GUILISTGROUPBOX:
                         case GUICOMBOBOX:
+                        case GUITEXTELEMENTSAREA:
                             if (procesarBoton(object, objMenu)){ //Comprobamos si se ha pulsado el elemento
                                 posBoton = findEventPos(object->getName());  //Buscamos la posicion del elemento en el array de punteros a funcion
                                 if (posBoton >= 0){ //Si hemos encontrado una funcion
@@ -2281,7 +2284,7 @@ bool Iofrontend::bucleReproductor(){
                 //Recargamos la cancion si se ha terminado la descarga de la misma
                 //y no se habia obtenido informacion del tiempo total de la cancion
                 if (threadDownloader != NULL){
-                    if (lenSongSec == 0){
+                    if (lenSongSec == 0 && !threadDownloader->isRunning() && !finishedDownload){
                         reloadSong(posAlbumSelected, posSongSelected);
                     //Si no se ha descargado, comprobamos si se ha terminado la descarga
                     } else if (!threadDownloader->isRunning() && !finishedDownload && player->getStatus() == PLAYING &&
@@ -2353,7 +2356,8 @@ void Iofrontend::reloadSong(int posAlbumSelected, int posSongSelected){
             //mayor informacion sobre la cancion que se esta reproduciendo
             //Nos aseguramos que modificamos la posicion correcta con el campo posSongSelected
             playList->setLastSelectedPos(posSongSelected);
-            juke->refreshPlayListMetadata();
+            Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlayListMetadata);
+            thread->start();
         }
     }
 }
@@ -3230,8 +3234,39 @@ bool Iofrontend::waitAceptCancel(string btnAceptar, string btnCancelar, int pant
     return salida;
 }
 
+/**
+*
+*/
 int Iofrontend::accionesCddbCancelar(tEvento *evento){
     setSelMenu(PANTALLAREPRODUCTOR);
+    return 0;
+}
+
+/**
+*
+*/
+int Iofrontend::accionesLetrasBox(tEvento *evento){
+    UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
+    Traza::print("Iofrontend::accionesLetrasBox", textElems->getSelectedPos(), W_DEBUG);
+    if (textElems->getSelectedPos() >= 0){
+        string tmpUrl = textElems->getTextVector()->at(textElems->getSelectedPos())->getUrl();
+        Traza::print("Iofrontend::accionesLetrasBox: " + tmpUrl, W_DEBUG);
+        if (!tmpUrl.empty()){
+
+            char infoBuf[MAX_PATH];
+            GetWindowsDirectory( infoBuf, MAX_PATH );
+
+            Launcher lanzador;
+            FileLaunch emulInfo;
+            emulInfo.rutaexe = infoBuf;
+            emulInfo.fileexe = "explorer.exe";
+            emulInfo.parmsexe = tmpUrl;
+            bool resultado = lanzador.lanzarProgramaUNIXFork(&emulInfo);
+
+//            string cmd = "explorer \"" + tmpUrl + "\"";
+//            system(cmd.c_str());
+        }
+    }
     return 0;
 }
 

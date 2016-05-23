@@ -1113,13 +1113,13 @@
 	"Excepcion.h"
 	"Traza.h"
 
-1462863807 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
+1463476724 source:c:\github\proyectos\onmusik\src\iofrontend.cpp
 	"Iofrontend.h"
 	"uilistgroup.h"
 	"beans/listgroupcol.h"
 	"uilistcommon.h"
 
-1462863441 c:\github\proyectos\onmusik\src\iofrontend.h
+1463414032 c:\github\proyectos\onmusik\src\iofrontend.h
 	<string>
 	<vector>
 	"Ioutil.h"
@@ -1142,7 +1142,7 @@
 	"scrapper/scrapper.h"
 	"updater/updater.h"
 
-1462800754 c:\github\proyectos\onmusik\src\ioutil.h
+1463467257 c:\github\proyectos\onmusik\src\ioutil.h
 	<iostream>
 	<map>
 	<cmath>
@@ -1277,7 +1277,7 @@
 	<iostream>
 	<vector>
 
-1461570845 c:\github\externallibs\uiobjects\src\uitextelementsarea.h
+1463466256 c:\github\externallibs\uiobjects\src\uitextelementsarea.h
 	<object.h>
 
 1462280727 c:\github\externallibs\uiobjects\src\uispectrum.h
@@ -1371,7 +1371,7 @@
 	"Dirutil.h"
 	"thread.h"
 
-1461565293 c:\github\proyectos\httpcurl\httpcurl\src\util\constant.h
+1463410698 c:\github\proyectos\httpcurl\httpcurl\src\util\constant.h
 	<sstream>
 	<string.h>
 	<vector>
@@ -1502,7 +1502,7 @@
 	<iostream>
 	"Constant.h"
 
-1462538160 source:c:\github\proyectos\onmusik\src\ioutil.cpp
+1463477080 source:c:\github\proyectos\onmusik\src\ioutil.cpp
 	"Ioutil.h"
 	"9001.png.h"
 	"font/Arimo_Regular.ttf.h"
@@ -2159,7 +2159,7 @@
 	<Constant.h>
 	"Menuobject.h"
 
-1460358988 c:\github\proyectos\httpcurl\httpcurl\src\htmlparser.h
+1463986405 c:\github\proyectos\httpcurl\httpcurl\src\htmlparser.h
 	<buffio.h>
 	<iostream>
 	<string>
@@ -2820,7 +2820,7 @@
 	"json/json.h"
 	"lyricsbase.h"
 
-1460476236 source:c:\github\proyectos\onmusik\src\scrapper\scrapper.cpp
+1463482634 source:c:\github\proyectos\onmusik\src\scrapper\scrapper.cpp
 	"scrapper.h"
 
 1460372333 c:\github\proyectos\httpcurl\httpcurl\src\lyrics\lyricsbase.h
@@ -2970,7 +2970,7 @@
 1461354668 d:\github\codeblocks\proyectos\httpcurl\httpcurl\src\servers\googledrive.h
 	"ioauth2.h"
 
-1462863810 source:c:\github\proyectos\mp3play\src\audioplayer.cpp
+1462888790 source:c:\github\proyectos\mp3play\src\audioplayer.cpp
 	"audioplayer.h"
 	"Constant.h"
 
@@ -3008,7 +3008,7 @@
 918291456 c:\github\proyectos\mp3play\src\fft\complex.h
 	<math.h>
 
-1462268103 source:c:\github\proyectos\mp3play\src\fft\fft.cpp
+1462887784 source:c:\github\proyectos\mp3play\src\fft\fft.cpp
 	"fft.h"
 
 1159274752 source:c:\github\proyectos\mp3play\src\audiocd\audiocd_helpers.cpp

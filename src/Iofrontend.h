@@ -174,6 +174,7 @@ class Iofrontend : public Ioutil{
         bool waitAceptCancel(string btnAceptar, string btnCancelar, int pantalla);
         int accionesCddbAceptar(tEvento *evento);
         void showCDDBMenuData();
+        int accionesLetrasBox(tEvento *evento);
 
     public :
         Iofrontend();

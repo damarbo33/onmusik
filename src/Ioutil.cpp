@@ -1397,9 +1397,7 @@ void Ioutil::drawUISpectrumFft(Object *obj){
                     percent = valueFreq / (double) MAXVALUEFFT;
                     barHeight = (H - margenBarras) * percent;
 
-                    if (barHeight > hBarCeil)
-                    {
-//                        barHeight -= (barHeight % hBarCeil);
+                    if (barHeight > hBarCeil){
                         int ceils = barHeight / hBarCeil;
                         barHeight = hBarCeil * ceils - sepBarras;
                     }
@@ -3365,7 +3363,7 @@ void Ioutil::drawUITextElementsArea(Object *obj){
                     }
 
                     //Se dibuja el texto
-                    drawTextInsideArea(elem->getText().c_str(),
+                    drawTextInsideArea(i,
                              elem->getPos()->x + (elem->isUseMaxLabelMargin() ?  maxPxLabel : 0) + TEXLABELTEXTSPACE,
                              elem->getPos()->y, obj, &areaLocation);
 
@@ -3387,8 +3385,12 @@ void Ioutil::drawUITextElementsArea(Object *obj){
 /**
 *
 */
-void Ioutil::drawTextInsideArea( string dato, int x, int y, Object *obj, SDL_Rect *textLocation){
+void Ioutil::drawTextInsideArea( int posArrayTexto, int x, int y, Object *obj, SDL_Rect *textLocation){
     if (font != NULL){
+
+        UITextElementsArea *objText = (UITextElementsArea *)obj;
+        string dato = objText->getTextVector()->at(posArrayTexto)->getText();
+
         SDL_Color foregroundColor = { (unsigned char)obj->getTextColor().r,
         (unsigned char)obj->getTextColor().g, (unsigned char)obj->getTextColor().b };
 
@@ -3421,6 +3423,14 @@ void Ioutil::drawTextInsideArea( string dato, int x, int y, Object *obj, SDL_Rec
                     SDL_Surface* textSurface =  TTF_RenderText_Blended(font, tmpStr.c_str(), foregroundColor);
                     SDL_BlitSurface(textSurface, NULL, screen, &screenLocation);
                     SDL_FreeSurface(textSurface);
+
+                    if (objText->getSelectedPos() == posArrayTexto && !objText->getTextVector()->at(posArrayTexto)->getUrl().empty()){
+                        pintarLinea(screenLocation.x,
+                                    screenLocation.y + objText->getTextVector()->at(posArrayTexto)->getStyle()->fontSize,
+                                    screenLocation.x + tamPalabra,
+                                    screenLocation.y + objText->getTextVector()->at(posArrayTexto)->getStyle()->fontSize,
+                                    obj->getTextColor());
+                    }
                 }
             }
 
@@ -3429,7 +3439,6 @@ void Ioutil::drawTextInsideArea( string dato, int x, int y, Object *obj, SDL_Rec
             }
         }
 
-        UITextElementsArea *objText = (UITextElementsArea *)obj;
         objText->setMaxOffsetY(offsetY);
         drawScrollBar(obj);
 
