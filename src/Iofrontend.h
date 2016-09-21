@@ -32,6 +32,23 @@
 
 const unsigned int MAXSONG_REPEAT_AVOID = 20;
 
+//*********************************************************************************/
+//Cuidado con no sobrepasar el numero de elementos que define la constante MAXMENU
+//*********************************************************************************/
+ typedef enum { PANTALLAREPRODUCTOR,     //0
+        PANTALLALISTADODIR,
+        PANTALLACONFIRMAR,
+        PANTALLABROWSER2,
+        PANTALLAOPENMEDIA,
+        MENUPOPUPS,
+        PANTALLAPREGUNTA,
+        PANTALLABIENVENIDA,
+        PANTALLALOGIN,
+        PANTALLACDDB,
+        PANTALLACDDBDATA,
+        MAXMENU
+} enumMenus;
+
 class SongsReproduced{
 
     public:
