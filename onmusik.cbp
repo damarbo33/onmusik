@@ -32,6 +32,9 @@
 					<Add directory="../../ExternalLibs/tidy/include" />
 					<Add directory="onmusik/src/scrapper" />
 					<Add directory="onmusik/src/updater" />
+					<Add directory="../../ExternalLibs/UIObjects/src/common" />
+					<Add directory="ExternalLibs/UIObjects/src/screens" />
+					<Add directory="src" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -75,7 +78,6 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-pg" />
 					<Add option="-g" />
 					<Add directory="../../ExternalLibs/sqllite/src" />
 					<Add directory="../../ExternalLibs/libjpeg/src/libjpeg" />
@@ -96,9 +98,11 @@
 					<Add directory="../../ExternalLibs/tidy/include" />
 					<Add directory="onmusik/src/scrapper" />
 					<Add directory="onmusik/src/updater" />
+					<Add directory="../../ExternalLibs/UIObjects/src/common" />
+					<Add directory="src" />
+					<Add directory="ExternalLibs/UIObjects/src/screens" />
 				</Compiler>
 				<Linker>
-					<Add option="-pg -lgmon" />
 					<Add option="-lsqllite" />
 					<Add option="-lUIObjects" />
 					<Add option="-lsdlgfx" />
@@ -136,7 +140,12 @@
 		</Build>
 		<Compiler>
 			<Add option="-fexceptions" />
+			<Add option="-DWIN" />
 		</Compiler>
+		<Unit filename="../../ExternalLibs/UIObjects/src/common/Icogestor.cpp" />
+		<Unit filename="../../ExternalLibs/UIObjects/src/common/Icogestor.h" />
+		<Unit filename="../../ExternalLibs/UIObjects/src/common/Ioutil.cpp" />
+		<Unit filename="../../ExternalLibs/UIObjects/src/common/Ioutil.h" />
 		<Unit filename="../MP3Play/src/audiocd/AudioCD_Helpers.cpp" />
 		<Unit filename="../MP3Play/src/audiocd/AudioCD_Helpers.h" />
 		<Unit filename="../MP3Play/src/audiocd/CAudioCD.cpp" />
@@ -152,9 +161,7 @@
 		<Unit filename="resource.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
-		<Unit filename="src/Icogestor.cpp" />
 		<Unit filename="src/Iofrontend.cpp" />
-		<Unit filename="src/Ioutil.cpp" />
 		<Unit filename="src/jukebox.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/scrapper/scrapper.cpp" />

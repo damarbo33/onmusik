@@ -2,36 +2,6 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="src\updater\updater.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="481" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="..\MP3Play\src\audiocd\AudioCD_Helpers.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="309" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="..\MP3Play\src\audiocd\CAudioCD.cpp" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1708" topLine="252" />
-		</Cursor>
-	</File>
-	<File name="..\MP3Play\src\audiocd\CAudioCD.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2706" topLine="91" />
-		</Cursor>
-	</File>
-	<File name="..\MP3Play\src\audioplayer.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="7072" topLine="103" />
-		</Cursor>
-	</File>
-	<File name="..\MP3Play\src\audioplayer.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="804" topLine="84" />
-		</Cursor>
-	</File>
 	<File name="..\MP3Play\src\fft\Complex.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="513" topLine="0" />
@@ -47,29 +17,19 @@
 			<Cursor1 position="1005" topLine="44" />
 		</Cursor>
 	</File>
-	<File name="src\Icogestor.cpp" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\Iofrontend.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="-3" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3721" topLine="87" />
+			<Cursor1 position="93809" topLine="2148" />
 		</Cursor>
 	</File>
-	<File name="src\Iofrontend.cpp" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\jukebox.cpp" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="-3" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="84204" topLine="1961" />
-		</Cursor>
-	</File>
-	<File name="src\Ioutil.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="27522" topLine="826" />
-		</Cursor>
-	</File>
-	<File name="src\jukebox.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2027" topLine="422" />
+			<Cursor1 position="26182" topLine="622" />
 		</Cursor>
 	</File>
 	<File name="src\main.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1256" topLine="30" />
+			<Cursor1 position="1369" topLine="87" />
 		</Cursor>
 	</File>
 	<File name="src\scrapper\scrapper.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -85,6 +45,61 @@
 	<File name="src\updater\updater.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="1968" topLine="41" />
+		</Cursor>
+	</File>
+	<File name="src\updater\updater.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="481" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="..\..\ExternalLibs\UIObjects\src\common\Icogestor.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4308" topLine="116" />
+		</Cursor>
+	</File>
+	<File name="..\..\ExternalLibs\UIObjects\src\common\Icogestor.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="801" topLine="11" />
+		</Cursor>
+	</File>
+	<File name="..\..\ExternalLibs\UIObjects\src\common\Ioutil.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="-3" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="73399" topLine="1896" />
+		</Cursor>
+	</File>
+	<File name="..\..\ExternalLibs\UIObjects\src\common\Ioutil.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="-4" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="7608" topLine="41" />
+		</Cursor>
+	</File>
+	<File name="..\MP3Play\src\audiocd\AudioCD_Helpers.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="309" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="..\MP3Play\src\audiocd\CAudioCD.cpp" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="-2" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6464" topLine="252" />
+		</Cursor>
+	</File>
+	<File name="..\MP3Play\src\audiocd\CAudioCD.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2706" topLine="91" />
+		</Cursor>
+	</File>
+	<File name="..\MP3Play\src\audioplayer.cpp" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="-3" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="15281" topLine="441" />
+		</Cursor>
+	</File>
+	<File name="..\MP3Play\src\audioplayer.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="804" topLine="84" />
+		</Cursor>
+	</File>
+	<File name="..\MP3Play\src\biquad.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="-2" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="303" topLine="141" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

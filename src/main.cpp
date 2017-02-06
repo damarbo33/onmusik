@@ -4,6 +4,7 @@
 #include <fstream>
 #include "updater/updater.h"
 
+
 bool procesarTeclado(tEvento *evento, Iofrontend *ioFront){
     bool salir = false;
     if (evento->key == SDLK_RETURN && evento->keyMod & KMOD_LALT){

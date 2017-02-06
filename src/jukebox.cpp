@@ -332,6 +332,12 @@ void Jukebox::convertir(string ruta, CdTrackInfo *cddbTrack){
     Dirutil dir;
     vector <FileProps> *filelist = new vector <FileProps>();
     Traza::print("Jukebox::convertir", W_DEBUG);
+    //Codec alternativo alpha
+    //string codecType = " -vn -acodec vorbis -strict -2 -b:a 128k ";
+    //Basando en calidad
+    //string codecType = " -acodec vorbis -vn -strict -2 -q:a 4 ";
+    //Codec recomendado
+    string codecType = " -vn -acodec libvorbis -b:a 128k ";
 
     try{
         convertedFilesList->clear();
@@ -344,8 +350,8 @@ void Jukebox::convertir(string ruta, CdTrackInfo *cddbTrack){
         emulInfo.rutaexe = dir.GetShortUtilName(Constant::getAppDir()) + FILE_SEPARATOR + "rsc";
         emulInfo.fileexe = "ffmpeg.exe";
         //Conversion OGG
-        emulInfo.parmsexe = string("-loglevel quiet -y -i \"%ROMFULLPATH%\" -map_metadata 0 -acodec libvorbis ") +
-                            string("-id3v2_version 3 -write_id3v1 1 -ac 2 -b:a 128k ") +
+        emulInfo.parmsexe = string("-loglevel quiet -y -i \"%ROMFULLPATH%\" -map_metadata 0 ") +
+                            string("-id3v2_version 3 -write_id3v1 1 ") + codecType +
                             string("\"%ROMPATH%") + FILE_SEPARATOR + string("%ROMNAME%.ogg\"");
         //Conversion MP3
     //    emulInfo.parmsexe = string("-y -i \"%ROMFULLPATH%\" -map_metadata 0 -acodec libmp3lame -id3v2_version 3 -write_id3v1 1 -ac 2 -b:a 128k ") +
@@ -399,8 +405,7 @@ void Jukebox::convertir(string ruta, CdTrackInfo *cddbTrack){
                             + " -metadata date=\"" + cddbTrack->year + "\""
                             + " -metadata genre=\"" + cddbTrack->genre + "\""
                             + " -metadata track=\"" + Constant::TipoToStr(i+1) + "/" + Constant::TipoToStr(cddbTrack->titleList.size()) + "\"" +
-                            string(" -acodec libvorbis ") +
-                            string("-id3v2_version 3 -write_id3v1 1 -ac 2 -b:a 128k ") +
+                            string(" -id3v2_version 3 -write_id3v1 1 ") + codecType +
                             string("\"%ROMPATH%") + FILE_SEPARATOR + string("%ROMNAME%.ogg\"");
                     }
                     //Como no es un fichero ogg, necesitamos recodificar

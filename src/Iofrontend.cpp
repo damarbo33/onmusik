@@ -769,9 +769,13 @@ void Iofrontend::setDinamicSizeObjects(){
         //lista que tenga ese menu con el total de la ventana que queda
         for (int i=0; i<MAXMENU; i++){
             try{
-                ObjectsMenu[i]->getObjByName(TITLESCREEN)->setTam( 0, 0, this->getWidth(),Constant::getINPUTH());
-                int j = 0;
                 Object *posibleObj = NULL;
+                posibleObj = ObjectsMenu[i]->getObjByName(TITLESCREEN);
+                //Caso especial de redimension
+                if(posibleObj != NULL)
+                    posibleObj->setTam( 0, 0, this->getWidth(),Constant::getINPUTH());
+
+                int j = 0;
 
                 while (j < ObjectsMenu[i]->getSize()){
                     posibleObj = ObjectsMenu[i]->getObjByPos(j);
