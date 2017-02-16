@@ -12,3 +12,6 @@ onmusik.depend
 Release/Docs/keys.txt
 ‚
 ±
+dist
+build
+*.o

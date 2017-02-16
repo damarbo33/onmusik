@@ -103,7 +103,7 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLALOGIN]->add("btnLoginCancel", GUIBUTTON, (BUTTONSERVERW/2 + 5) * 2, 30,BUTTONSERVERW,BUTTONH, "Cancelar", true)->setIcon(cross);
 
     UITextElementsArea *infoTextRom = (UITextElementsArea *)ObjectsMenu[PANTALLACONFIRMAR]->getObjByName("textosBox");
-    t_posicion pos = {0,0,0,0};
+    t_posicion pos;
     infoTextRom->addField("labelDetalle","","",pos, true);
     infoTextRom->setTextColor(cBlanco);
     infoTextRom->setColor(cNegro);
@@ -186,7 +186,7 @@ void Iofrontend::initUIObjs(){
 
     UITextElementsArea *LetrasLabel = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
     t_element_style style;
-    t_posicion posLetras = {10,10,0,0};
+    t_posicion posLetras(10,10,0,0);
     style.pos = posLetras;
     style.bold = true;
     style.fontSize = 28;
@@ -284,7 +284,7 @@ void Iofrontend::initUIObjs(){
 
     UITextElementsArea *LetrasCDDB = (UITextElementsArea *)ObjectsMenu[PANTALLACDDBDATA]->getObjByName("lblDataCDDB");
     t_element_style styleCddb;
-    t_posicion posLetrasCddb = {5,5,0,0};
+    t_posicion posLetrasCddb(5,5,0,0);
     styleCddb.pos = posLetrasCddb;
     styleCddb.bold = false;
     styleCddb.fontSize = 14;

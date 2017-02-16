@@ -335,7 +335,7 @@ void Jukebox::convertir(string ruta, CdTrackInfo *cddbTrack){
     //Codec alternativo alpha
     //string codecType = " -vn -acodec vorbis -strict -2 -b:a 128k ";
     //Basando en calidad
-    //string codecType = " -acodec vorbis -vn -strict -2 -q:a 4 ";
+    //string codecType = " -vn -acodec vorbis -strict -2 -q:a 4 ";
     //Codec recomendado
     string codecType = " -vn -acodec libvorbis -b:a 128k ";
 
