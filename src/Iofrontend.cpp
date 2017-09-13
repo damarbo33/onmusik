@@ -3256,7 +3256,7 @@ int Iofrontend::accionesLetrasBox(tEvento *evento){
         string tmpUrl = textElems->getTextVector()->at(textElems->getSelectedPos())->getUrl();
         Traza::print("Iofrontend::accionesLetrasBox: " + tmpUrl, W_DEBUG);
         if (!tmpUrl.empty()){
-
+#ifdef WIN
             char infoBuf[MAX_PATH];
             GetWindowsDirectory( infoBuf, MAX_PATH );
 
@@ -3266,9 +3266,15 @@ int Iofrontend::accionesLetrasBox(tEvento *evento){
             emulInfo.fileexe = "explorer.exe";
             emulInfo.parmsexe = tmpUrl;
             bool resultado = lanzador.lanzarProgramaUNIXFork(&emulInfo);
-
-//            string cmd = "explorer \"" + tmpUrl + "\"";
+#endif             
+//            string cmd = CMD_LAUNCH_BROWSER + " \"" + tmpUrl + "\"";
 //            system(cmd.c_str());
+            Launcher lanzador;
+            FileLaunch emulInfo;
+            emulInfo.rutaexe = "/usr/bin";
+            emulInfo.fileexe = CMD_LAUNCH_BROWSER;
+            emulInfo.parmsexe = tmpUrl;
+            bool resultado = lanzador.lanzarProgramaUNIXFork(&emulInfo);
         }
     }
     return 0;

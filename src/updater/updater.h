@@ -12,8 +12,8 @@ class Updater
         Updater();
         virtual ~Updater();
         void updateFFmpeg(string ruta);
-        DWORD updates();
-        setRuta(string var) {ruta = var;}
+        uint32_t updates();
+        void setRuta(string var) {ruta = var;}
         bool needUpdate(string ruta);
         void abort();
 

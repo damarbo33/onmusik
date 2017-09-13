@@ -10,7 +10,11 @@ bool procesarTeclado(tEvento *evento, Iofrontend *ioFront){
     if (evento->key == SDLK_RETURN && evento->keyMod & KMOD_LALT){
         ioFront->toggleFullScreen();
         evento->resize = true;
+    } else if (evento->key == SDLK_ESCAPE){
+        salir = true;
+        evento->quit = true;
     }
+        
     return salir;
 }
 
@@ -30,7 +34,7 @@ void Terminate(void)
 */
 
 int main(int argc, char *argv[]){
-    #ifdef WIN
+    //#ifdef WIN
         string appDir = argv[0];
         int pos = appDir.rfind(Constant::getFileSep());
         if (pos == string::npos){
@@ -43,12 +47,12 @@ int main(int argc, char *argv[]){
             appDir.substr(0, appDir.rfind(Constant::getFileSep()));
         }
         Constant::setAppDir(appDir);
-    #endif // WIN
+    //#endif // WIN
 
-    #ifdef UNIX
-        Dirutil dir;
-        Constant::setAppDir(dir.getDirActual());
-    #endif // UNIX
+    //#ifdef UNIX
+    //    Dirutil dir;
+    //    Constant::setAppDir(dir.getDirActual());
+    //#endif // UNIX
 
     string rutaTraza = appDir + Constant::getFileSep() + "Traza.txt";
 
@@ -92,7 +96,7 @@ int main(int argc, char *argv[]){
                 if (LIMITFPS){
                 //Calculamos el tiempo que deberia pasar de frame a frame en un lapso de 1 seg (TIMETOLIMITFRAME) y le restamos
                 //el tiempo que realmente ha pasado (before - SDL_GetTicks()), para esperar el tiempo que indique
-                //esta diferencia. No es el mejor método pero es sencillo de implementar
+                //esta diferencia. No es el mejor mï¿½todo pero es sencillo de implementar
                     delay = before - SDL_GetTicks() + TIMETOLIMITFRAME;
                     if(delay > 0) SDL_Delay(delay);
                 }
@@ -107,6 +111,5 @@ int main(int argc, char *argv[]){
     delete ioFront;
     Traza::print("Eliminando traza", W_DEBUG);
     delete traza;
-    Traza::print("Saliendo de la aplicación", W_DEBUG);
     exit(0);
 }

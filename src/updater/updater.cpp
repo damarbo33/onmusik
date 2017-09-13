@@ -10,7 +10,7 @@ Updater::~Updater(){
     delete utilHttp;
 }
 
-DWORD Updater::updates(){
+uint32_t Updater::updates(){
     if (!ruta.empty())
         updateFFmpeg(ruta);
 
@@ -23,8 +23,8 @@ DWORD Updater::updates(){
 bool Updater::needUpdate(string ruta){
     Dirutil dir;
     string downDir = ruta + Constant::getFileSep();
-    string file1 = downDir + Constant::getFileSep() + "ffmpeg.exe";
-    string file2 = downDir + Constant::getFileSep() + "ffprobe.exe";
+    string file1 = downDir + "ffmpeg.exe";
+    string file2 = downDir + "ffprobe.exe";
     return (!dir.existe(file1) || !dir.existe(file2));
 }
 
@@ -36,11 +36,15 @@ void Updater::updateFFmpeg(string ruta){
     aborted = false;
 
     string downDir = ruta + Constant::getFileSep();
-    string file1 = downDir + Constant::getFileSep() + "ffmpeg.exe";
-    string file2 = downDir + Constant::getFileSep() + "ffprobe.exe";
-    string strFileName1 = downDir + Constant::getFileSep() + "ffmpeg.zip";
-    string strFileName2 = downDir + Constant::getFileSep() + "ffprobe.zip";
-
+    string file1 = downDir + "ffmpeg.exe";
+    string file2 = downDir + "ffprobe.exe";
+    string strFileName1 = downDir + "ffmpeg.zip";
+    string strFileName2 = downDir + "ffprobe.zip";
+    
+    if (!dir.existe(downDir)){
+        dir.createDir(downDir);
+    }
+    
     string url1 = "https://github.com/damarbo33/onmusik/raw/master/Release/ffmpeg.zip";
     string url2 = "https://github.com/damarbo33/onmusik/raw/master/Release/ffprobe.zip";
 

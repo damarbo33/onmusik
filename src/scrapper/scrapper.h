@@ -13,7 +13,7 @@ class Scrapper
         void setTrack(string var){track = var;}
         void setArtist(string var){artist = var;}
         void setObjectsMenu(tmenu_gestor_objects *var){ObjectsMenu = var;}
-        DWORD getLyrics();
+        uint32_t getLyrics();
 
     protected:
 
@@ -23,7 +23,7 @@ class Scrapper
         string artist;
         vector <TrackInfo *> info;
 
-        DWORD getLyricsSong();
+        uint32_t getLyricsSong();
         LyricsBase *arr[2];
 };
 

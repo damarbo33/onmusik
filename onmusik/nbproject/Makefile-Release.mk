@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=MinGW32-Windows
+CND_PLATFORM=MinGW_64-Windows
 CND_DLIB_EXT=dll
 CND_CONF=Release
 CND_DISTDIR=dist
@@ -63,7 +63,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../../../ExternalLibs/crosslib/crosslib/dist/Release/MinGW32-Windows -L../../../ExternalLibs/curl-7.40.0-devel-mingw32/lib -L../../../ExternalLibs/SDL/libs/lib -L../../../ExternalLibs/SDL/libs/lib/x86 -L.. -lcrosslib -lsdlgfx -lmingw32 -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image -lcrypto -lcurl -lcurldll -lidn -lrtmp -lssh2 -lssh2dll -lssl -lz -lzdll -lws2_32 resource.o
+LDLIBSOPTIONS=-L../../../ExternalLibs/crosslib/crosslib/dist/Release/MinGW-Windows -L../../../ExternalLibs/crosslib/crosslib/dist/Release/MinGW32-Windows -L../../../ExternalLibs/curl-7.40.0-devel-mingw32/lib -L../../../ExternalLibs/SDL/libs/lib -L../../../ExternalLibs/SDL/libs/lib/x86 -L.. -lcrosslib -lsdlgfx -lmingw32 -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image -lcrypto -lcurl -lcurldll -lidn -lrtmp -lssh2 -lssh2dll -lssl -lz -lzdll -lws2_32 resource.o
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}

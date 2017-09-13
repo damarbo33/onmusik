@@ -453,7 +453,7 @@ void Jukebox::convertir(string ruta, CdTrackInfo *cddbTrack){
         //Finalmente escribimos el fichero de metadata
         std::string outputConfig = Json::writeString(wbuilder, root);
         fichero.writeToFile(rutaMetadata.c_str(),(char *)outputConfig.c_str(),outputConfig.length(),true);
-        ObjectsMenu->getObjByName("statusMessage")->setLabel("Conversión terminada");
+        ObjectsMenu->getObjByName("statusMessage")->setLabel("Conversiï¿½n terminada");
     } catch (Excepcion &e){
         Traza::print("Error Jukebox::convertir" + string(e.getMessage()), W_ERROR);
     }
@@ -698,13 +698,13 @@ DWORD Jukebox::refreshPlayListMetadataFromId3Dir(){
 *
 */
 DWORD Jukebox::authenticateServers(){
-    DWORD salida = NOERROR;
+    DWORD salida = SINERROR;
     for (int i=0; i < MAXSERVERS; i++){
         try{
             int error = arrCloud[i]->authenticate();
             if (error == ERRORREFRESHTOKEN){
                 arrCloud[i]->storeAccessToken(arrCloud[i]->getClientid(), arrCloud[i]->getSecret(), arrCloud[i]->getRefreshToken(), true);
-            } else if (error != NOERROR){
+            } else if (error != SINERROR){
                 salida = error;
             }
         } catch (Excepcion &e){
@@ -921,7 +921,7 @@ int Jukebox::extraerCD(string cdDrive, string extractionPath, CdTrackInfo *cdTra
             ULONG Time = audioCD.GetTrackTime( i );
 
             msg = "Track " + Constant::TipoToStr(i+1) + " Tiempo: " + Constant::TipoToStr(Time/60) + ":"
-                 + Constant::TipoToStr(Time%60) + " Tamaño: "
+                 + Constant::TipoToStr(Time%60) + " Tamaï¿½o: "
                  + Constant::TipoToStr(ceil (audioCD.GetTrackSize(i) / double( pow(1024, 2)))) + " MB";
 
             ObjectsMenu->getObjByName("statusMessage")->setLabel(msg);
@@ -1011,7 +1011,7 @@ int Jukebox::searchCddbAlbums(string cdDrive, vector<CdTrackInfo *> *cdTrackList
 
 
 /**
-* Comprueba si existe el directorio o fichero pasado por parámetro
+* Comprueba si existe el directorio o fichero pasado por parï¿½metro
 */
 bool Jukebox::existe(string ruta){
     Traza::print("Jukebox::existe " + ruta, W_DEBUG);

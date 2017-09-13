@@ -20,7 +20,7 @@ Scrapper::~Scrapper(){
 /**
 *
 */
-DWORD Scrapper::getLyrics(){
+uint32_t Scrapper::getLyrics(){
     getLyricsSong();
     return 0;
 }
@@ -28,7 +28,7 @@ DWORD Scrapper::getLyrics(){
 /**
 *
 */
-DWORD Scrapper::getLyricsSong(){
+uint32_t Scrapper::getLyricsSong(){
     vector <TrackInfo *> info;
     int ret = NOTFOUND;
     UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu->getObjByName("LetrasBox");
