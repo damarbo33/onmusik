@@ -43,17 +43,17 @@ class Jukebox{
 
         TID3Tags getSongInfo(string filepath);
         void convertir(string ruta, CdTrackInfo *cddbTrack);
-        DWORD convertir();
-        DWORD uploadMusicToServer();
-        DWORD refreshAlbumAndPlaylist();
-        DWORD refreshPlaylist();
-        DWORD downloadFile();
-        DWORD refreshAlbum();
-        DWORD refreshPlayListMetadata();
-        DWORD refreshPlayListMetadataFromId3Dir();
-        DWORD authenticateServers();
-        DWORD extraerCD();
-        DWORD searchCddbAlbums();
+        uint32_t convertir();
+        uint32_t uploadMusicToServer();
+        uint32_t refreshAlbumAndPlaylist();
+        uint32_t refreshPlaylist();
+        uint32_t downloadFile();
+        uint32_t refreshAlbum();
+        uint32_t refreshPlayListMetadata();
+        uint32_t refreshPlayListMetadataFromId3Dir();
+        uint32_t authenticateServers();
+        uint32_t extraerCD();
+        uint32_t searchCddbAlbums();
 
         void setObjectsMenu(tmenu_gestor_objects *var){ObjectsMenu = var;}
         void setDirToUpload(string var){dirToUpload = var;}

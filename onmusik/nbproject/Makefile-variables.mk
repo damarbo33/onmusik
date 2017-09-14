@@ -23,13 +23,13 @@ CND_PACKAGE_DIR_Release=dist/Release/MinGW_64-Windows/package
 CND_PACKAGE_NAME_Release=onmusik.tar
 CND_PACKAGE_PATH_Release=dist/Release/MinGW_64-Windows/package/onmusik.tar
 # Linux_Debug configuration
-CND_PLATFORM_Linux_Debug=GNU-Linux
-CND_ARTIFACT_DIR_Linux_Debug=dist/Linux_Debug/GNU-Linux
+CND_PLATFORM_Linux_Debug=MinGW_64-Windows
+CND_ARTIFACT_DIR_Linux_Debug=dist/Linux_Debug/MinGW_64-Windows
 CND_ARTIFACT_NAME_Linux_Debug=onmusik
-CND_ARTIFACT_PATH_Linux_Debug=dist/Linux_Debug/GNU-Linux/onmusik
-CND_PACKAGE_DIR_Linux_Debug=dist/Linux_Debug/GNU-Linux/package
+CND_ARTIFACT_PATH_Linux_Debug=dist/Linux_Debug/MinGW_64-Windows/onmusik
+CND_PACKAGE_DIR_Linux_Debug=dist/Linux_Debug/MinGW_64-Windows/package
 CND_PACKAGE_NAME_Linux_Debug=onmusik.tar
-CND_PACKAGE_PATH_Linux_Debug=dist/Linux_Debug/GNU-Linux/package/onmusik.tar
+CND_PACKAGE_PATH_Linux_Debug=dist/Linux_Debug/MinGW_64-Windows/package/onmusik.tar
 #
 # include compiler specific variables
 #

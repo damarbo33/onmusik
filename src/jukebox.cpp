@@ -140,7 +140,7 @@ TID3Tags Jukebox::getSongInfo(string filepath){
 /**
 *
 */
-DWORD Jukebox::convertir(){
+uint32_t Jukebox::convertir(){
     convertir(dirToUpload, NULL);
     uploadMusicToServer(dirToUpload);
     return 0;
@@ -149,7 +149,7 @@ DWORD Jukebox::convertir(){
 /**
 *
 */
-DWORD Jukebox::downloadFile(){
+uint32_t Jukebox::downloadFile(){
     downloadFile(fileToDownload);
     return 0;
 }
@@ -157,7 +157,7 @@ DWORD Jukebox::downloadFile(){
 /**
 *
 */
-DWORD Jukebox::uploadMusicToServer(){
+uint32_t Jukebox::uploadMusicToServer(){
     uploadMusicToServer(dirToUpload);
     return 0;
 }
@@ -165,7 +165,7 @@ DWORD Jukebox::uploadMusicToServer(){
 /**
 *
 */
-DWORD Jukebox::extraerCD(){
+uint32_t Jukebox::extraerCD(){
     if (!cdDrive.empty() && !extractionPath.empty()){
         CdTrackInfo cddbTrack;
         int res = extraerCD(cdDrive, extractionPath, &cddbTrack);
@@ -210,7 +210,7 @@ DWORD Jukebox::extraerCD(){
 /**
 *
 */
-DWORD Jukebox::refreshAlbumAndPlaylist(){
+uint32_t Jukebox::refreshAlbumAndPlaylist(){
     aborted = false;
     refreshAlbum();
     UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
@@ -225,7 +225,7 @@ DWORD Jukebox::refreshAlbumAndPlaylist(){
 /**
 *
 */
-DWORD Jukebox::refreshPlaylist(){
+uint32_t Jukebox::refreshPlaylist(){
     Traza::print("Jukebox::refreshPlaylist", W_DEBUG);
     Dirutil dir;
     CloudFiles files;
@@ -516,7 +516,7 @@ void Jukebox::hashMapMetadatos(map<string, string> *metadatos, string ruta){
 /**
 *
 */
-DWORD Jukebox::refreshPlayListMetadata(){
+uint32_t Jukebox::refreshPlayListMetadata(){
     UIListGroup *playList = ((UIListGroup *)ObjectsMenu->getObjByName("playLists"));
     string file = Constant::getAppDir() + FILE_SEPARATOR + "temp.ogg";
     unsigned int posSongSelected = playList->getLastSelectedPos();
@@ -616,7 +616,7 @@ void Jukebox::addLocalAlbum(string ruta){
 /**
 *
 */
-DWORD Jukebox::refreshPlayListMetadataFromId3Dir(){
+uint32_t Jukebox::refreshPlayListMetadataFromId3Dir(){
     UIListGroup *playList = ((UIListGroup *)ObjectsMenu->getObjByName("playLists"));
     double duration = 0.0;
     canPlay = false;
@@ -697,8 +697,8 @@ DWORD Jukebox::refreshPlayListMetadataFromId3Dir(){
 /**
 *
 */
-DWORD Jukebox::authenticateServers(){
-    DWORD salida = SINERROR;
+uint32_t Jukebox::authenticateServers(){
+    uint32_t salida = SINERROR;
     for (int i=0; i < MAXSERVERS; i++){
         try{
             int error = arrCloud[i]->authenticate();
@@ -718,7 +718,7 @@ DWORD Jukebox::authenticateServers(){
 /**
 *
 */
-DWORD Jukebox::refreshAlbum(){
+uint32_t Jukebox::refreshAlbum(){
     Traza::print("Jukebox::refreshAlbum", W_DEBUG);
     UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
     albumList->clearLista();
@@ -971,7 +971,7 @@ int Jukebox::getCddb(CAudioCD *audioCD, CdTrackInfo *cdTrack){
 /**
 *
 */
-DWORD Jukebox::searchCddbAlbums(){
+uint32_t Jukebox::searchCddbAlbums(){
     if (this->cdTrackList != NULL && !this->cdDrive.empty()){
         this->cdTrackList->clear();
         searchCddbAlbums(this->cdDrive, this->cdTrackList);

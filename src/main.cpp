@@ -10,7 +10,7 @@ bool procesarTeclado(tEvento *evento, Iofrontend *ioFront){
     if (evento->key == SDLK_RETURN && evento->keyMod & KMOD_LALT){
         ioFront->toggleFullScreen();
         evento->resize = true;
-    } else if (evento->key == SDLK_ESCAPE){
+    } else if (evento->key == SDLK_F4 && evento->keyMod & KMOD_LALT){
         salir = true;
         evento->quit = true;
     }

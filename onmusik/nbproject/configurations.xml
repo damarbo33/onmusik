@@ -80,6 +80,32 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
+        <cTool>
+          <incDir>
+            <pElem>../../../ExternalLibs/SDL/libs/include</pElem>
+            <pElem>../../../ExternalLibs/SDL/libs/include/SDL</pElem>
+            <pElem>../../../ExternalLibs/crosslib/src/ziputils/zlib</pElem>
+            <pElem>../../../ExternalLibs/crosslib/src/uiobjects</pElem>
+            <pElem>../../../ExternalLibs/crosslib/src/uiobjects/common</pElem>
+            <pElem>../../../ExternalLibs/crosslib/src/sqllite</pElem>
+            <pElem>../../../ExternalLibs/crosslib/src/libjpeg</pElem>
+            <pElem>../../../ExternalLibs/crosslib/src/ziputils/unzip</pElem>
+            <pElem>../../../ExternalLibs/curl-7.40.0-devel-mingw32/include</pElem>
+            <pElem>../../../ExternalLibs/crosslib/src/tidy/include</pElem>
+            <pElem>../../../ExternalLibs/crosslib/src/tidy/src</pElem>
+            <pElem>../../../ExternalLibs/crosslib/src/gumbo-parser-master/src</pElem>
+            <pElem>../../../ExternalLibs/crosslib/src/httpcurl</pElem>
+            <pElem>../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include</pElem>
+            <pElem>../../../ExternalLibs/crosslib/src/rijndael</pElem>
+            <pElem>../../MP3Play/src</pElem>
+            <pElem>../../BmpRLE</pElem>
+            <pElem>../src</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>WIN</Elem>
+            <Elem>WIN32</Elem>
+          </preprocessorList>
+        </cTool>
         <ccTool>
           <incDir>
             <pElem>../../../ExternalLibs/SDL/libs/include</pElem>
@@ -116,7 +142,8 @@
           </linkerAddLib>
           <linkerLibItems>
             <linkerLibLibItem>crosslib</linkerLibLibItem>
-            <linkerOptionItem>-lsdlgfx -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image -lcrypto -lcurl -lcurldll -lidn -lrtmp -lssh2 -lssh2dll -lssl -lz -lzdll</linkerOptionItem>
+            <linkerOptionItem>-lsdlgfx -lmingw32 -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image -lcrypto -lcurl -lcurldll -lidn -lrtmp -lssh2 -lssh2dll -lssl -lz -lzdll -lws2_32 </linkerOptionItem>
+            <linkerOptionItem></linkerOptionItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>

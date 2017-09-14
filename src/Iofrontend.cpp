@@ -2549,7 +2549,7 @@ int Iofrontend::autenticarServicios(){
     //Realizamos la conexion de prueba a google y a dropbox
     if (thread->start())
         Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
-
+    
     tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
     tEvento evento;
     tEvento eventoNull;
@@ -2559,7 +2559,6 @@ int Iofrontend::autenticarServicios(){
     flipScr();
 
     pintarIconoProcesando(true);
-    thread->start();
     while (thread->isRunning() && evento.key != SDLK_ESCAPE && !evento.quit){
         WaitForKey();
         procesarControles(obj, &eventoNull, NULL);
@@ -2587,6 +2586,7 @@ int Iofrontend::autenticarServicios(){
 //            } while (someErrorToken > 0);
         }
     }
+    delete thread;
     return someErrorToken;
 }
 
@@ -2841,10 +2841,12 @@ void Iofrontend::actualizaciones(){
 
         if (evento.key == SDLK_ESCAPE || evento.quit){
             updater->abort();
-            threadUpdate->join();
+            threadUpdate->join(); //Esperamos a la finalizacion del thread
             WaitForKey();
+            
         }
-
+        
+        cout << "salida del thread " << threadUpdate->getExitCode() << endl;
         delete threadUpdate;
         clearScr();
         procesarControles(ObjectsMenu[PANTALLAREPRODUCTOR], &eventoNulo, NULL);
@@ -3266,7 +3268,10 @@ int Iofrontend::accionesLetrasBox(tEvento *evento){
             emulInfo.fileexe = "explorer.exe";
             emulInfo.parmsexe = tmpUrl;
             bool resultado = lanzador.lanzarProgramaUNIXFork(&emulInfo);
-#endif             
+#endif
+
+#ifdef UNIX
+            
 //            string cmd = CMD_LAUNCH_BROWSER + " \"" + tmpUrl + "\"";
 //            system(cmd.c_str());
             Launcher lanzador;
@@ -3275,6 +3280,7 @@ int Iofrontend::accionesLetrasBox(tEvento *evento){
             emulInfo.fileexe = CMD_LAUNCH_BROWSER;
             emulInfo.parmsexe = tmpUrl;
             bool resultado = lanzador.lanzarProgramaUNIXFork(&emulInfo);
+#endif            
         }
     }
     return 0;
