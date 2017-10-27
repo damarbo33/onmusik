@@ -296,6 +296,7 @@ uint32_t Jukebox::refreshPlaylist(){
                         strSeconds = "";
                         ulongSeconds = 0;
                     }
+                    Constant::lowerCase(&fichero);
 
                     metaKeyArtist = getMetadatos(&metadatos, fichero + arrTags[tagArtist]);
                     metaKeyAlbum = getMetadatos(&metadatos, fichero + arrTags[tagAlbum]);
@@ -496,6 +497,7 @@ void Jukebox::hashMapMetadatos(map<string, string> *metadatos, string ruta){
                 Traza::print("Jukebox::hashMapMetadatos. cancion: " + songFileName, W_DEBUG);
                 if (songFileName.compare("error") != 0){
                     songFileName = Constant::udecodeUTF8(songFileName);
+                    Constant::lowerCase(&songFileName);
                     Traza::print("Jukebox::hashMapMetadatos. decodificada: " + songFileName, W_DEBUG);
                     Json::Value value;
                     value = root[root.getMemberNames().at(i)];
