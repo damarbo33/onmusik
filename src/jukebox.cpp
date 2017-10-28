@@ -275,14 +275,8 @@ uint32_t Jukebox::refreshPlaylist(){
             for (int i=0; i < files.fileList.size(); i++){
                 ruta = files.fileList.at(i)->path;
                 filename = ruta.substr(ruta.find_last_of("/")+1);
+                idFile = files.fileList.at(i)->strHash;
 
-                if (this->getServerSelected() == GOOGLEDRIVESERVER){
-                    idFile = files.fileList.at(i)->strHash;
-                } else {
-                    idFile = ruta;
-                }
-
-    //            cout << filename  << "; " << dir.getExtension(filename) << endl;
                 if (!files.fileList.at(i)->isDir && filtroOGG.find(dir.getExtension(filename)) != string::npos){
                     fichero = dir.getFileNameNoExt(filename);
                     Traza::print("fichero: " + fichero, W_DEBUG);
@@ -743,12 +737,7 @@ uint32_t Jukebox::refreshAlbum(){
             if (files.fileList.at(i)->isDir){
                 ruta = files.fileList.at(i)->path;
                 discName = ruta.substr(ruta.find_last_of("/")+1);
-
-                if (serverID == GOOGLEDRIVESERVER){
-                    albumList->addElemLista(discName, files.fileList.at(i)->strHash, music, serverID);
-                } else {
-                    albumList->addElemLista(discName, ruta, music, serverID);
-                }
+                albumList->addElemLista(discName, files.fileList.at(i)->strHash, music, serverID);
                 Traza::print("Jukebox::refreshAlbum anyadido: " + ruta, W_DEBUG);
             }
         }

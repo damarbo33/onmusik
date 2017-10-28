@@ -26,6 +26,10 @@
                     <name>Linux_Debug</name>
                     <type>1</type>
                 </confElem>
+                <confElem>
+                    <name>Debug2</name>
+                    <type>1</type>
+                </confElem>
             </confList>
             <formatting>
                 <project-formatting-style>false</project-formatting-style>
