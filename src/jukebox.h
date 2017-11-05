@@ -5,6 +5,7 @@
 #include "Menuobject.h"
 #include "servers/dropbox.h"
 #include "servers/googledrive.h"
+#include "servers/onedrive.h"
 #include "listaIni.h"
 #include "thread.h"
 #include "audiocd/CAudioCD.h"
@@ -32,8 +33,9 @@ const char arrTags[9][20] = {{"album"},{"title"},
 {"composer"},{"artist"},{"date"}};
 
 typedef enum{tagAlbum, tagTitle, tagDuration,tagTrack,tagGenre,tagPublisher,tagComposer,tagArtist,tagDate,tagMAX} id3Pos;
-typedef enum{DROPBOXSERVER, GOOGLEDRIVESERVER, MAXSERVERS} cloudServers;
+typedef enum{DROPBOXSERVER, GOOGLEDRIVESERVER, ONEDRIVESERVER, MAXSERVERS} cloudServers;
 const char arrNameServers[3][20] = {{"Drobox"},{"Google"},{"undefined"}};
+const char DIRCLOUD[] = "ONMUSIK";
 
 class Jukebox{
 

@@ -10,6 +10,8 @@ const string cliendid="";
 const string secret="";
 const string googleClientId = "";
 const string googleSecret = "";
+const string onedriveClientId="";
+const string onedriveSecret="";
 
 
 
@@ -100,7 +102,8 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLALOGIN]->add("textosBox", GUITEXTELEMENTSAREA, 0, -40 * zoomText, getWidth()-50, 70, "", true)->setVerContenedor(false);
     ObjectsMenu[PANTALLALOGIN]->add("btnGoogle", GUIBUTTON, -(BUTTONSERVERW/2 + 5)*2, 30,BUTTONSERVERW,BUTTONH, "Google", true)->setIcon(google_png);
     ObjectsMenu[PANTALLALOGIN]->add("btnDropbox", GUIBUTTON, 0, 30,BUTTONSERVERW,BUTTONH, "Dropbox", true)->setIcon(dropbox_png);
-    ObjectsMenu[PANTALLALOGIN]->add("btnLoginCancel", GUIBUTTON, (BUTTONSERVERW/2 + 5) * 2, 30,BUTTONSERVERW,BUTTONH, "Cancelar", true)->setIcon(cross);
+    ObjectsMenu[PANTALLALOGIN]->add("btnOnedrive", GUIBUTTON, (BUTTONSERVERW/2 + 5)*2, 30,BUTTONSERVERW,BUTTONH, "OneDrive", true)->setIcon(onedrive_png);
+    ObjectsMenu[PANTALLALOGIN]->add("btnLoginCancel", GUIBUTTON, 0, 80,BUTTONSERVERW,BUTTONH, "Cancelar", true)->setIcon(cross);
 
     UITextElementsArea *infoTextRom = (UITextElementsArea *)ObjectsMenu[PANTALLACONFIRMAR]->getObjByName("textosBox");
     t_posicion pos;
@@ -126,7 +129,7 @@ void Iofrontend::initUIObjs(){
 
     UIPanel *panel = (UIPanel *)ObjectsMenu[PANTALLABIENVENIDA]->getObjByName("borde");
     panel->setColor(cNegro);
-    panel->setAlpha(200);
+    panel->setAlpha(ALPHABACKGROUND);
 
 
     ObjectsMenu[PANTALLABROWSER2]->add("ImgFondo", GUIPICTURE, 0, Constant::getINPUTH(), 0, 0, "ImgFondo", true)->setEnabled(false);
@@ -227,6 +230,7 @@ void Iofrontend::initUIObjs(){
     if (popup2 != NULL){
         popup2->addElemLista("Subir a Dropbox", "dropbox", dropbox_png, DROPBOXSERVER);
         popup2->addElemLista("Subir a Google", "google", google_png, GOOGLEDRIVESERVER);
+        popup2->addElemLista("Subir a Onedrive", "onedrive", onedrive_png, ONEDRIVESERVER);
     }
 
     UIPopupMenu * popup3 = addPopup(PANTALLAREPRODUCTOR, "popupUploadCD", "btnAddCD");
@@ -309,6 +313,7 @@ void Iofrontend::initUIObjs(){
 
     addEvent("btnGoogle", &Iofrontend::marcarBotonSeleccionado);
     addEvent("btnDropbox", &Iofrontend::marcarBotonSeleccionado);
+    addEvent("btnOnedrive", &Iofrontend::marcarBotonSeleccionado);
     addEvent("btnLoginCancel", &Iofrontend::marcarBotonSeleccionado);
     addEvent("aceptarCddb", &Iofrontend::marcarBotonSeleccionado);
     addEvent("cancelarCddb", &Iofrontend::marcarBotonSeleccionado);
@@ -873,7 +878,7 @@ bool Iofrontend::casoPANTALLACONFIRMAR(string titulo, string txtDetalle){
     procesarControles(ObjectsMenu[menuInicial], &askEvento, NULL);
     SDL_Rect iconRectFondo = {0, 0, this->getWidth(), this->getHeight()};
     SDL_Surface *mySurface = NULL;
-    drawRectAlpha(iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h , cNegro, 200);
+    drawRectAlpha(iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h , cNegro, ALPHABACKGROUND);
     takeScreenShot(&mySurface, iconRectFondo);
 
     //Seguidamente cambiamos la pantalla a la de la confirmacion
@@ -1852,12 +1857,15 @@ int Iofrontend::AddServer(tEvento *evento){
     Traza::print("Iofrontend::AddServer", W_INFO);
 
     string strNameServer;
-    int someErrorToken;
+    int someErrorToken = -1;
 
     juke->getServerCloud(GOOGLEDRIVESERVER)->setClientid(googleClientId);
     juke->getServerCloud(GOOGLEDRIVESERVER)->setSecret(googleSecret);
     juke->getServerCloud(DROPBOXSERVER)->setClientid(cliendid);
     juke->getServerCloud(DROPBOXSERVER)->setSecret(secret);
+    juke->getServerCloud(ONEDRIVESERVER)->setClientid(onedriveClientId);
+    juke->getServerCloud(ONEDRIVESERVER)->setSecret(onedriveSecret);
+    
 
     this->setSelMenu(PANTALLAREPRODUCTOR);
     tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
@@ -1867,8 +1875,8 @@ int Iofrontend::AddServer(tEvento *evento){
 
     //Si despues de autenticarse, no se ha podido obtener el access token, lo obtenemos manualmente
     if (someErrorToken != MAXSERVERS){
-        string mensaje = "Para usar la aplicación debes dar permisos desde tu cuenta de Google o Dropbox. ";
-        mensaje.append("A continuación se abrirá un explorador. Debes logarte en Dropbox o Google y pulsar el botón de \"PERMITIR\".");
+        string mensaje = "Para usar la aplicación debes dar permisos desde tu cuenta de Google, Dropbox o OneDrive. ";
+        mensaje.append("A continuación se abrirá un explorador. Debes logarte y pulsar el botón de \"PERMITIR\".");
         mensaje.append("Seguidamente deberás copiar el código obtenido y pegarlo en la ventana de Onmusik que aparecerá a continuación.");
 
         int serverSelected = casoPANTALLALOGIN(Constant::toAnsiString("Autorizar aplicación"), Constant::toAnsiString(mensaje), false);
@@ -1878,17 +1886,19 @@ int Iofrontend::AddServer(tEvento *evento){
             strNameServer = arrNameServers[serverSelected];
 
             juke->getServerCloud(serverSelected)->launchAuthorize(tmpClient);
-            string code = casoPANTALLAPREGUNTA(Constant::toAnsiString("Autorizar aplicación"), Constant::toAnsiString("Introduce el campo obtenido de la página de "
-                                               + strNameServer + " (CTRL+V)"));
+            string code = casoPANTALLAPREGUNTA(Constant::toAnsiString("Autorizar aplicación"), 
+                    Constant::toAnsiString("Introduce el campo obtenido de la página de "
+                    + strNameServer + " (CTRL+V)"));
+            
             if (!code.empty()){
                 clearScr(cGrisOscuro);
                 juke->getServerCloud(serverSelected)->storeAccessToken(tmpClient, tmpSecret, code, false);
             }
-            someErrorToken = comprobarTokenServidores();
+            //Commented to force the refresh of the list
+            //someErrorToken = comprobarTokenServidores();
         } else {
             someErrorToken = MAXSERVERS;
         }
-
     }
     return someErrorToken;
 }
@@ -2543,6 +2553,8 @@ int Iofrontend::autenticarServicios(){
     juke->getServerCloud(GOOGLEDRIVESERVER)->setSecret(googleSecret);
     juke->getServerCloud(DROPBOXSERVER)->setClientid(cliendid);
     juke->getServerCloud(DROPBOXSERVER)->setSecret(secret);
+    juke->getServerCloud(ONEDRIVESERVER)->setClientid(onedriveClientId);
+    juke->getServerCloud(ONEDRIVESERVER)->setSecret(onedriveSecret);
 
     Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::authenticateServers);
 
@@ -2608,7 +2620,10 @@ int Iofrontend::comprobarTokenServidores(){
         } else if (i == GOOGLEDRIVESERVER){
             obj->getObjByName("btnGoogle")->setEnabled(strAccessToken.empty());
             obj->getObjByName("btnGoogle")->setImgDrawed(false);
-        }
+        } else if (i == ONEDRIVESERVER){
+            obj->getObjByName("btnOnedrive")->setEnabled(strAccessToken.empty());
+            obj->getObjByName("btnOnedrive")->setImgDrawed(false);
+        } 
     }
     return someErrorToken;
 }
@@ -2992,7 +3007,7 @@ int Iofrontend::casoPANTALLALOGIN(string titulo, string txtDetalle, bool allButt
     procesarControles(ObjectsMenu[menuInicial], &askEvento, NULL);
     SDL_Rect iconRectFondo = {0, 0, this->getWidth(), this->getHeight()};
     SDL_Surface *mySurface = NULL;
-    drawRectAlpha(iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h , cNegro, 200);
+    drawRectAlpha(iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h , cNegro, ALPHABACKGROUND);
     takeScreenShot(&mySurface, iconRectFondo);
 
     //Seguidamente cambiamos la pantalla a la de la confirmacion
@@ -3009,6 +3024,8 @@ int Iofrontend::casoPANTALLALOGIN(string titulo, string txtDetalle, bool allButt
         objMenu->getObjByName("btnDropbox")->setImgDrawed(false);
         objMenu->getObjByName("btnGoogle")->setEnabled(true);
         objMenu->getObjByName("btnGoogle")->setImgDrawed(false);
+        objMenu->getObjByName("btnOnedrive")->setEnabled(true);
+        objMenu->getObjByName("btnOnedrive")->setImgDrawed(false);
     }
 
     long delay = 0;
@@ -3020,8 +3037,6 @@ int Iofrontend::casoPANTALLALOGIN(string titulo, string txtDetalle, bool allButt
         askEvento = WaitForKey();
 //        clearScr(cBgScreen);
         printScreenShot(&mySurface, iconRectFondo);
-
-
         procesarControles(objMenu, &askEvento, NULL);
 
         flipScr();
@@ -3033,12 +3048,16 @@ int Iofrontend::casoPANTALLALOGIN(string titulo, string txtDetalle, bool allButt
             salida = GOOGLEDRIVESERVER;
             objMenu->getObjByName("btnGoogle")->setTag("");
             Traza::print("Detectado Google pulsado", W_DEBUG);
-        }else if (objMenu->getObjByName("btnDropbox")->getTag().compare("selected") == 0){
+        } else if (objMenu->getObjByName("btnDropbox")->getTag().compare("selected") == 0){
             salir = true;
             salida = DROPBOXSERVER;
             objMenu->getObjByName("btnDropbox")->setTag("");
             Traza::print("Detectado Dropbox pulsado", W_DEBUG);
-
+        } else if (objMenu->getObjByName("btnOnedrive")->getTag().compare("selected") == 0){
+            salir = true;
+            salida = ONEDRIVESERVER;
+            objMenu->getObjByName("btnOnedrive")->setTag("");
+            Traza::print("Detectado Onedrive pulsado", W_DEBUG);
         } else if (objMenu->getObjByName("btnLoginCancel")->getTag().compare("selected") == 0){
             salir = true;
             salida = MAXSERVERS;
@@ -3191,7 +3210,7 @@ bool Iofrontend::waitAceptCancel(string btnAceptar, string btnCancelar, int pant
     clearScr();
 
     procesarControles(ObjectsMenu[menuInicial], &askEvento, NULL);
-    drawRectAlpha(iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h , cNegro, 200);
+    drawRectAlpha(iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h , cNegro, ALPHABACKGROUND);
     takeScreenShot(&mySurface, iconRectFondo);
 
     setSelMenu(pantalla);

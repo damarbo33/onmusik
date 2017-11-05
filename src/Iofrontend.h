@@ -31,6 +31,7 @@
 
 
 const unsigned int MAXSONG_REPEAT_AVOID = 20;
+const unsigned int ALPHABACKGROUND = 235;
 
 //*********************************************************************************/
 //Cuidado con no sobrepasar el numero de elementos que define la constante MAXMENU
