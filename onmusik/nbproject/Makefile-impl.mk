@@ -27,11 +27,11 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=onmusik
 
 # Active Configuration
-DEFAULTCONF=Debug
+DEFAULTCONF=Linux_Debug
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=Debug Release Linux_Debug Debug2 
+ALLCONFS=Linux_Debug Debug2 Release 
 
 
 # build
