@@ -1,7 +1,7 @@
 ## Descargar Onmusik
 
 La última versión de la aplicación se puede descargar del siguiente enlace:
-* [Descargar Onmusik V1.8](https://github.com/damarbo33/onmusik/raw/master/Release/OnMusik1.8.zip)
+* [Descargar Onmusik V1.9](https://github.com/damarbo33/onmusik/raw/master/Release/OnMusik1.9.zip)
 * [Versiones Anteriores](https://github.com/damarbo33/onmusik/tree/master/Release)
 
 
@@ -69,6 +69,7 @@ Desde la versión 1.5 se ha introducido la opción de reproducir ficheros locale
 
 ### Añadiendo otros servidores
 Desde la versión 1.6 se puede conectar con Google Drive también
+Desde la versión 1.9 se puede conectar con Microsoft Onedrive también
 
 ### Visualizador mejorado
 Desde la versión 1.7 se puede alternar el visualizador gráfico de barras con el visualizador de onda con pulsar doble click en su espacio.
