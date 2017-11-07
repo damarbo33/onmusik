@@ -1,6 +1,5 @@
 #include "jukebox.h"
 
-
 const string filterExt = ".ogg .mp3";
 const string filtroOGG = ".ogg";
 const string musicDir = "Music";
@@ -51,92 +50,6 @@ Jukebox::~Jukebox()
         delete arrCloud[i];
     }
     Traza::print("Servidores eliminados", W_DEBUG);
-}
-
-/**
-*
-*/
-TID3Tags Jukebox::getSongInfo(string filepath){
-    Launcher lanzador;
-    FileLaunch emulInfo;
-    Dirutil dir;
-    TID3Tags songTags;
-    const string tags = "title,album,artist,track,genre,publisher,composer";
-
-    try{
-        //Se especifica el fichero de musica a reproducir
-        emulInfo.rutaroms = dir.getFolder(filepath);
-        emulInfo.nombrerom = dir.getFileName(filepath);
-        //Se especifica el ejecutable
-        emulInfo.rutaexe = dir.GetShortUtilName(Constant::getAppDir()) + FILE_SEPARATOR + "rsc";
-        emulInfo.fileexe = "ffprobe.exe";
-
-        emulInfo.parmsexe = "-i \"%ROMFULLPATH%\" -show_entries format_tags=";
-        emulInfo.parmsexe.append(tags);
-        emulInfo.parmsexe.append(" -show_entries stream_tags=");
-        emulInfo.parmsexe.append(tags);
-        emulInfo.parmsexe.append(" -show_entries format=size,duration");
-        emulInfo.parmsexe.append(" -v quiet");
-        //Lanzamos el programa
-        bool resultado = lanzador.lanzarProgramaUNIXFork(&emulInfo);
-//        if (resultado){
-//            cout << "Lanzamiento OK" << endl;
-//        } else {
-//            cout << "Error en el lanzamiento" << endl;
-//        }
-        //Cargamos la salida de la ejecucion del programa anterior
-        listaSimple<string> *lista = new listaSimple<string>();
-        lista->loadStringsFromFile(Constant::getAppDir() + FILE_SEPARATOR + "out.log");
-
-        size_t  pos = 0;
-        string line;
-        string lineLower;
-        string value;
-        for (int i=0; i < lista->getSize(); i++){
-            line = lista->get(i);
-            lineLower = line;
-            Constant::lowerCase(&lineLower);
-
-            for (int j=0; j < tagMAX; j++){
-                if ( lineLower.find(arrTags[j]) != string::npos
-                    && (pos = line.find("=")) != string::npos){
-                    value = line.substr(pos + 1);
-
-                    Traza::print("Jukebox::getSongInfo. Tag " + value, W_DEBUG);
-                    char *arr = new char[value.length()+1];
-                    strcpy(arr, value.c_str());
-                    Constant::utf8ascii(arr);
-                    value = string(arr);
-                    delete [] arr;
-                    Traza::print("Jukebox::getSongInfo. Tag_utf8ascii " + value, W_DEBUG);
-
-                    if (j == tagAlbum){
-                        songTags.album = value;
-                    } else if (j == tagTitle){
-                        songTags.title = value;
-                    } else if (j == tagDuration){
-                        songTags.duration = value;
-                    } else if (j == tagTrack){
-                        songTags.track = value;
-                    } else if (j == tagGenre){
-                        songTags.genre = value;
-                    } else if (j == tagPublisher){
-                        songTags.publisher = value;
-                    } else if (j == tagComposer){
-                        songTags.composer = value;
-                    } else if (j == tagArtist){
-                        songTags.artist = value;
-                    } else if (j == tagDate){
-                        songTags.date = value;
-                    }
-                }
-            }
-        }
-        delete lista;
-    } catch (Excepcion &e){
-        Traza::print("Excepcion en getSongInfo para " + filepath, W_ERROR);
-    }
-    return songTags;
 }
 
 /**
@@ -331,50 +244,33 @@ void Jukebox::convertir(string ruta, CdTrackInfo *cddbTrack){
     Dirutil dir;
     vector <FileProps> *filelist = new vector <FileProps>();
     Traza::print("Jukebox::convertir", W_DEBUG);
-    //Codec alternativo alpha
-    //string codecType = " -vn -acodec vorbis -strict -2 -b:a 128k ";
-    //Basando en calidad
-    //string codecType = " -vn -acodec vorbis -strict -2 -q:a 4 ";
-    //Codec recomendado
-    string codecType = " -vn -acodec libvorbis -b:a 128k ";
+    Transcode trans;
+    struct AudioParams audio_dst;
+    audio_dst.channels = 2;
+    audio_dst.bitrate = 128000;
+    trans.setAudio_dst(audio_dst);
+    FileProps file;
+    Fileio fichero;
+    int countFile = 0;
+    Json::Value root;   // starts as "null"; will contain the root value after parsing
+    string songFileName = "cancion";
+    Json::StreamWriterBuilder wbuilder;
+    //wbuilder.settings_["indentation"] = "";
+    string rutaFicheroOgg;
+    TID3Tags id3Tags;
 
     try{
         convertedFilesList->clear();
         Traza::print("Jukebox::clear", W_DEBUG);
         dir.listarDirRecursivo(ruta, filelist, filtroFicheros);
-        FileProps file;
-        Launcher lanzador;
-        FileLaunch emulInfo;
-        bool resultado = false;
-        emulInfo.rutaexe = dir.GetShortUtilName(Constant::getAppDir()) + FILE_SEPARATOR + "rsc";
-        emulInfo.fileexe = "ffmpeg.exe";
-        //Conversion OGG
-        emulInfo.parmsexe = string("-loglevel quiet -y -i \"%ROMFULLPATH%\" -map_metadata 0 ") +
-                            string("-id3v2_version 3 -write_id3v1 1 ") + codecType +
-                            string("\"%ROMPATH%") + FILE_SEPARATOR + string("%ROMNAME%.ogg\"");
-        //Conversion MP3
-    //    emulInfo.parmsexe = string("-y -i \"%ROMFULLPATH%\" -map_metadata 0 -acodec libmp3lame -id3v2_version 3 -write_id3v1 1 -ac 2 -b:a 128k ") +
-    //                        string("\"%ROMPATH%\\%ROMNAME%.mp3\"");
-        Fileio fichero;
-        string metadata = "";
         string rutaMetadata = ruta + FILE_SEPARATOR + fileMetadata;
         dir.borrarArchivo(rutaMetadata);
-        Constant::setExecMethod(launch_create_process);
-
-        int countFile = 0;
-        Json::Value root;   // starts as "null"; will contain the root value after parsing
-        string songFileName = "cancion";
-        Json::StreamWriterBuilder wbuilder;
-        //wbuilder.settings_["indentation"] = "";
-        string rutaFicheroOgg;
-        TID3Tags id3Tags;
         Traza::print("Codificando " + Constant::TipoToStr(filelist->size()) + " archivos de la ruta " + ruta, W_DEBUG);
 
         for (int i=0; i < filelist->size(); i++){
             file = filelist->at(i);
             if (filtroFicheros.find(dir.getExtension(file.filename)) != string::npos && file.filename.compare("..") != 0){
                 rutaFicheroOgg = file.dir + FILE_SEPARATOR + dir.getFileNameNoExt(file.filename) + ".ogg";
-
                 //Counter for the codification progress message
                 countFile++;
                 int percent = (countFile/(float)(filelist->size()))*100;
@@ -382,12 +278,8 @@ void Jukebox::convertir(string ruta, CdTrackInfo *cddbTrack){
 
                 //Si no existe fichero ogg, debemos recodificar
                 if (!dir.existe(rutaFicheroOgg)){
-                    //Launching the coding in ogg format
-                    emulInfo.rutaroms = file.dir;
-                    emulInfo.nombrerom = file.filename;
                     //Si tenemos informacion del cd, generamos sus id3_tags
                     if (cddbTrack != NULL && i < cddbTrack->titleList.size() ){
-
                         int pos;
                         string album = cddbTrack->albumName;
                         string artist = cddbTrack->albumName;
@@ -395,20 +287,10 @@ void Jukebox::convertir(string ruta, CdTrackInfo *cddbTrack){
                             artist = cddbTrack->albumName.substr(0, pos);
                             album = cddbTrack->albumName.substr(pos + 1);
                         }
-
-                        emulInfo.parmsexe = string("-loglevel quiet -y -i \"%ROMFULLPATH%\"") +
-                            + " -metadata title=\"" + cddbTrack->titleList.at(i) + "\""
-                            + " -metadata album=\"" + album + "\""
-                            + " -metadata artist=\"" + artist + "\""
-                            + " -metadata album_artist=\"" + artist + "\""
-                            + " -metadata date=\"" + cddbTrack->year + "\""
-                            + " -metadata genre=\"" + cddbTrack->genre + "\""
-                            + " -metadata track=\"" + Constant::TipoToStr(i+1) + "/" + Constant::TipoToStr(cddbTrack->titleList.size()) + "\"" +
-                            string(" -id3v2_version 3 -write_id3v1 1 ") + codecType +
-                            string("\"%ROMPATH%") + FILE_SEPARATOR + string("%ROMNAME%.ogg\"");
                     }
                     //Como no es un fichero ogg, necesitamos recodificar
-                    resultado = lanzador.lanzarProgramaUNIXFork(&emulInfo);
+                    trans.transcode(file.dir + FILE_SEPARATOR + file.filename, rutaFicheroOgg);
+                    
                     //Anyadimos el fichero convertido
                     convertedFilesList->add(rutaFicheroOgg);
 
@@ -416,14 +298,16 @@ void Jukebox::convertir(string ruta, CdTrackInfo *cddbTrack){
                         if (!dir.isDir(file.dir + FILE_SEPARATOR + file.filename)){
                             dir.borrarArchivo(file.dir + FILE_SEPARATOR + file.filename);
                         }
-                        id3Tags = getSongInfo(rutaFicheroOgg);
+                        id3Tags = trans.getSongInfo(rutaFicheroOgg);
                     } else {
-                        id3Tags = getSongInfo(file.dir + FILE_SEPARATOR + file.filename);
+                        id3Tags = trans.getSongInfo(file.dir + FILE_SEPARATOR + file.filename);
                     }
 
                 } else {
                     //El fichero es ogg. No necesitamos recodificar y solo obtenemos info de la cancion
-                    id3Tags = getSongInfo(rutaFicheroOgg);
+                    id3Tags = trans.getSongInfo(rutaFicheroOgg);
+                    //Anyadimos el fichero convertido
+                    convertedFilesList->add(rutaFicheroOgg);
                 }
                 Traza::print("Tags id3 obtenidos para: " + file.filename, W_DEBUG);
                 //Generating metadata with time info for each song
@@ -451,8 +335,8 @@ void Jukebox::convertir(string ruta, CdTrackInfo *cddbTrack){
         convertedFilesList->sort();
         //Finalmente escribimos el fichero de metadata
         std::string outputConfig = Json::writeString(wbuilder, root);
-        fichero.writeToFile(rutaMetadata.c_str(),(char *)outputConfig.c_str(),outputConfig.length(),true);
-        ObjectsMenu->getObjByName("statusMessage")->setLabel("Conversi�n terminada");
+        fichero.writeToFile(rutaMetadata.c_str(), (char *)outputConfig.c_str(), outputConfig.length(), true);
+        ObjectsMenu->getObjByName("statusMessage")->setLabel("Conversion terminada");
     } catch (Excepcion &e){
         Traza::print("Error Jukebox::convertir" + string(e.getMessage()), W_ERROR);
     }
@@ -522,7 +406,8 @@ uint32_t Jukebox::refreshPlayListMetadata(){
     string file = Constant::getAppDir() + FILE_SEPARATOR + "temp.ogg";
     unsigned int posSongSelected = playList->getLastSelectedPos();
     Traza::print("Obteniendo datos de la cancion: " + file, W_DEBUG);
-    TID3Tags songTags = getSongInfo(file);
+    Transcode trans;
+    TID3Tags songTags = trans.getSongInfo(file);
     Traza::print("Datos obtenidos", W_DEBUG);
     if (!songTags.title.empty()) playList->getCol(posSongSelected, 0)->setTexto(songTags.title);
     if (!songTags.artist.empty()) playList->getCol(posSongSelected, 1)->setValor(songTags.artist);
@@ -663,11 +548,12 @@ uint32_t Jukebox::refreshPlayListMetadataFromId3Dir(){
     delete filelist;
     playList->setImgDrawed(false);
     canPlay = true;
+    Transcode trans;
 
     for (int i=0; i < playList->getSize(); i++){
         string file = playList->getValue(i);
         Traza::print("Obteniendo datos de la cancion: " + file, W_DEBUG);
-        TID3Tags songTags = getSongInfo(file);
+        TID3Tags songTags = trans.getSongInfo(file);
         Traza::print("Datos obtenidos", W_DEBUG);
         if (rutaInfoId3.compare(playList->getValue(i)) == 0){
             duration = floor(Constant::strToTipo<double>(songTags.duration));

@@ -11,7 +11,6 @@ class Updater
     public:
         Updater();
         virtual ~Updater();
-        void updateFFmpeg(string ruta);
         uint32_t updates();
         void setRuta(string var) {ruta = var;}
         bool needUpdate(string ruta);

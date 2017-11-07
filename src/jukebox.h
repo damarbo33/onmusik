@@ -10,23 +10,14 @@
 #include "thread.h"
 #include "audiocd/CAudioCD.h"
 #include "cddb/freedb.h"
+#include "Transcode.h"
 
 using namespace std;
 
 static const string filtroFicheros = ".mp3,.mid,.wav,.wma,.cda,.aac,.ac3,.flac,.mp4,.ogg";
 static const string filtroFicherosReproducibles = ".mp3,.mid,.wav,.ogg,.flac";
 
-struct TID3Tags{
-    string album;
-    string title;
-    string duration;
-    string track;
-    string genre;
-    string publisher;
-    string composer;
-    string artist;
-    string date;
-};
+
 
 const char arrTags[9][20] = {{"album"},{"title"},
 {"duration"},{"track"},{"genre"},{"publisher"},
@@ -43,7 +34,6 @@ class Jukebox{
         Jukebox();
         virtual ~Jukebox();
 
-        TID3Tags getSongInfo(string filepath);
         void convertir(string ruta, CdTrackInfo *cddbTrack);
         uint32_t convertir();
         uint32_t uploadMusicToServer();

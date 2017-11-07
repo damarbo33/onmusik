@@ -47,6 +47,7 @@
           <itemPath>../src/updater/updater.cpp</itemPath>
         </logicalFolder>
         <itemPath>../src/Iofrontend.cpp</itemPath>
+        <itemPath>../src/Transcode.cpp</itemPath>
         <itemPath>../../MP3Play/src/audioplayer.cpp</itemPath>
         <itemPath>../../MP3Play/src/biquad.cpp</itemPath>
         <itemPath>../src/jukebox.cpp</itemPath>
@@ -197,6 +198,8 @@
       </item>
       <item path="../src/Iofrontend.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../src/Transcode.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="../src/jukebox.cpp" ex="false" tool="1" flavor2="9">
       </item>
       <item path="../src/jukebox.h" ex="false" tool="3" flavor2="0">
@@ -276,6 +279,7 @@
           <linkerLibItems>
             <linkerLibLibItem>crosslib</linkerLibLibItem>
             <linkerOptionItem>-lsdl_gfx -lmingw32 -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image -lcurl -lws2_32 </linkerOptionItem>
+            <linkerOptionItem>-lavutil -lavformat -lavcodec -lswscale -lswresample</linkerOptionItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
@@ -338,6 +342,8 @@
       <item path="../src/Iofrontend.cpp" ex="false" tool="1" flavor2="9">
       </item>
       <item path="../src/Iofrontend.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../src/Transcode.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../src/jukebox.cpp" ex="false" tool="1" flavor2="9">
       </item>
@@ -490,6 +496,8 @@
       <item path="../src/Iofrontend.cpp" ex="false" tool="1" flavor2="9">
       </item>
       <item path="../src/Iofrontend.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../src/Transcode.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../src/jukebox.cpp" ex="false" tool="1" flavor2="9">
       </item>
