@@ -185,6 +185,7 @@ uint32_t Jukebox::refreshPlaylist(){
             }
             
             Traza::print("Jukebox::refreshPlaylist. Rellenando metadatos para cada cancion", W_DEBUG);
+            string tmpFich = "";
             
             for (int i=0; i < files.fileList.size(); i++){
                 ruta = files.fileList.at(i)->path;
@@ -194,10 +195,14 @@ uint32_t Jukebox::refreshPlaylist(){
 
                 if (!files.fileList.at(i)->isDir && filterExt.find(dir.getExtension(filename)) != string::npos){
                     fichero = dir.getFileNameNoExt(filename);
-//                    Traza::print("fichero: " + fichero, W_DEBUG);
+                    //Remove special chars
+                    tmpFich = Constant::toAlphanumeric(fichero);
+                    //and make it lower case
+                    Constant::lowerCase(&tmpFich);
+                    Traza::print("tmpFich: " + tmpFich, W_DEBUG);
                     //Miramos en la hashmap si existe nuestra clave
                     if (metaOK){
-                        metaKeyTime = fichero + arrTags[tagDuration];
+                        metaKeyTime = tmpFich + arrTags[tagDuration];
                         if (metadatos.count(metaKeyTime) > 0){
                             //cout << "Buscando tiempo para: " << metaKeyTime << endl;
                             strSeconds = metadatos.at(metaKeyTime);
@@ -206,20 +211,20 @@ uint32_t Jukebox::refreshPlaylist(){
                             strSeconds = "";
                             ulongSeconds = 0;
                         }
-                        Constant::lowerCase(&fichero);
 
-                        metaKeyArtist = getMetadatos(&metadatos, fichero + arrTags[tagArtist]);
-                        metaKeyAlbum = getMetadatos(&metadatos, fichero + arrTags[tagAlbum]);
-                        metaKeyTitle = getMetadatos(&metadatos, fichero + arrTags[tagTitle]);
+                        metaKeyArtist = getMetadatos(&metadatos, tmpFich + arrTags[tagArtist]);
+                        metaKeyAlbum = getMetadatos(&metadatos, tmpFich + arrTags[tagAlbum]);
+                        metaKeyTitle = getMetadatos(&metadatos, tmpFich + arrTags[tagTitle]);
     //                    Traza::print("Jukebox::refreshPlaylist. Album: " + metaKeyAlbum, W_DEBUG);
     //                    Traza::print("Jukebox::refreshPlaylist. Title: " + metaKeyTitle, W_DEBUG);
-                        metaKeyAlbum = Constant::udecodeUTF8(metaKeyAlbum);
-                        metaKeyTitle = Constant::udecodeUTF8(metaKeyTitle);
+                        metaKeyAlbum = Constant::toAnsiString(Constant::udecodeUTF8(metaKeyAlbum));
+                        metaKeyTitle = Constant::toAnsiString(Constant::udecodeUTF8(metaKeyTitle));
+                        metaKeyArtist = Constant::toAnsiString(Constant::udecodeUTF8(metaKeyArtist));
     //                    Traza::print("Jukebox::refreshPlaylist. Album: " + metaKeyAlbum, W_DEBUG);
     //                    Traza::print("Jukebox::refreshPlaylist. Title: " + metaKeyTitle, W_DEBUG);
                     }
                     vector <ListGroupCol *> miFila;
-                    miFila.push_back(new ListGroupCol(metaKeyTitle.empty() ? fichero : metaKeyTitle, idFile));
+                    miFila.push_back(new ListGroupCol(metaKeyTitle.empty() ? Constant::toAnsiString(fichero) : metaKeyTitle, idFile));
                     miFila.push_back(new ListGroupCol(metaKeyArtist, metaKeyArtist));
                     miFila.push_back(new ListGroupCol(metaKeyAlbum, metaKeyAlbum));
                     miFila.push_back(new ListGroupCol(Constant::timeFormat(ulongSeconds), strSeconds));
@@ -378,8 +383,13 @@ void Jukebox::hashMapMetadatos(map<string, string> *metadatos, string ruta){
                 songFileName = root.getMemberNames().at(i);
                 Traza::print("Jukebox::hashMapMetadatos. cancion: " + songFileName, W_DEBUG);
                 if (songFileName.compare("error") != 0){
+                    //We decode it from utf8
                     songFileName = Constant::udecodeUTF8(songFileName);
+                    //Remove special chars
+                    songFileName = Constant::toAlphanumeric(songFileName);
+                    //and make it lower case
                     Constant::lowerCase(&songFileName);
+
                     Traza::print("Jukebox::hashMapMetadatos. decodificada: " + songFileName, W_DEBUG);
                     Json::Value value;
                     value = root[root.getMemberNames().at(i)];
@@ -414,18 +424,22 @@ uint32_t Jukebox::refreshPlayListMetadata(){
     if (!songTags.artist.empty()) playList->getCol(posSongSelected, 1)->setTexto(songTags.artist);
     if (!songTags.album.empty()) playList->getCol(posSongSelected, 2)->setValor(songTags.album);
     if (!songTags.album.empty()) playList->getCol(posSongSelected, 2)->setTexto(songTags.album);
-    if (!songTags.duration.empty()) playList->getCol(posSongSelected, 3)->setValor(songTags.duration);
-    if (!songTags.duration.empty()) playList->getCol(posSongSelected, 3)
+    
+    //If we don't have correct time we don't set it
+    if (!songTags.duration.empty() && songTags.duration.compare("0") != 0){
+        playList->getCol(posSongSelected, 3)->setValor(songTags.duration);
+        playList->getCol(posSongSelected, 3)
                         ->setTexto(Constant::timeFormat(floor(Constant::strToTipo<double>(songTags.duration))));
-    Traza::print("Playlist actualizado", W_DEBUG);
-    UIProgressBar *objProg = (UIProgressBar *)ObjectsMenu->getObjByName("progressBarMedia");
-    int max_ = objProg->getProgressMax();
-    Traza::print("Actualizando barra de progreso con el valor", max_, W_DEBUG);
-    //Actualizamos la barra de progreso en el caso de que no tuvieramos informacion del maximo de duracion
-    if (max_ == 0){
-        max_ = floor(Constant::strToTipo<double>(songTags.duration));
-        objProg->setProgressMax(max_);
-        ObjectsMenu->getObjByName("mediaTimerTotal")->setLabel(Constant::timeFormat(max_));
+        
+        UIProgressBar *objProg = (UIProgressBar *)ObjectsMenu->getObjByName("progressBarMedia");
+        int max_ = objProg->getProgressMax();
+        Traza::print("Actualizando barra de progreso con el valor", max_, W_DEBUG);
+        //Actualizamos la barra de progreso en el caso de que no tuvieramos informacion del maximo de duracion
+        if (max_ == 0){
+            max_ = floor(Constant::strToTipo<double>(songTags.duration));
+            objProg->setProgressMax(max_);
+            ObjectsMenu->getObjByName("mediaTimerTotal")->setLabel(Constant::timeFormat(max_));
+        }
     }
     Traza::print("Redibujar playlist", W_DEBUG);
     playList->setImgDrawed(false);
@@ -631,6 +645,7 @@ uint32_t Jukebox::refreshAlbum(){
             if (files.fileList.at(i)->isDir){
                 ruta = files.fileList.at(i)->path;
                 discName = ruta.substr(ruta.find_last_of("/")+1);
+                discName = Constant::toAnsiString(discName);
                 albumList->addElemLista(discName, files.fileList.at(i)->strHash, music, serverID);
                 Traza::print("Jukebox::refreshAlbum anyadido: " + ruta, W_DEBUG);
             }

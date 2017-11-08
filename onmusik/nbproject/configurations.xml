@@ -280,6 +280,7 @@
             <linkerLibLibItem>crosslib</linkerLibLibItem>
             <linkerOptionItem>-lsdl_gfx -lmingw32 -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image -lcurl -lws2_32 </linkerOptionItem>
             <linkerOptionItem>-lavutil -lavformat -lavcodec -lswscale -lswresample</linkerOptionItem>
+            <linkerOptionItem>-ljsoncpp</linkerOptionItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
@@ -433,6 +434,8 @@
           <linkerLibItems>
             <linkerLibLibItem>crosslib</linkerLibLibItem>
             <linkerOptionItem>-lsdl_gfx -lmingw32 -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image -lcurl -lws2_32 </linkerOptionItem>
+            <linkerOptionItem>-lavutil -lavformat -lavcodec -lswscale -lswresample</linkerOptionItem>
+            <linkerOptionItem>-ljsoncpp</linkerOptionItem>
           </linkerLibItems>
           <commandLine>-mwindows</commandLine>
         </linkerTool>

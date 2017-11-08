@@ -123,6 +123,8 @@ class Jukebox{
         bool isDir(string ruta);
         bool existe(string ruta);
         bool borrarArchivo(string ruta);
+        
+        
 
 
 };

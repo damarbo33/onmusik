@@ -12,6 +12,8 @@
  */
 
 #include "Transcode.h"
+#include "Constant.h"
+#include "Traza.h"
 
 Transcode::Transcode() {
     memset(buffErrors, '\0', AV_ERROR_MAX_STRING_SIZE);
@@ -877,33 +879,38 @@ TID3Tags Transcode::getSongInfo(string filepath){
     AVFormatContext *fmt_ctx = NULL;
     AVDictionaryEntry *tag = NULL;
     int ret;
+    string key = "";
     
     av_register_all();
     if ((ret = avformat_open_input(&fmt_ctx, filepath.c_str(), NULL, NULL)))
         return songTags;
-
-    while ((tag = av_dict_get(fmt_ctx->metadata, "", tag, AV_DICT_IGNORE_SUFFIX))){
-        if (strcmp(tag->key, "title") == 0) songTags.title = tag->value;
-        else if (strcmp(tag->key, "album") == 0) songTags.album = tag->value;
-        else if (strcmp(tag->key, "artist") == 0) songTags.artist = tag->value;
-        else if (strcmp(tag->key, "track") == 0) songTags.track = tag->value;
-        else if (strcmp(tag->key, "genre") == 0) songTags.genre = tag->value;
-        else if (strcmp(tag->key, "publisher") == 0) songTags.publisher = tag->value;
-        else if (strcmp(tag->key, "composer") == 0) songTags.composer = tag->value;
+    
+    
+    AVDictionary *metadata = fmt_ctx->metadata;
+    if (av_dict_count(fmt_ctx->metadata) == 0 && fmt_ctx->nb_streams > 0){
+        metadata = fmt_ctx->streams[0]->metadata;
     }
-
+    
+    while ((tag = av_dict_get(metadata, "", tag, AV_DICT_IGNORE_SUFFIX))){
+        key = tag->key;
+        Constant::lowerCase(&key);
+        if (key.compare("title") == 0) songTags.title = tag->value;
+        else if (key.compare("album") == 0) songTags.album = tag->value;
+        else if (key.compare("artist") == 0) songTags.artist = tag->value;
+        else if (key.compare("track") == 0) songTags.track = tag->value;
+        else if (key.compare("genre") == 0) songTags.genre = tag->value;
+        else if (key.compare("publisher") == 0) songTags.publisher = tag->value;
+        else if (key.compare("composer") == 0) songTags.composer = tag->value;
+    }
+    
+    
     avformat_find_stream_info(fmt_ctx, 0);
-    av_dump_format(fmt_ctx, 0, filepath.c_str(), 0);
+    //av_dump_format(fmt_ctx, 0, filepath.c_str(), 0);
     int64_t duration = fmt_ctx->duration;
     stringstream ss;//create a stringstream
     ss << ceil((double) duration / AV_TIME_BASE);//add number to the stream
     songTags.duration = ss.str();
     avformat_close_input(&fmt_ctx);
-    
-//    char *arr = new char[value.length()+1];
-//                    strcpy(arr, value.c_str());
-//                    Constant::utf8ascii(arr);
-//                    value = string(arr);
-//                    delete [] arr;
+
     return songTags;
 }

@@ -64,7 +64,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../../../ExternalLibs/crosslib/crosslib/dist/Debug2/MinGW2_64-Windows -lcrosslib -lsdl_gfx -lmingw32 -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image -lcurl -lws2_32 -lavutil -lavformat -lavcodec -lswscale -lswresample
+LDLIBSOPTIONS=-L../../../ExternalLibs/crosslib/crosslib/dist/Debug2/MinGW2_64-Windows -lcrosslib -lsdl_gfx -lmingw32 -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image -lcurl -lws2_32 -lavutil -lavformat -lavcodec -lswscale -lswresample -ljsoncpp
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}

@@ -29,8 +29,8 @@
 #define TRANSCODE_H
 
 //NEEDED FOR FFMPEG AV INCLUDES!!!
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
+//#define __STDC_FORMAT_MACROS
+//#include <inttypes.h>
 //NEEDED FOR FFMPEG AV INCLUDES!!!
 
 #include <iostream>
@@ -115,6 +115,7 @@ private:
     int write_output_file_trailer(AVFormatContext *output_format_context);
     
     int copy_metadata(AVFormatContext *input_format_context, AVFormatContext *output_format_context);
+    void dump_metadata(void *ctx, AVDictionary *m, const char *indent);
     
 };
 
