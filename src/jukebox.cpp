@@ -217,14 +217,14 @@ uint32_t Jukebox::refreshPlaylist(){
                         metaKeyTitle = getMetadatos(&metadatos, tmpFich + arrTags[tagTitle]);
     //                    Traza::print("Jukebox::refreshPlaylist. Album: " + metaKeyAlbum, W_DEBUG);
     //                    Traza::print("Jukebox::refreshPlaylist. Title: " + metaKeyTitle, W_DEBUG);
-                        metaKeyAlbum = Constant::toAnsiString(Constant::udecodeUTF8(metaKeyAlbum));
-                        metaKeyTitle = Constant::toAnsiString(Constant::udecodeUTF8(metaKeyTitle));
-                        metaKeyArtist = Constant::toAnsiString(Constant::udecodeUTF8(metaKeyArtist));
+                        metaKeyAlbum = Constant::udecodeUTF8(metaKeyAlbum);
+                        metaKeyTitle = Constant::udecodeUTF8(metaKeyTitle);
+                        metaKeyArtist = Constant::udecodeUTF8(metaKeyArtist);
     //                    Traza::print("Jukebox::refreshPlaylist. Album: " + metaKeyAlbum, W_DEBUG);
     //                    Traza::print("Jukebox::refreshPlaylist. Title: " + metaKeyTitle, W_DEBUG);
                     }
                     vector <ListGroupCol *> miFila;
-                    miFila.push_back(new ListGroupCol(metaKeyTitle.empty() ? Constant::toAnsiString(fichero) : metaKeyTitle, idFile));
+                    miFila.push_back(new ListGroupCol(metaKeyTitle.empty() ? fichero : metaKeyTitle, idFile));
                     miFila.push_back(new ListGroupCol(metaKeyArtist, metaKeyArtist));
                     miFila.push_back(new ListGroupCol(metaKeyAlbum, metaKeyAlbum));
                     miFila.push_back(new ListGroupCol(Constant::timeFormat(ulongSeconds), strSeconds));
@@ -419,11 +419,11 @@ uint32_t Jukebox::refreshPlayListMetadata(){
     Transcode trans;
     TID3Tags songTags = trans.getSongInfo(file);
     Traza::print("Datos obtenidos", W_DEBUG);
-    if (!songTags.title.empty()) playList->getCol(posSongSelected, 0)->setTexto(songTags.title);
+    if (!songTags.title.empty()) playList->getCol(posSongSelected, 0)->setTexto(Constant::toAnsiString(songTags.title));
     if (!songTags.artist.empty()) playList->getCol(posSongSelected, 1)->setValor(songTags.artist);
-    if (!songTags.artist.empty()) playList->getCol(posSongSelected, 1)->setTexto(songTags.artist);
+    if (!songTags.artist.empty()) playList->getCol(posSongSelected, 1)->setTexto(Constant::toAnsiString(songTags.artist));
     if (!songTags.album.empty()) playList->getCol(posSongSelected, 2)->setValor(songTags.album);
-    if (!songTags.album.empty()) playList->getCol(posSongSelected, 2)->setTexto(songTags.album);
+    if (!songTags.album.empty()) playList->getCol(posSongSelected, 2)->setTexto(Constant::toAnsiString(songTags.album));
     
     //If we don't have correct time we don't set it
     if (!songTags.duration.empty() && songTags.duration.compare("0") != 0){
@@ -645,7 +645,7 @@ uint32_t Jukebox::refreshAlbum(){
             if (files.fileList.at(i)->isDir){
                 ruta = files.fileList.at(i)->path;
                 discName = ruta.substr(ruta.find_last_of("/")+1);
-                discName = Constant::toAnsiString(discName);
+                discName = discName;
                 albumList->addElemLista(discName, files.fileList.at(i)->strHash, music, serverID);
                 Traza::print("Jukebox::refreshAlbum anyadido: " + ruta, W_DEBUG);
             }

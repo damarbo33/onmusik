@@ -1,7 +1,5 @@
 #include "Iofrontend.h"
-#include "uilistgroup.h"
-#include "beans/listgroupcol.h"
-#include "uilistcommon.h"
+
 
 //Estos son los campos necesarios para identificar la aplicacion
 //de dropbox que he dado de alta mediante oauth.
@@ -13,9 +11,6 @@ const string googleSecret = "";
 const string onedriveClientId="";
 const string onedriveSecret="";
 
-
-
-bool Iofrontend::finishedDownload;
 const int MAXDBGAIN = 20;
 
 /**
@@ -47,13 +42,12 @@ Iofrontend::Iofrontend(){
     initUIObjs();
     posAlbumSelected = 0;
     posSongSelected = 0;
-    finishedDownload = false;
     threadPlayer = NULL;
     threadDownloader = NULL;
     threadLyrics = NULL;
-    setSelMenu(PANTALLAREPRODUCTOR);
-    tEvento evento;
-    drawMenu(evento);
+//    setSelMenu(PANTALLAREPRODUCTOR);
+//    tEvento evento;
+//    drawMenu(evento);
     Traza::print("Fin Constructor de IoFrontend", W_INFO);
 }
 
@@ -86,11 +80,18 @@ Iofrontend::~Iofrontend(){
 
 void Iofrontend::initUIObjs(){
 
+    //ObjectsMenu[PANTALLAFOO]->add("borde", GUIPANELBORDER,0,0,0,0, "PRUEBAS2222", false);
+    ObjectsMenu[PANTALLAFOO]->add("treeList", GUITREELISTBOX, 20,20,100,200, "", false)->setEnabled(true);
+    UITreeListBox *treeList = ((UITreeListBox *)ObjectsMenu[PANTALLAFOO]->getObjByName("treeList"));
+    
+    /*
     ObjectsMenu[PANTALLAPREGUNTA]->add("valor", GUIINPUTWIDE, 0, -20 * zoomText, INPUTW, Constant::getINPUTH(), "Dato:", true);
     ObjectsMenu[PANTALLAPREGUNTA]->add("btnAceptarPregunta", GUIBUTTON, -(BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
     ObjectsMenu[PANTALLAPREGUNTA]->add("btnCancelarPregunta", GUIBUTTON, (BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
     ObjectsMenu[PANTALLAPREGUNTA]->add("borde", GUIPANELBORDER,0,0,0,0, "Introduzca el dato", false);
     ObjectsMenu[PANTALLAPREGUNTA]->getObjByName("valor")->setColor(cBlanco);
+    
+    
 
 
     ObjectsMenu[PANTALLACONFIRMAR]->add("borde", GUIPANELBORDER,0,0,0,0, Constant::toAnsiString("Seleccione una opción"), false);
@@ -353,7 +354,7 @@ void Iofrontend::initUIObjs(){
     addEvent("btnLetras", &Iofrontend::accionesLetras);
     addEvent("btnAceptarCDDB", &Iofrontend::accionesCddbAceptar);
     addEvent("btnCancelarCDDB", &Iofrontend::accionesCddbCancelar);
-    addEvent("LetrasBox", &Iofrontend::accionesLetrasBox);
+    addEvent("LetrasBox", &Iofrontend::accionesLetrasBox);*/
 }
 
 /**
@@ -392,7 +393,6 @@ int Iofrontend::casoDEFAULT(tEvento evento){
 */
 bool Iofrontend::procesarControles(tmenu_gestor_objects *objMenu, tEvento *evento, tscreenobj *screenEvents){
     Traza::print("procesarControles: Inicio", W_PARANOIC);
-
     bool execFunc = true;
     bool drawComp = true;
     if (screenEvents != NULL){
@@ -1917,13 +1917,12 @@ int Iofrontend::showPopupUpload(tEvento *evento){
 */
 int Iofrontend::mediaClicked(tEvento *evento){
     Traza::print("Iofrontend::mediaClicked", W_INFO);
-    //Comprobamos si se ha terminado la descarga y recargamos en ese caso
-    reloadSong(posAlbumSelected, posSongSelected);
-
     UIProgressBar * objProg = (UIProgressBar *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarMedia");
     Traza::print("Pos pulsada barra de tiempo", objProg->getProgressPos(), W_DEBUG);
-    float pos = 0;
-    if (finishedDownload && objProg->getProgressMax() > 0 && player->getStatus() == PLAYING){
+    
+    if (player->isSongDownloaded() && objProg->getProgressMax() > 0 && player->getStatus() == PLAYING){
+        //Comprobamos si se ha terminado la descarga y recargamos en ese caso
+        //reloadSong(posAlbumSelected, posSongSelected); 
         player->setPosicionCancion(objProg->getProgressPos() * 1000);
     }
     return 0;
@@ -2167,7 +2166,7 @@ bool Iofrontend::bucleReproductor(){
     long lenSongSec = 0;
     tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
     bool panelMediaVisible = true;
-    finishedDownload = false;
+    player->setSongDownloaded(false);
 
     try {
         //Obtenemos de la lista de reproduccion, el tiempo, el nombre y la ruta de la cancion.
@@ -2205,11 +2204,13 @@ bool Iofrontend::bucleReproductor(){
         player->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
 
         Dirutil dir;
+        
         if (dir.existe(cancion)){
+            //Local file reproduction case
             player->setFilename(cancion);
             player->setSongDownloaded(true);
-            finishedDownload = true;
         } else {
+            //Streamming file reproduction case
             player->setFilename(file);
             player->setSongDownloaded(false);
         }
@@ -2257,19 +2258,17 @@ bool Iofrontend::bucleReproductor(){
                         || player->getStatus() == FINISHEDSONG))
                     Traza::print("Saliendo por fin de cancion",player->getStatus(), W_DEBUG);
 
-
-
                 if ((askEvento.isKey && askEvento.key == SDLK_SPACE) || askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_START)){
                     player->pause();
                     timerPanelMedia = SDL_GetTicks();
                 } else if ((askEvento.isKey && askEvento.key == SDLK_RIGHT) || askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_RIGHT)){
-                    if (finishedDownload && objProg->getProgressPos() + 10 < objProg->getProgressMax()){
+                    if (player->isSongDownloaded() && objProg->getProgressPos() + 10 < objProg->getProgressMax()){
                         reloadSong(posAlbumSelected, posSongSelected);
                         player->forward(10000);
                         timerPanelMedia = SDL_GetTicks();
                     }
                 } else if ((askEvento.isKey && askEvento.key == SDLK_LEFT) || askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_LEFT)){
-                    if (finishedDownload){
+                    if (player->isSongDownloaded()){
                         reloadSong(posAlbumSelected, posSongSelected);
                         player->rewind(10000);
                         timerPanelMedia = SDL_GetTicks();
@@ -2298,13 +2297,18 @@ bool Iofrontend::bucleReproductor(){
                 //Recargamos la cancion si se ha terminado la descarga de la misma
                 //y no se habia obtenido informacion del tiempo total de la cancion
                 if (threadDownloader != NULL){
-                    if (lenSongSec == 0 && !threadDownloader->isRunning() && !finishedDownload){
+//                    if (lenSongSec == 0 && !threadDownloader->isRunning()){
+//                        reloadSong(posAlbumSelected, posSongSelected);
+//                    }
+//                    //Comprobamos si se ha terminado la descarga en cualquier caso
+                    if (!threadDownloader->isRunning()){
                         reloadSong(posAlbumSelected, posSongSelected);
-                    //Si no se ha descargado, comprobamos si se ha terminado la descarga
-                    } else if (!threadDownloader->isRunning() && !finishedDownload && player->getStatus() == PLAYING &&
-                                posAlbumSelected == albumList->getLastSelectedPos() && !player->isSongDownloaded()){
                         player->setSongDownloaded(true);
+                        threadDownloader = NULL;
                     }
+//                    if (!threadDownloader->isRunning()){
+//                        reloadSong(posAlbumSelected, posSongSelected);
+//                    }
                 }
 
                 Traza::print("Estado Cancion 8", player->getStatus(), W_PARANOIC);
@@ -2327,23 +2331,23 @@ bool Iofrontend::bucleReproductor(){
 }
 
 /**
-*
-*/
+ * 
+ * @param posAlbumSelected
+ * @param posSongSelected
+ */
 void Iofrontend::reloadSong(int posAlbumSelected, int posSongSelected){
     Traza::print("Iofrontend::reloadSong", W_INFO);
 
     if (threadDownloader != NULL && player != NULL){
         Traza::print("Iofrontend::reloadSong", W_DEBUG);
         tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
-
         UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
-
         //Cuando detectamos que se ha descargado el fichero totalmente, recargamos
         //el thread para que se pueda avanzar o retroceder. Esto es debido a limitaciones
         //en la libreria de SDL para Mix_LoadMUS_RW con un fichero a medio descargar
         //por streaming. Solo lo hacemos si se ha terminado el thread de descarga, se esta
         //reproduciendo una cancion y no se ha seleccionado otro album que haya cambiado la lista
-        if (!threadDownloader->isRunning() && !finishedDownload && player->getStatus() == PLAYING &&
+        if (!threadDownloader->isRunning() && !player->isSongDownloaded() && player->getStatus() == PLAYING &&
             posAlbumSelected == albumList->getLastSelectedPos()){
             UIListGroup *playList = ((UIListGroup *)obj->getObjByName("playLists"));
             Traza::print("Descarga completada correctamente", W_DEBUG);
@@ -2364,7 +2368,7 @@ void Iofrontend::reloadSong(int posAlbumSelected, int posSongSelected){
                 Traza::print("Thread reproductor started with id: ", threadPlayer->getThreadID(), W_DEBUG);
 
             Traza::print("reloadSong player started", W_DEBUG);
-            finishedDownload = true;
+            threadDownloader = NULL;
 
             //Una vez que el fichero esta descargado, ya podemos obtener los tags id3 que contienen
             //mayor informacion sobre la cancion que se esta reproduciendo

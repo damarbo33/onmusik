@@ -46,8 +46,12 @@
         <logicalFolder name="updater" displayName="updater" projectFiles="true">
           <itemPath>../src/updater/updater.cpp</itemPath>
         </logicalFolder>
+        <itemPath>../src/ArbolAAB.cpp</itemPath>
+        <itemPath>../src/ArbolAAB.h</itemPath>
         <itemPath>../src/Iofrontend.cpp</itemPath>
+        <itemPath>../../../ExternalLibs/crosslib/src/uiobjects/Menuobject.cpp</itemPath>
         <itemPath>../src/Transcode.cpp</itemPath>
+        <itemPath>../../../ExternalLibs/crosslib/src/uiobjects/UITreeListBox.cpp</itemPath>
         <itemPath>../../MP3Play/src/audioplayer.cpp</itemPath>
         <itemPath>../../MP3Play/src/biquad.cpp</itemPath>
         <itemPath>../src/jukebox.cpp</itemPath>
@@ -138,6 +142,16 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="../../../ExternalLibs/crosslib/src/uiobjects/Menuobject.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../../ExternalLibs/crosslib/src/uiobjects/UITreeListBox.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp"
             ex="false"
             tool="1"
@@ -193,6 +207,10 @@
       <item path="../resource.rc" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../src/9001.png.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../src/ArbolAAB.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../src/ArbolAAB.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../src/Iofrontend.cpp" ex="false" tool="1" flavor2="9">
       </item>
@@ -246,6 +264,7 @@
             <Elem>WIN</Elem>
             <Elem>WIN32</Elem>
           </preprocessorList>
+          <warningLevel>0</warningLevel>
         </cTool>
         <ccTool>
           <incDir>
@@ -270,6 +289,7 @@
             <Elem>WIN</Elem>
             <Elem>WIN32</Elem>
           </preprocessorList>
+          <warningLevel>0</warningLevel>
         </ccTool>
         <linkerTool>
           <linkerAddLib>
@@ -284,6 +304,16 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="../../../ExternalLibs/crosslib/src/uiobjects/Menuobject.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../../ExternalLibs/crosslib/src/uiobjects/UITreeListBox.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp"
             ex="false"
             tool="1"
@@ -339,6 +369,10 @@
       <item path="../resource.rc" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../src/9001.png.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../src/ArbolAAB.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../src/ArbolAAB.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../src/Iofrontend.cpp" ex="false" tool="1" flavor2="9">
       </item>
@@ -440,6 +474,16 @@
           <commandLine>-mwindows</commandLine>
         </linkerTool>
       </compileType>
+      <item path="../../../ExternalLibs/crosslib/src/uiobjects/Menuobject.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../../ExternalLibs/crosslib/src/uiobjects/UITreeListBox.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp"
             ex="false"
             tool="1"
@@ -495,6 +539,10 @@
       <item path="../resource.rc" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../src/9001.png.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../src/ArbolAAB.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../src/ArbolAAB.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../src/Iofrontend.cpp" ex="false" tool="1" flavor2="9">
       </item>

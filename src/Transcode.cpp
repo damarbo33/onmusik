@@ -363,7 +363,7 @@ int Transcode::decode_audio_frame(AVFrame *frame,
     AVPacket input_packet;
     int error;
     init_packet(&input_packet);
-
+    
     /* Read one audio frame from the input file into a temporary packet. */
     if ((error = av_read_frame(input_format_context, &input_packet)) < 0) {
         /* If we are at the end of the file, flush the decoder below. */
@@ -376,6 +376,7 @@ int Transcode::decode_audio_frame(AVFrame *frame,
         }
     }
 
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(57, 48, 0)    
     /* Decode the audio frame stored in the temporary packet.
      * The input audio stream decoder is used to do this.
      * If we are at the end of the file, pass an empty packet to the decoder
@@ -387,6 +388,43 @@ int Transcode::decode_audio_frame(AVFrame *frame,
         av_packet_unref(&input_packet);
         return error;
     }
+#else    
+    int ret;
+    // AVERROR(EAGAIN) means that we need to feed more
+    // That we can decode Frame or Packet
+    do {
+        do {
+            ret = avcodec_send_packet(input_codec_context, &input_packet);
+        } while(ret == AVERROR(EAGAIN));
+
+        if(ret == AVERROR_EOF || ret == AVERROR(EINVAL)) {
+            printf("AVERROR(EAGAIN): %d, AVERROR_EOF: %d, AVERROR(EINVAL): %d\n", AVERROR(EAGAIN), AVERROR_EOF, AVERROR(EINVAL));
+            printf("fe_read_frame: Frame getting error (%d)!\n", ret);
+            return ret;
+        } else {
+            *data_present = 1;
+        }
+        ret = avcodec_receive_frame(input_codec_context, frame);
+    } while(ret == AVERROR(EAGAIN));
+    
+    if(ret == AVERROR_EOF){
+        *finished = 1;
+        *data_present = 0;
+    }
+
+    if(ret == AVERROR(EINVAL)) {
+        // An error or EOF occured,index break out and return what
+        // we have so far.
+//        printf("AVERROR(EAGAIN): %d, AVERROR_EOF: %d, AVERROR(EINVAL): %d\n", AVERROR(EAGAIN), AVERROR_EOF, AVERROR(EINVAL));
+//        printf("fe_read_frame: EOF or some othere decoding error (%d)!\n", ret);
+        fprintf(stderr, "Could not decode frame (error '%s')\n",
+        av_cplus_err2str(ret));
+        av_packet_unref(&input_packet);
+        return ret;
+    }
+#endif
+    
+    
 
     /* If the decoder has not been flushed completely, we are not finished,
      * so that this function has to be called again. */
@@ -418,7 +456,7 @@ int Transcode::init_converted_samples(uint8_t ***converted_input_samples,
      * Each pointer will later point to the audio samples of the corresponding
      * channels (although it may be NULL for interleaved formats).
      */
-    if (!(*converted_input_samples = calloc(output_codec_context->channels,
+    if (!(*converted_input_samples = (uint8_t**)calloc(output_codec_context->channels,
                                             sizeof(**converted_input_samples)))) {
         fprintf(stderr, "Could not allocate converted input sample pointers\n");
         return AVERROR(ENOMEM);
@@ -644,6 +682,7 @@ int Transcode::encode_audio_frame(AVFrame *frame,
         pts += frame->nb_samples;
     }
 
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(57, 48, 0)    
     /* Encode the audio frame and store it in the temporary packet.
      * The output audio stream encoder is used to do this. */
     if ((error = avcodec_encode_audio2(output_codec_context, &output_packet,
@@ -653,6 +692,26 @@ int Transcode::encode_audio_frame(AVFrame *frame,
         av_packet_unref(&output_packet);
         return error;
     }
+    
+#else    
+    *data_present = 0;
+    error = avcodec_send_frame(output_codec_context, frame);
+    if ( error != AVERROR_EOF && error != AVERROR(EAGAIN) && error != 0){
+        fprintf(stderr, "Could not send frame (error '%s')\n",
+                    av_cplus_err2str(error));
+        return error;
+    }   
+
+    if ( (error = avcodec_receive_packet(output_codec_context, &output_packet)) == 0)
+        *data_present = 1;
+        
+    if ( error != AVERROR_EOF && error != AVERROR(EAGAIN) && error != 0){
+        fprintf(stderr, "Could not receive packet (error '%s')\n",
+                    av_cplus_err2str(error));
+        return error;
+    }   
+#endif
+    
 
     /* Write one audio frame from the temporary packet to the output file. */
     if (*data_present) {
@@ -662,7 +721,6 @@ int Transcode::encode_audio_frame(AVFrame *frame,
             av_packet_unref(&output_packet);
             return error;
         }
-
         av_packet_unref(&output_packet);
     }
 

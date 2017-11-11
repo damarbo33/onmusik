@@ -28,6 +28,10 @@
 #include "audioplayer.h"
 #include "scrapper/scrapper.h"
 #include "updater/updater.h"
+#include "uilistgroup.h"
+#include "beans/listgroupcol.h"
+#include "uilistcommon.h"
+#include "UITreeListBox.h"
 
 
 const unsigned int MAXSONG_REPEAT_AVOID = 20;
@@ -36,7 +40,7 @@ const unsigned int ALPHABACKGROUND = 235;
 //*********************************************************************************/
 //Cuidado con no sobrepasar el numero de elementos que define la constante MAXMENU
 //*********************************************************************************/
- typedef enum { PANTALLAREPRODUCTOR,     //0
+ typedef enum { PANTALLAREPRODUCTOR = 0,     //0
         PANTALLALISTADODIR,
         PANTALLACONFIRMAR,
         PANTALLABROWSER2,
@@ -47,6 +51,7 @@ const unsigned int ALPHABACKGROUND = 235;
         PANTALLALOGIN,
         PANTALLACDDB,
         PANTALLACDDBDATA,
+        PANTALLAFOO,
         MAXMENU
 } enumMenus;
 
@@ -80,7 +85,6 @@ class Iofrontend : public Ioutil{
         Jukebox *juke;
         Scrapper *scrapper;
         vector <TrackInfo *> info;
-        static bool finishedDownload;
         SongsReproduced mySongsReproduced;
         Colorutil *convColor;
         int selMenu;
