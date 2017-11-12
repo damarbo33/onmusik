@@ -127,10 +127,12 @@ uint32_t Jukebox::extraerCD(){
 */
 uint32_t Jukebox::refreshAlbumAndPlaylist(){
     aborted = false;
+    //Refresco de la lista de albumes
     refreshAlbum();
-    UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
+    
+    UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu->getObjByName("albumList"));
     if (albumList->getSize() > 0){
-        this->setAlbumSelected(albumList->getListValues()->get(0));
+        this->setAlbumSelected(albumList->get(0).value);
         refreshPlaylist();
     }
 
@@ -157,10 +159,14 @@ uint32_t Jukebox::refreshPlaylist(){
     string idFile = "";
     string filename = "";
     UIListGroup *playList = ((UIListGroup *)ObjectsMenu->getObjByName("playLists"));
+    UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu->getObjByName("albumList"));
+    
+    TreeNode parentNode = albumList->get(albumList->getLastSelectedPos());
     IOauth2 *server = this->getServerCloud(this->getServerSelected());
+    bool needAlbumRefresh = false;
+    bool needListRefresh = true;
 
     if (!this->albumSelected.empty()){
-        playList->clearLista();
         string albumSelec = this->albumSelected;
         Traza::print("albumSelec: " + albumSelec, W_DEBUG);
         //Obtenemos los ficheros que nos devuelve dropbox
@@ -192,14 +198,23 @@ uint32_t Jukebox::refreshPlaylist(){
                 filename = ruta.substr(ruta.find_last_of("/")+1);
                 idFile = files.fileList.at(i)->strHash;
                 Constant::lowerCase(&filename);
-
-                if (!files.fileList.at(i)->isDir && filterExt.find(dir.getExtension(filename)) != string::npos){
+                
+                if (files.fileList.at(i)->isDir && parentNode.estado != TREENODEOBTAINED){
+                    albumList->add(parentNode.id + "." +  Constant::TipoToStr(i), filename, idFile, music, this->getServerSelected(), true);
+                    needAlbumRefresh = true;
+                } else if (!files.fileList.at(i)->isDir && filterExt.find(dir.getExtension(filename)) != string::npos){
                     fichero = dir.getFileNameNoExt(filename);
                     //Remove special chars
                     tmpFich = Constant::toAlphanumeric(fichero);
                     //and make it lower case
                     Constant::lowerCase(&tmpFich);
-                    Traza::print("tmpFich: " + tmpFich, W_DEBUG);
+                    //Traza::print("tmpFich: " + tmpFich, W_DEBUG);
+                    if (needListRefresh){
+                        playList->clearLista();
+                        playList->setPosActualLista(0);
+                        playList->refreshLastSelectedPos();
+                        needListRefresh = false;
+                    }
                     //Miramos en la hashmap si existe nuestra clave
                     if (metaOK){
                         metaKeyTime = tmpFich + arrTags[tagDuration];
@@ -233,6 +248,14 @@ uint32_t Jukebox::refreshPlaylist(){
             }
         }
         playList->setImgDrawed(false);
+        if (needAlbumRefresh){
+            parentNode.estado = TREENODEOBTAINED;
+            parentNode.ico = folder;
+            albumList->refreshNode(parentNode);
+            albumList->sort();            
+            albumList->calcularScrPos();
+            albumList->setImgDrawed(false);
+        }
     }
     Traza::print("Jukebox::refreshPlaylist END", W_DEBUG);
 
@@ -284,57 +307,53 @@ void Jukebox::convertir(string ruta, CdTrackInfo *cddbTrack){
                 //Si no existe fichero ogg, debemos recodificar
                 if (!dir.existe(rutaFicheroOgg)){
                     //Si tenemos informacion del cd, generamos sus id3_tags
+                    TID3Tags *tag = NULL;
                     if (cddbTrack != NULL && i < cddbTrack->titleList.size() ){
                         int pos;
-                        string album = cddbTrack->albumName;
-                        string artist = cddbTrack->albumName;
+                        tag = new TID3Tags();
+                        tag->album = cddbTrack->albumName;
+                        tag->artist = cddbTrack->albumName;
                         if ((pos = cddbTrack->albumName.find("/")) != string::npos ){
-                            artist = cddbTrack->albumName.substr(0, pos);
-                            album = cddbTrack->albumName.substr(pos + 1);
+                            tag->artist = cddbTrack->albumName.substr(0, pos);
+                            tag->album = cddbTrack->albumName.substr(pos + 1);
                         }
-                    }
-                    //Como no es un fichero ogg, necesitamos recodificar
-                    trans.transcode(file.dir + FILE_SEPARATOR + file.filename, rutaFicheroOgg);
-                    
+                        tag->title = cddbTrack->titleList.at(i);
+                        tag->date = cddbTrack->year;
+                        tag->genre = cddbTrack->genre;
+                        tag->track = Constant::TipoToStr(i+1) + "/" + Constant::TipoToStr(cddbTrack->titleList.size());
+                    } 
+                    trans.transcode(file.dir + FILE_SEPARATOR + file.filename, rutaFicheroOgg, tag);
+                    if (tag != NULL) delete tag;
                     //Anyadimos el fichero convertido
                     convertedFilesList->add(rutaFicheroOgg);
-
-                    if (cddbTrack != NULL){
-                        if (!dir.isDir(file.dir + FILE_SEPARATOR + file.filename)){
-                            dir.borrarArchivo(file.dir + FILE_SEPARATOR + file.filename);
-                        }
-                        id3Tags = trans.getSongInfo(rutaFicheroOgg);
-                    } else {
-                        id3Tags = trans.getSongInfo(file.dir + FILE_SEPARATOR + file.filename);
-                    }
-
+                    id3Tags = trans.getSongInfo(rutaFicheroOgg);
                 } else {
                     //El fichero es ogg. No necesitamos recodificar y solo obtenemos info de la cancion
                     id3Tags = trans.getSongInfo(rutaFicheroOgg);
                     //Anyadimos el fichero convertido
                     convertedFilesList->add(rutaFicheroOgg);
                 }
-                Traza::print("Tags id3 obtenidos para: " + file.filename, W_DEBUG);
+                Traza::print("Conversion terminada: " + file.filename, W_DEBUG);
                 //Generating metadata with time info for each song
                 songFileName = Constant::uencodeUTF8(dir.getFileNameNoExt(file.filename));
-                Traza::print("songFileName", W_DEBUG);
+//                Traza::print("songFileName", W_DEBUG);
                 root[songFileName]["album"] = Constant::uencodeUTF8(id3Tags.album);
-                Traza::print("album", W_DEBUG);
+//                Traza::print("album", W_DEBUG);
                 root[songFileName]["title"] = Constant::uencodeUTF8(id3Tags.title);
-                Traza::print("title", W_DEBUG);
+//                Traza::print("title", W_DEBUG);
                 root[songFileName]["duration"] = id3Tags.duration;
-                Traza::print("duration", W_DEBUG);
-                Traza::print(id3Tags.track, W_DEBUG);
+//                Traza::print("duration", W_DEBUG);
+//                Traza::print(id3Tags.track, W_DEBUG);
                 root[songFileName]["track"] = id3Tags.track;
-                Traza::print("track", W_DEBUG);
+//                Traza::print("track", W_DEBUG);
                 root[songFileName]["genre"] = id3Tags.genre;
-                Traza::print("genre", W_DEBUG);
+//                Traza::print("genre", W_DEBUG);
                 root[songFileName]["publisher"] = id3Tags.publisher;
-                Traza::print("publisher", W_DEBUG);
+//                Traza::print("publisher", W_DEBUG);
                 root[songFileName]["composer"] = id3Tags.composer;
-                Traza::print("composer", W_DEBUG);
+//                Traza::print("composer", W_DEBUG);
                 root[songFileName]["artist"] = id3Tags.artist;
-                Traza::print("Tags anyadidos al fichero de metadatos", W_DEBUG);
+//                Traza::print("Tags anyadidos al fichero de metadatos", W_DEBUG);
             }
         }
         convertedFilesList->sort();
@@ -504,14 +523,14 @@ void Jukebox::abortServers(){
 */
 void Jukebox::addLocalAlbum(string ruta){
     Traza::print("Jukebox::addLocalAlbum", W_DEBUG);
-    UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
+    UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu->getObjByName("albumList"));
     Dirutil dir;
     string nombreAlbum = dir.getFolder(ruta);
     nombreAlbum = nombreAlbum.substr(nombreAlbum.find_last_of(FILE_SEPARATOR)+1);
 
     if (dir.existe(ruta)){
         Traza::print("Jukebox::addLocalAlbum anyadiendo: " + ruta, W_DEBUG);
-        albumList->addElemLista(nombreAlbum, dir.getFolder(ruta), music);
+        albumList->add("0", nombreAlbum, dir.getFolder(ruta), music, -1, true);
     }
     Traza::print("Jukebox::addLocalAlbum END", W_DEBUG);
 }
@@ -624,11 +643,12 @@ uint32_t Jukebox::authenticateServers(){
 */
 uint32_t Jukebox::refreshAlbum(){
     Traza::print("Jukebox::refreshAlbum", W_DEBUG);
-    UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
+    UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu->getObjByName("albumList"));
     albumList->clearLista();
     CloudFiles files;
     string ruta;
     string idRuta;
+    int albumId = 0;
 
     for (int serverID=0; serverID < MAXSERVERS && !aborted; serverID++){
         IOauth2 *server = this->getServerCloud(serverID);
@@ -646,12 +666,15 @@ uint32_t Jukebox::refreshAlbum(){
                 ruta = files.fileList.at(i)->path;
                 discName = ruta.substr(ruta.find_last_of("/")+1);
                 discName = discName;
-                albumList->addElemLista(discName, files.fileList.at(i)->strHash, music, serverID);
+                albumList->add(Constant::TipoToStr(albumId), discName, files.fileList.at(i)->strHash, music, serverID, true);
                 Traza::print("Jukebox::refreshAlbum anyadido: " + ruta, W_DEBUG);
+                albumId++;
             }
         }
         files.clear();
     }
+    albumList->sort();
+    albumList->calcularScrPos();
 
     Traza::print("Jukebox::refreshAlbum END", W_DEBUG);
     return 0;
@@ -679,15 +702,14 @@ void Jukebox::uploadMusicToServer(string ruta){
             file = filelist->at(i);
             rutaLocal = file.dir + FILE_SEPARATOR + file.filename;
             nombreAlbum = generarNombreAlbum(&file, ruta);
-
-            if (lastNombreAlbum.compare(nombreAlbum) != 0 && !lastNombreAlbum.empty()){
-                subirMetadatos(lastNombreAlbum, rutaUpload, rutaMetadata);
-            }
+//            if (lastNombreAlbum.compare(nombreAlbum) != 0 && !lastNombreAlbum.empty()){
+//                subirMetadatos(lastNombreAlbum, rutaUpload, rutaMetadata);
+//            }
 
             if (this->getServerSelected() == GOOGLEDRIVESERVER){
                 rutaUpload = generarDirGoogleDrive(nombreAlbum);
             } else {
-                rutaUpload = musicDir + "/" + nombreAlbum + "/" + file.filename;
+                rutaUpload = "/" + musicDir + "/" + nombreAlbum + "/" + file.filename;
             }
 
             if (filtroOGG.find(dir.getExtension(file.filename)) != string::npos && file.filename.compare("..") != 0){
@@ -699,19 +721,20 @@ void Jukebox::uploadMusicToServer(string ruta){
 
                 Traza::print("Subiendo fichero...", W_DEBUG);
                 Traza::print("Confirmando subida del album " + rutaUpload + "...", W_DEBUG);
-                server->chunckedUpload(rutaLocal, rutaUpload, server->getAccessToken());
+                bool ret = server->chunckedUpload(rutaLocal, rutaUpload, server->getAccessToken());
                 //Si habiamos convertido el fichero, lo borramos
-                if (convertedFilesList->find(rutaLocal) != -1){
+                if (convertedFilesList->find(rutaLocal) != -1 && ret){
                     dir.borrarArchivo(rutaLocal);
                 }
             }
             lastNombreAlbum = nombreAlbum;
         }
 
-        subirMetadatos(nombreAlbum, rutaUpload, rutaMetadata);
-        dir.borrarArchivo(rutaMetadata);
+        if (subirMetadatos(nombreAlbum, rutaUpload, rutaMetadata))
+            dir.borrarArchivo(rutaMetadata);
+        
         refreshAlbum();
-        UIList *albumList = ((UIList *)ObjectsMenu->getObjByName("albumList"));
+        UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu->getObjByName("albumList"));
         albumList->setImgDrawed(false);
         ObjectsMenu->getObjByName("statusMessage")->setLabel("Album " + nombreAlbum + " subido");
     }
@@ -759,15 +782,15 @@ string Jukebox::generarDirGoogleDrive(string nombreAlbum){
 /**
 *
 */
-void Jukebox::subirMetadatos(string nombreAlbum, string rutaUpload, string rutaMetadata){
+bool Jukebox::subirMetadatos(string nombreAlbum, string rutaUpload, string rutaMetadata){
     IOauth2 *server = this->getServerCloud(this->getServerSelected());
     ObjectsMenu->getObjByName("statusMessage")->setLabel("Subiendo " + fileMetadata);
     Traza::print("Subiendo metadatos...", W_DEBUG);
     if (this->getServerSelected() != GOOGLEDRIVESERVER){
-        rutaUpload = musicDir + "/" + nombreAlbum + "/" + fileMetadata;
+        rutaUpload = "/" + musicDir + "/" + nombreAlbum + "/" + fileMetadata;
     }
     Traza::print("Confirmando metadatos " + rutaUpload + "...", W_DEBUG);
-    server->chunckedUpload(rutaMetadata, rutaUpload, server->getAccessToken());
+    return server->chunckedUpload(rutaMetadata, rutaUpload, server->getAccessToken());
 }
 
 /**
@@ -821,7 +844,7 @@ int Jukebox::extraerCD(string cdDrive, string extractionPath, CdTrackInfo *cdTra
             ULONG Time = audioCD.GetTrackTime( i );
 
             msg = "Track " + Constant::TipoToStr(i+1) + " Tiempo: " + Constant::TipoToStr(Time/60) + ":"
-                 + Constant::TipoToStr(Time%60) + " Tama�o: "
+                 + Constant::TipoToStr(Time%60) + " Tamaño: "
                  + Constant::TipoToStr(ceil (audioCD.GetTrackSize(i) / double( pow(1024, 2)))) + " MB";
 
             ObjectsMenu->getObjByName("statusMessage")->setLabel(msg);
@@ -837,9 +860,10 @@ int Jukebox::extraerCD(string cdDrive, string extractionPath, CdTrackInfo *cdTra
             }
 
             // Save track-data to file...
-            if ( ! audioCD.ExtractTrack( i, songName.c_str() ) ){
+            int ret = audioCD.ExtractTrack( i, songName.c_str());
+            if ( ret != 0 ){
                 ObjectsMenu->getObjByName("statusMessage")->setLabel("No se puede extraer la pista " + Constant::TipoToStr(i));
-                Traza::print("No se puede extraer la pista", i, W_DEBUG);
+                Traza::print("No se puede extraer la pista " + Constant::TipoToStr(i) + " con error: " + Constant::TipoToStr(ret), W_DEBUG);
             }
             // ... or just get the data into memory
     //        CBuf<char> Buf;

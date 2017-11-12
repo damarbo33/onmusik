@@ -792,11 +792,27 @@ int Transcode::write_output_file_trailer(AVFormatContext *output_format_context)
  * @param output_format_context
  * @return 
  */
-int Transcode::copy_metadata(AVFormatContext *input_format_context, AVFormatContext *output_format_context){
+int Transcode::copy_metadata(AVFormatContext *input_format_context, AVFormatContext *output_format_context, TID3Tags *tags){
     AVDictionaryEntry *tag = NULL;
-    while ((tag = av_dict_get(input_format_context->metadata, "", tag, AV_DICT_IGNORE_SUFFIX))){
-        av_dict_set(&output_format_context->metadata, tag->key, tag->value, AV_DICT_IGNORE_SUFFIX);
+    
+    if (tags == NULL){
+        while ((tag = av_dict_get(input_format_context->metadata, "", tag, AV_DICT_IGNORE_SUFFIX))){
+            av_dict_set(&output_format_context->metadata, tag->key, tag->value, AV_DICT_IGNORE_SUFFIX);
+        }
+    } else {
+        av_dict_set(&output_format_context->metadata, "album", tags->album.c_str(), AV_DICT_IGNORE_SUFFIX);
+        av_dict_set(&output_format_context->metadata, "track", tags->track.c_str(), AV_DICT_IGNORE_SUFFIX);
+        av_dict_set(&output_format_context->metadata, "artist", tags->artist.c_str(), AV_DICT_IGNORE_SUFFIX);
+        av_dict_set(&output_format_context->metadata, "composer", tags->composer.c_str(), AV_DICT_IGNORE_SUFFIX);
+        av_dict_set(&output_format_context->metadata, "title", tags->title.c_str(), AV_DICT_IGNORE_SUFFIX);
+        av_dict_set(&output_format_context->metadata, "genre", tags->genre.c_str(), AV_DICT_IGNORE_SUFFIX);
+        av_dict_set(&output_format_context->metadata, "publisher", tags->publisher.c_str(), AV_DICT_IGNORE_SUFFIX);
     }
+    
+}
+
+int Transcode::transcode(string orig, string dest){
+    return transcode(orig, dest, NULL);
 }
 
 /**
@@ -805,7 +821,7 @@ int Transcode::copy_metadata(AVFormatContext *input_format_context, AVFormatCont
  * @param dest
  * @return 
  */
-int Transcode::transcode(string orig, string dest)
+int Transcode::transcode(string orig, string dest, TID3Tags *tags)
 {
     AVFormatContext *input_format_context = NULL, *output_format_context = NULL;
     AVCodecContext *input_codec_context = NULL, *output_codec_context = NULL;
@@ -831,7 +847,8 @@ int Transcode::transcode(string orig, string dest)
         goto cleanup;
     
     /**Copy the metadata if exist*/
-    copy_metadata(input_format_context, output_format_context);
+    copy_metadata(input_format_context, output_format_context, tags);
+    
     
     /* Initialize the resampler to be able to convert audio sample formats. */
     if (init_resampler(input_codec_context, output_codec_context,

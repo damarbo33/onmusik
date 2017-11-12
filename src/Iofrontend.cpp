@@ -45,9 +45,9 @@ Iofrontend::Iofrontend(){
     threadPlayer = NULL;
     threadDownloader = NULL;
     threadLyrics = NULL;
-//    setSelMenu(PANTALLAREPRODUCTOR);
-//    tEvento evento;
-//    drawMenu(evento);
+    setSelMenu(PANTALLAREPRODUCTOR);
+    tEvento evento;
+    drawMenu(evento);
     Traza::print("Fin Constructor de IoFrontend", W_INFO);
 }
 
@@ -79,21 +79,12 @@ Iofrontend::~Iofrontend(){
 **/
 
 void Iofrontend::initUIObjs(){
-
-    //ObjectsMenu[PANTALLAFOO]->add("borde", GUIPANELBORDER,0,0,0,0, "PRUEBAS2222", false);
-    ObjectsMenu[PANTALLAFOO]->add("treeList", GUITREELISTBOX, 20,20,100,200, "", false)->setEnabled(true);
-    UITreeListBox *treeList = ((UITreeListBox *)ObjectsMenu[PANTALLAFOO]->getObjByName("treeList"));
-    
-    /*
     ObjectsMenu[PANTALLAPREGUNTA]->add("valor", GUIINPUTWIDE, 0, -20 * zoomText, INPUTW, Constant::getINPUTH(), "Dato:", true);
     ObjectsMenu[PANTALLAPREGUNTA]->add("btnAceptarPregunta", GUIBUTTON, -(BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
     ObjectsMenu[PANTALLAPREGUNTA]->add("btnCancelarPregunta", GUIBUTTON, (BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
     ObjectsMenu[PANTALLAPREGUNTA]->add("borde", GUIPANELBORDER,0,0,0,0, "Introduzca el dato", false);
     ObjectsMenu[PANTALLAPREGUNTA]->getObjByName("valor")->setColor(cBlanco);
     
-    
-
-
     ObjectsMenu[PANTALLACONFIRMAR]->add("borde", GUIPANELBORDER,0,0,0,0, Constant::toAnsiString("Seleccione una opción"), false);
     ObjectsMenu[PANTALLACONFIRMAR]->add("textosBox", GUITEXTELEMENTSAREA, 0, -50 * zoomText, getWidth()-50, 120, "", true)->setVerContenedor(false);
     ObjectsMenu[PANTALLACONFIRMAR]->add("btnSiConfirma", GUIBUTTON, -(BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
@@ -143,7 +134,7 @@ void Iofrontend::initUIObjs(){
 
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("panelMedia", GUIPANEL, 0,0,0,0, "", true)->setEnabled(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("statusMessage",  GUILABEL,  0,0,0,0, "", false)->setEnabled(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("albumList", GUILISTBOX, 0,0,0,0, "", true)->setEnabled(true);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("albumList", GUITREELISTBOX, 0,0,0,0, "", true)->setEnabled(true);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("playLists", GUILISTGROUPBOX, 0,0,0,0, "", true)->setEnabled(true);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("LetrasBox", GUITEXTELEMENTSAREA, 0,0,0,0, "Letras", true)->setVerContenedor(true);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("spectrum", GUISPECTRUM, 0,0,0,0, "", true)->setEnabled(true);
@@ -215,7 +206,7 @@ void Iofrontend::initUIObjs(){
     objProg->setProgressPos(SDL_MIX_MAXVOLUME);
 
 
-    UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
+    UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
     UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
     albumList->setColor(cGrisOscuro);
     albumList->setTextColor(cBlanco);
@@ -329,7 +320,7 @@ void Iofrontend::initUIObjs(){
     addEvent("btnAddCD", &Iofrontend::showPopupUploadCD);
     addEvent("btnOpenLocal", &Iofrontend::openLocalDisc);
     addEvent("btnAddServer", &Iofrontend::btnActionAddServer);
-    addEvent("albumList", &Iofrontend::selectAlbum);
+    addEvent("albumList", &Iofrontend::selectTreeAlbum);
     addEvent("playLists", &Iofrontend::accionesPlaylist);
     addEvent("popupAlbum", &Iofrontend::accionAlbumPopup);
     addEvent("popupUpload", &Iofrontend::accionUploadPopup);
@@ -354,7 +345,7 @@ void Iofrontend::initUIObjs(){
     addEvent("btnLetras", &Iofrontend::accionesLetras);
     addEvent("btnAceptarCDDB", &Iofrontend::accionesCddbAceptar);
     addEvent("btnCancelarCDDB", &Iofrontend::accionesCddbCancelar);
-    addEvent("LetrasBox", &Iofrontend::accionesLetrasBox);*/
+    addEvent("LetrasBox", &Iofrontend::accionesLetrasBox);
 }
 
 /**
@@ -481,6 +472,7 @@ bool Iofrontend::procesarControles(tmenu_gestor_objects *objMenu, tEvento *event
                         case GUILISTGROUPBOX:
                         case GUICOMBOBOX:
                         case GUITEXTELEMENTSAREA:
+                        case GUITREELISTBOX:
                             if (procesarBoton(object, objMenu)){ //Comprobamos si se ha pulsado el elemento
                                 posBoton = findEventPos(object->getName());  //Buscamos la posicion del elemento en el array de punteros a funcion
                                 if (posBoton >= 0){ //Si hemos encontrado una funcion
@@ -838,8 +830,12 @@ void Iofrontend::setDinamicSizeObjects(){
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarMedia")->setTam( TIMEW + SEPTIMER, bottom - PROGRESSSEPBOTTOM, this->getWidth() - TIMEW*2 - SEPTIMER*2, PROGRESSHEIGHT);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimer")->setTam(SEPTIMER, bottom - PROGRESSSEPBOTTOM, TIMEW, FAMFAMICONH);
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimerTotal")->setTam(this->getWidth() - TIMEW, bottom - PROGRESSSEPBOTTOM, TIMEW, FAMFAMICONH);
-
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList")->setTam(0, FAMFAMICONH + 2, ALBUMWIDTH, calculaPosPanelMedia() - FAMFAMICONH - 2 - ALBUMWIDTH);
+        
+        UITreeListBox *albumList = ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList");
+        albumList->setTam(0, FAMFAMICONH + 2, ALBUMWIDTH, calculaPosPanelMedia() - FAMFAMICONH - 2 - ALBUMWIDTH);
+        albumList->calcularScrPos();
+        albumList->setImgDrawed(false);
+        
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum")->setTam(0, FAMFAMICONH + 2 + calculaPosPanelMedia() - FAMFAMICONH - 2 - ALBUMWIDTH, ALBUMWIDTH, ALBUMWIDTH);
 
         int yFiltros = FAMFAMICONH + 2 + calculaPosPanelMedia() - FAMFAMICONH - 2 - ALBUMWIDTH;
@@ -2071,7 +2067,7 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
         //Comprobamos si estamos intentando reproducir una cancion del disco
         //duro o de dropbox
         if (!dir.existe(cancion)){
-            UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
+            UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
             int idservidor = albumList->getDestino(albumList->getLastSelectedPos());
             juke->setServerSelected(idservidor);
             //Creamos el thread
@@ -2177,7 +2173,7 @@ bool Iofrontend::bucleReproductor(){
         Traza::print("cancion: " + cancion + " time: " + time, W_DEBUG);
 
         //Obtenemos el codigo del album y la cancion que esta reproduciendose actualmente
-        UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
+        UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
         posAlbumSelected = albumList->getLastSelectedPos();
         posSongSelected = playList->getLastSelectedPos();
 
@@ -2341,7 +2337,7 @@ void Iofrontend::reloadSong(int posAlbumSelected, int posSongSelected){
     if (threadDownloader != NULL && player != NULL){
         Traza::print("Iofrontend::reloadSong", W_DEBUG);
         tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
-        UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
+        UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
         //Cuando detectamos que se ha descargado el fichero totalmente, recargamos
         //el thread para que se pueda avanzar o retroceder. Esto es debido a limitaciones
         //en la libreria de SDL para Mix_LoadMUS_RW con un fichero a medio descargar
@@ -2433,7 +2429,7 @@ void Iofrontend::refrescarAlbums(){
     delete thread;
 
     ((UIListGroup *)obj->getObjByName("playLists"))->setImgDrawed(false);
-    ((UIListGroup *)obj->getObjByName("albumList"))->setImgDrawed(false);
+    ((UITreeListBox *)obj->getObjByName("albumList"))->setImgDrawed(false);
 }
 
 /**
@@ -2441,7 +2437,7 @@ void Iofrontend::refrescarAlbums(){
 */
 int Iofrontend::selectAlbum(tEvento *evento){
     Traza::print("Iofrontend::selectAlbum", W_INFO);
-    UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
+    UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
     UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
 
     string albumSelected = albumList->getValue(albumList->getLastSelectedPos());
@@ -2755,28 +2751,26 @@ int Iofrontend::accionAlbumPopup(tEvento *evento){
     if (obj->getObjectType() == GUIPOPUPMENU){
         UIPopupMenu *objPopup = (UIPopupMenu *)obj;
         //Obtenemos el valor del elemento seleccionado en el popup
-        string selected = objPopup->getListValues()->get(objPopup->getPosActualLista());
+//        string selected = objPopup->getListValues()->get(objPopup->getPosActualLista());
         if (objPopup->getCallerPopup() != NULL){
             //Obtenemos el objeto llamador
-            if (objPopup->getCallerPopup()->getObjectType() == GUILISTBOX){
-                UIList *objList = (UIList *)objPopup->getCallerPopup();
-                string borrar = objList->getValue(objList->getPosActualLista());
-                string text = objList->getListNames()->get(objList->getPosActualLista());
+            if (objPopup->getCallerPopup()->getObjectType() == GUITREELISTBOX){
+                UITreeListBox *objList = (UITreeListBox *)objPopup->getCallerPopup();
+                TreeNode node = objList->get(objList->getPosActualLista());
+                
+                string borrar = node.value;
+                string text = node.text;
+                int idservidor = node.dest;
                 Traza::print("Iofrontend::accionAlbumPopup. Borramos: " + borrar, W_DEBUG);
-                int idservidor = objList->getDestino(objList->getPosActualLista());
+
                 bool confirm = false;
 
-                if (idservidor == DROPBOXSERVER){
-                    confirm = casoPANTALLACONFIRMAR(Constant::toAnsiString("Borrar Álbum"),
-                                    Constant::toAnsiString("¿Está seguro de que desea eliminar: " + borrar + "?"));
-                } else if (idservidor == GOOGLEDRIVESERVER){
-                    confirm = casoPANTALLACONFIRMAR(Constant::toAnsiString("Borrar Álbum"),
-                                    Constant::toAnsiString("¿Está seguro de que desea eliminar: " + text + "?"));
-                }
+                confirm = casoPANTALLACONFIRMAR(Constant::toAnsiString("Borrar Álbum"),
+                                Constant::toAnsiString("¿Está seguro de que desea eliminar: " + text + "?"));
 
                 if (confirm){
                     IOauth2 *server = juke->getServerCloud(idservidor);
-                    bool res = server->deleteFiles(Constant::uencodeUTF8(borrar), server->getAccessToken());
+                    bool res = server->deleteFiles(borrar, server->getAccessToken());
                     if (res){
                         showMessage(Constant::toAnsiString("Álbum eliminado correctamente"), 2000);
                         tEvento askEvento;
@@ -2879,7 +2873,7 @@ void Iofrontend::actualizaciones(){
 */
 void Iofrontend::bienvenida(){
     Traza::print("bienvenida: Inicio", W_INFO);
-    UIList *albumList = ((UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
+    UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
 
     bool someAccesToken = false;
     for (int i=0; i < MAXSERVERS; i++){
@@ -2953,7 +2947,7 @@ void Iofrontend::addLocalAlbum(string ruta){
     Traza::print("Iofrontend::addLocalAlbum. Reproduciendo: " + ruta, W_INFO);
 
     try{
-        UIList *albumList = ((UIList *)pantRepr->getObjByName("albumList"));
+        UITreeListBox *albumList = ((UITreeListBox *)pantRepr->getObjByName("albumList"));
         UIListGroup *playList = ((UIListGroup *)pantRepr->getObjByName("playLists"));
 
         Dirutil dir;
@@ -3394,8 +3388,104 @@ void Iofrontend::showCDDBMenuData(){
 }
 
 
+/**
+*
+*/
+//int Iofrontend::accionesAlbumSelec(tEvento *evento){
+//    Traza::print("Iofrontend::accionesAlbumSelec", W_INFO);
+//    UITreeListBox *treeList = ((UITreeListBox *)ObjectsMenu[PANTALLAFOO]->getObjByName("treeAlbumList"));
+//    TreeNode node = treeList->get(treeList->getPosActualLista());
+//    Traza::print("Selected node: " + node.id + (node.show ? " S" : " N"), W_DEBUG);
+//
+//    if (node.estado != TREENODEOBTAINED){
+//        node.estado = TREENODEOBTAINED;
+//        node.ico = folder;
+//        treeList->refreshNode(node);
+//        Traza::print("Refreshed" + node.id + (node.show ? " S" : " N"), W_DEBUG);
+//        for (int i=0; i < 5; i++){
+//            string parentId = node.id + "." + Constant::TipoToStr(i);
+//            treeList->add(parentId, "Nodo" + parentId, "Valor Nodo" + parentId, music, -1, true);
+//        }
+//        treeList->sort();
+//    }
+//    treeList->calcularScrPos();
+//    return 0;
+//}
 
+int Iofrontend::accionesAlbumSelec(tEvento *evento){
+    Traza::print("Iofrontend::accionesAlbumSelec", W_INFO);
+    UITreeListBox *treeList = ((UITreeListBox *)ObjectsMenu[PANTALLAFOO]->getObjByName("treeAlbumList"));
+    TreeNode node = treeList->get(treeList->getPosActualLista());
+    Traza::print("Selected node: " + node.id + (node.show ? " S" : " N"), W_DEBUG);
 
+    if (node.estado != TREENODEOBTAINED){
+//        node.estado = TREENODEOBTAINED;
+//        node.ico = folder;
+//        treeList->refreshNode(node);
+//        Traza::print("Refreshed" + node.id + (node.show ? " S" : " N"), W_DEBUG);
+//        for (int i=0; i < 5; i++){
+//            string parentId = node.id + "." + Constant::TipoToStr(i);
+//            treeList->add(parentId, "Nodo" + parentId, "Valor Nodo" + parentId, music, -1, true);
+//        }
+//        treeList->sort();
+    }
+    treeList->calcularScrPos();
+    return 0;
+}
 
+/**
+ * 
+ * @param evento
+ * @return 
+ */
+int Iofrontend::selectTreeAlbum(tEvento *evento){
+    Traza::print("Iofrontend::selectAlbum", W_INFO);
+    UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
+    UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
 
+    TreeNode node = albumList->get(albumList->getLastSelectedPos());
+    string albumSelected = node.value;
+    
+    Dirutil dir;
+
+    if (dir.existe(albumSelected)){
+        this->addLocalAlbum(albumSelected);
+    } else if (node.estado != TREENODEOBTAINED){
+        Traza::print("Comprobando autorizacion selectAlbum...", W_DEBUG);
+
+        tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+
+        int idservidor = albumList->getDestino(albumList->getLastSelectedPos());
+        juke->setObjectsMenu(obj);
+        juke->setServerSelected(idservidor);
+        juke->setAlbumSelected(albumList->getValue(albumList->getLastSelectedPos()));
+
+        Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlaylist);
+
+        if (thread->start())
+            Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
+        pintarIconoProcesando(true);
+
+        tEvento evento;
+        while (thread->isRunning()){
+            evento = WaitForKey();
+            procesarControles(obj, &evento, NULL);
+            pintarIconoProcesando(false);
+        }
+
+        UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
+
+        if (textElems->isVisible() && !playList->isVisible()){
+            playList->setVisible(true);
+            textElems->setVisible(false);
+        }
+        
+        
+        procesarControles(obj, &evento, NULL);
+        flipScr();
+        delete thread;
+
+    }
+    return 0;
+}
 

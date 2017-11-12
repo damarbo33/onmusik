@@ -86,6 +86,7 @@ public:
     void setAudio_dst(AudioParams audio_dst);
     AudioParams getAudio_dst() const;
     TID3Tags getSongInfo(string filepath);
+    int transcode(string orig, string dest, TID3Tags *tags);
   
     
 private:
@@ -114,7 +115,7 @@ private:
     int load_encode_and_write(AVAudioFifo *fifo,AVFormatContext *output_format_context,AVCodecContext *output_codec_context);
     int write_output_file_trailer(AVFormatContext *output_format_context);
     
-    int copy_metadata(AVFormatContext *input_format_context, AVFormatContext *output_format_context);
+    int copy_metadata(AVFormatContext *input_format_context, AVFormatContext *output_format_context, TID3Tags *tags);
     void dump_metadata(void *ctx, AVDictionary *m, const char *indent);
     
 };

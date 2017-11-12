@@ -28,6 +28,9 @@ typedef enum{DROPBOXSERVER, GOOGLEDRIVESERVER, ONEDRIVESERVER, MAXSERVERS} cloud
 const char arrNameServers[3][20] = {{"Drobox"},{"Google"},{"undefined"}};
 const char DIRCLOUD[] = "ONMUSIK";
 
+#define TREENODEINITIAL 0
+#define TREENODEOBTAINED 1
+
 class Jukebox{
 
     public:
@@ -118,7 +121,7 @@ class Jukebox{
         IOauth2 * arrCloud[MAXSERVERS];
         string generarNombreAlbum(FileProps *file, string ruta);
         string generarDirGoogleDrive(string nombreAlbum);
-        void subirMetadatos(string nombreAlbum, string rutaUpload, string rutaMetadata);
+        bool subirMetadatos(string nombreAlbum, string rutaUpload, string rutaMetadata);
         bool aborted;
         bool isDir(string ruta);
         bool existe(string ruta);

@@ -37,6 +37,8 @@
 const unsigned int MAXSONG_REPEAT_AVOID = 20;
 const unsigned int ALPHABACKGROUND = 235;
 
+
+
 //*********************************************************************************/
 //Cuidado con no sobrepasar el numero de elementos que define la constante MAXMENU
 //*********************************************************************************/
@@ -197,6 +199,8 @@ class Iofrontend : public Ioutil{
         int accionesCddbAceptar(tEvento *evento);
         void showCDDBMenuData();
         int accionesLetrasBox(tEvento *evento);
+        int accionesAlbumSelec(tEvento *evento);
+        int selectTreeAlbum(tEvento *evento);
 
     public :
         Iofrontend();
