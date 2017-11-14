@@ -38,8 +38,8 @@ class Jukebox{
         virtual ~Jukebox();
 
         void convertir(string ruta, CdTrackInfo *cddbTrack);
-        uint32_t convertir();
-        uint32_t uploadMusicToServer();
+        uint32_t convertAndUpload();
+        uint32_t upload();
         uint32_t refreshAlbumAndPlaylist();
         uint32_t refreshPlaylist();
         uint32_t downloadFile();
@@ -66,7 +66,7 @@ class Jukebox{
         void setRutaInfoId3(string var){rutaInfoId3 = var;}
         bool isCanPlay(){return canPlay;}
         void setCanPlay(bool var){canPlay = var;}
-        void setConcatNameFolder(bool var){concatNameFolder = var;}
+        //void setConcatNameFolder(bool var){concatNameFolder = var;}
 
         void setServerSelected(int var){serverSelected = var;}
         int getServerSelected(){return serverSelected;}
@@ -95,7 +95,13 @@ class Jukebox{
         void setCategSelected(string categSelected) { this->categSelected = categSelected; }
         string getCategSelected() { return this->categSelected; }
         void loadConfigCDDB(FreedbQuery *query);
-
+        void setFilterUploadExt(string var){
+            filterUploadExt = var;
+        }
+        string getFilterUploadExt() {
+            return filterUploadExt;
+        }
+        
     protected:
 
     private:
@@ -104,11 +110,12 @@ class Jukebox{
         string fileToDownload;
         int serverSelected;
         string albumSelected;
-        bool concatNameFolder;
+        //bool concatNameFolder;
         string cdDrive;
         string extractionPath;
         string categSelected;
         string idSelected;
+        string filterUploadExt;
 
         void hashMapMetadatos(map<string, string> *metadatos, string ruta);
 //        Dropbox dropboxDownloader;
@@ -126,6 +133,7 @@ class Jukebox{
         bool isDir(string ruta);
         bool existe(string ruta);
         bool borrarArchivo(string ruta);
+        void generarMetadatos(string ruta);
         
         
 

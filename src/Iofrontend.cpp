@@ -2643,8 +2643,10 @@ bool Iofrontend::errorTokenServidor(int servidor){
 }
 
 /**
-*
-*/
+ * 
+ * @param evento
+ * @return 
+ */
 int Iofrontend::accionUploadPopup(tEvento *evento){
     Traza::print("Iofrontend::accionUploadPopup", W_INFO);
     //Se obtiene el objeto menupopup que en principio esta seleccionado
@@ -2692,41 +2694,34 @@ int Iofrontend::uploadToServer(tEvento *evento, int idServer){
         //Si se ha seleccionado algo, establecemos el texto en el objeto que hemos recibido por parametro
         if (!fichName.empty()){
             Traza::print("Comprobando autorizacion...", W_DEBUG);
-            IOauth2 *server = juke->getServerCloud(idServer);
-
             juke->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
             juke->setDirToUpload(fichName);
             juke->setServerSelected(idServer);
 
-
             unsigned int nFiles [2] = {0,0};
             vector<string> dirs;
             dir.countDir(fichName.c_str(), nFiles, &dirs, filtroFicheros);
-            string dirSelected = fichName.substr(fichName.find_last_of(tempFileSep) + 1);
 
             bool continuar = true;
             if (nFiles[0] > 5 || nFiles[1] > 30){
                 string msg = "¿Estás seguro de subir " + Constant::TipoToStr(nFiles[0]);
                 msg.append(" álbums y " + Constant::TipoToStr(nFiles[1]) + " canciones?");
-                continuar = casoPANTALLACONFIRMAR("Advertencia", msg);
+                continuar = casoPANTALLACONFIRMAR("Advertencia", Constant::toAnsiString(msg));
             }
 
             if (continuar){
-                string msg = "La ruta seleccionada tiene subdirectorios. ¿Deseas concatenar el";
-                msg.append(" nombre del directorio seleccionado \"" + dirSelected + "\"");
-                msg.append(" al nombre de los discos que se subirán?\nPrevisualización:");
-                int maxElements = nFiles[1] > 30 ? 30 : nFiles[1];
-
-                for (int i=0; i < maxElements; i++){
-                    msg.append("\n- " + dirSelected + " " + dirs.at(i) );
+                string msg = "¿Deseas recodificar los ficheros en formato ogg (Ogg Vorbis)?";
+                bool recodificar = casoPANTALLACONFIRMAR("Advertencia", Constant::toAnsiString(msg));
+                
+                Thread<Jukebox> *thread;
+                if (recodificar){
+                    juke->setFilterUploadExt(".ogg");
+                    thread = new Thread<Jukebox>(juke, &Jukebox::convertAndUpload);
+                } else {
+                    juke->setFilterUploadExt(".mp3");
+                    thread = new Thread<Jukebox>(juke, &Jukebox::upload);
                 }
-
-                juke->setConcatNameFolder(true);
-                if (nFiles[0] > 0){
-                    juke->setConcatNameFolder(casoPANTALLACONFIRMAR("Advertencia", msg));
-                }
-
-                Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::convertir);
+                
                 if (thread->start())
                     Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
             }

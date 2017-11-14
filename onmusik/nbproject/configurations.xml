@@ -225,6 +225,7 @@
       </toolsSet>
       <compileType>
         <cTool>
+          <standard>10</standard>
           <incDir>
             <pElem>../../../ExternalLibs/crosslib/src/ziputils/zlib</pElem>
             <pElem>../../../ExternalLibs/crosslib/src/uiobjects</pElem>
@@ -244,11 +245,11 @@
           </incDir>
           <preprocessorList>
             <Elem>WIN</Elem>
-            <Elem>WIN32</Elem>
           </preprocessorList>
           <warningLevel>0</warningLevel>
         </cTool>
         <ccTool>
+          <standard>8</standard>
           <incDir>
             <pElem>../../../ExternalLibs/crosslib/src/ziputils/zlib</pElem>
             <pElem>../../../ExternalLibs/crosslib/src/uiobjects</pElem>
@@ -269,7 +270,6 @@
           <commandLine>-fpermissive</commandLine>
           <preprocessorList>
             <Elem>WIN</Elem>
-            <Elem>WIN32</Elem>
           </preprocessorList>
           <warningLevel>0</warningLevel>
         </ccTool>
@@ -284,6 +284,7 @@
             <linkerOptionItem>-lavutil -lavformat -lavcodec -lswscale -lswresample</linkerOptionItem>
             <linkerOptionItem>-ljsoncpp</linkerOptionItem>
           </linkerLibItems>
+          <commandLine>resource.res</commandLine>
         </linkerTool>
       </compileType>
       <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp"
@@ -339,6 +340,9 @@
       <item path="../../MP3Play/src/fft/Fft.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../resource.rc" ex="false" tool="3" flavor2="0">
+        <customTool>
+          <customToolCommandline>windres resource.rc -O coff -o resource.res</customToolCommandline>
+        </customTool>
       </item>
       <item path="../src/9001.png.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -395,6 +399,7 @@
             <Elem>WIN</Elem>
             <Elem>WIN32</Elem>
           </preprocessorList>
+          <warningLevel>0</warningLevel>
         </cTool>
         <ccTool>
           <developmentMode>6</developmentMode>
@@ -420,18 +425,12 @@
             <Elem>WIN</Elem>
             <Elem>WIN32</Elem>
           </preprocessorList>
+          <warningLevel>0</warningLevel>
         </ccTool>
-        <fortranCompilerTool>
-          <developmentMode>6</developmentMode>
-        </fortranCompilerTool>
-        <asmTool>
-          <developmentMode>6</developmentMode>
-        </asmTool>
         <linkerTool>
           <linkerAddLib>
             <pElem>../../../ExternalLibs/crosslib/crosslib/dist/Release/MinGW2_64-Windows</pElem>
           </linkerAddLib>
-          <stripSymbols>true</stripSymbols>
           <linkerCopySharedLibs>true</linkerCopySharedLibs>
           <linkerLibItems>
             <linkerLibLibItem>crosslib</linkerLibLibItem>
@@ -439,7 +438,7 @@
             <linkerOptionItem>-lavutil -lavformat -lavcodec -lswscale -lswresample</linkerOptionItem>
             <linkerOptionItem>-ljsoncpp</linkerOptionItem>
           </linkerLibItems>
-          <commandLine>-mwindows</commandLine>
+          <commandLine>-mwindows resource.res</commandLine>
         </linkerTool>
       </compileType>
       <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp"
@@ -495,6 +494,9 @@
       <item path="../../MP3Play/src/fft/Fft.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../resource.rc" ex="false" tool="3" flavor2="0">
+        <customTool>
+          <customToolCommandline>windres resource.rc -O coff -o resource.res</customToolCommandline>
+        </customTool>
       </item>
       <item path="../src/9001.png.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -502,13 +504,13 @@
       </item>
       <item path="../src/Iofrontend.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="../src/Transcode.cpp" ex="false" tool="1" flavor2="0">
+      <item path="../src/Transcode.cpp" ex="false" tool="1" flavor2="9">
       </item>
       <item path="../src/jukebox.cpp" ex="false" tool="1" flavor2="9">
       </item>
       <item path="../src/jukebox.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="../src/main.cpp" ex="false" tool="1" flavor2="0">
+      <item path="../src/main.cpp" ex="false" tool="1" flavor2="9">
       </item>
       <item path="../src/main.h" ex="false" tool="3" flavor2="0">
       </item>
