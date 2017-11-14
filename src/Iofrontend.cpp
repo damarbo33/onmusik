@@ -98,13 +98,16 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLALOGIN]->add("btnLoginCancel", GUIBUTTON, 0, 80,BUTTONSERVERW,BUTTONH, "Cancelar", true)->setIcon(cross);
 
     UITextElementsArea *infoTextRom = (UITextElementsArea *)ObjectsMenu[PANTALLACONFIRMAR]->getObjByName("textosBox");
-    t_posicion pos;
-    infoTextRom->addField("labelDetalle","","",pos, true);
+    
+    TextElement detalleElement;
+    detalleElement.setName("labelDetalle");
+    detalleElement.setUseMaxLabelMargin(true);
+    infoTextRom->addField(&detalleElement);
     infoTextRom->setTextColor(cBlanco);
     infoTextRom->setColor(cNegro);
 
     infoTextRom = (UITextElementsArea *)ObjectsMenu[PANTALLALOGIN]->getObjByName("textosBox");
-    infoTextRom->addField("labelDetalle","","",pos, true);
+    infoTextRom->addField(&detalleElement);
     infoTextRom->setTextColor(cBlanco);
     infoTextRom->setColor(cNegro);
 
@@ -116,7 +119,7 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLABIENVENIDA]->add("ImgFlecha", GUIBUTTON, 2 + FAMFAMICONW, 0, 50,50, "Ajustar volumen", false)->setIcon(FlechaEsquinaSupIzq)->setVerContenedor(false);
 
     UITextElementsArea *textLabel = (UITextElementsArea *)ObjectsMenu[PANTALLABIENVENIDA]->getObjByName("textosBox");
-    textLabel->addField("labelDetalle","","",pos, true);
+    textLabel->addField(&detalleElement);
     textLabel->setTextColor(cBlanco);
 
     UIPanel *panel = (UIPanel *)ObjectsMenu[PANTALLABIENVENIDA]->getObjByName("borde");
@@ -179,21 +182,31 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimer")->setTextColor(cBlanco);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("labelVol")->setTextColor(cBlanco);
 
-    UITextElementsArea *LetrasLabel = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
-    t_element_style style;
+    UITextElementsArea *LetrasArea = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
+    TextElement titleElement;
     t_posicion posLetras(10,10,0,0);
-    style.pos = posLetras;
-    style.bold = true;
-    style.fontSize = 28;
-    LetrasLabel->addField("TituloLetraCancion","","",style, true);
-    style.pos.y += 50;
-    style.bold = false;
-    style.fontSize = 24;
-    LetrasLabel->addField("LetraCancion","","",style, true);
-    LetrasLabel->setTextColor(cBlanco);
-    LetrasLabel->setVisible(false);
-    LetrasLabel->setColor(cNegroClaro);
-    LetrasLabel->setIntervalDespl(Constant::getMENUSPACE()*2);
+    titleElement.setPos(posLetras);
+    titleElement.getStyle()->bold = true;
+    titleElement.getStyle()->fontSize = 28;
+    titleElement.setUseMaxLabelMargin(true);
+    titleElement.setName("TituloLetraCancion");
+    LetrasArea->addField(&titleElement);
+    
+    TextElement lyricsArea;
+    posLetras.y += 50;
+    lyricsArea.setPos(posLetras);
+    lyricsArea.getStyle()->bold = false;
+    lyricsArea.getStyle()->fontSize = 24;
+    lyricsArea.setUseMaxLabelMargin(true);
+    lyricsArea.setName("LetraCancion");
+    LetrasArea->addField(&lyricsArea);
+    
+    LetrasArea->setTextColor(cBlanco);
+    LetrasArea->setVisible(false);
+    LetrasArea->setColor(cNegroClaro);
+    LetrasArea->setIntervalDespl(Constant::getMENUSPACE()*2);
+    
+    //ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("NewWindowIco")->setIcon(new_window) ;
 
 
     ((UIProgressBar *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarMedia"))->setTypeHint(HINT_TIME);
@@ -279,12 +292,16 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLACDDBDATA]->getObjByName("lblDataCDDB")->setTextColor(cBlanco);
 
     UITextElementsArea *LetrasCDDB = (UITextElementsArea *)ObjectsMenu[PANTALLACDDBDATA]->getObjByName("lblDataCDDB");
-    t_element_style styleCddb;
-    t_posicion posLetrasCddb(5,5,0,0);
-    styleCddb.pos = posLetrasCddb;
-    styleCddb.bold = false;
-    styleCddb.fontSize = 14;
-    LetrasCDDB->addField("msgWarning","",msgLabel,styleCddb, true);
+    TextElement cddbElement;
+    t_posicion posLetrascddb(5,5,0,0);
+    cddbElement.setPos(posLetrascddb);
+    cddbElement.getStyle()->bold = false;
+    cddbElement.getStyle()->fontSize = 14;
+    cddbElement.setName("msgWarning");
+    cddbElement.setUseMaxLabelMargin(true);
+    cddbElement.setText(msgLabel);
+    LetrasCDDB->addField(&cddbElement);
+    
     LetrasCDDB->setTextColor(cBlanco);
     LetrasCDDB->setVisible(true);
     LetrasCDDB->setColor(cNegroClaro);
@@ -852,6 +869,8 @@ void Iofrontend::setDinamicSizeObjects(){
 
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists")->setTam(ALBUMWIDTH, 0, this->getWidth() - ALBUMWIDTH, calculaPosPanelMedia());
         ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox")->setTam(ALBUMWIDTH, 0, this->getWidth() - ALBUMWIDTH, calculaPosPanelMedia());
+        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("NewWindowIco")->setTam(ALBUMWIDTH, 0, 45,45);
+        
     } catch (Excepcion &e){
         Traza::print("setDinamicSizeObjects: " + string(e.getMessage()), W_ERROR);
     }
@@ -1700,6 +1719,7 @@ int Iofrontend::accionesLetras(tEvento *evento){
 
     objPlayList->setVisible(!objPlayList->isVisible());
     textElems->setVisible(!objPlayList->isVisible());
+    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("NewWindowIco")->setVisible(textElems->isVisible());
 
     if (textElems->isVisible()){
         getLyricsFromActualSong();
@@ -2474,6 +2494,7 @@ int Iofrontend::selectAlbum(tEvento *evento){
         if (textElems->isVisible() && !playList->isVisible()){
             playList->setVisible(true);
             textElems->setVisible(false);
+            ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("NewWindowIco")->setVisible(false);
         }
 
         playList->setPosActualLista(0);
@@ -2773,7 +2794,8 @@ int Iofrontend::accionAlbumPopup(tEvento *evento){
                         clearEvento(&askEvento);
                         procesarControles(ObjectsMenu[menu], &askEvento, NULL);
                         flipScr();
-                        autenticateAndRefresh();
+                        //autenticateAndRefresh();
+                        refrescarAlbums();
                     }
                     else
                         showMessage(Constant::toAnsiString("Error al eliminar el álbum"), 2000);

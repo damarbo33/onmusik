@@ -54,6 +54,9 @@ uint32_t Scrapper::getLyricsSong(){
                     ((TextElement *)textElems->getTextVector()->at(0))->setUrl(info.at(0)->urlInfo);
                 else
                     ((TextElement *)textElems->getTextVector()->at(0))->setUrl(googleInfo);
+                
+                ((TextElement *)textElems->getTextVector()->at(0))->setIco(new_window);
+                
             } else {
                 textElems->setFieldText("LetraCancion", "");
             }
