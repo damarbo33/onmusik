@@ -503,7 +503,6 @@ uint32_t Jukebox::refreshPlayListMetadata(){
 *
 */
 void Jukebox::downloadFile(string ruta){
-    Dirutil dir;
     string tempFileDir = Constant::getAppDir() + FILE_SEPARATOR + "temp.ogg";
     Traza::print("Jukebox::downloadFile. Descargando fichero " + ruta, W_DEBUG);
 
@@ -581,7 +580,6 @@ uint32_t Jukebox::refreshPlayListMetadataFromId3Dir(){
 //    listaSimple<FileProps> *filelist = new listaSimple<FileProps>();
     vector<FileProps> *filelist = new vector<FileProps>();
     FileProps file;
-    string nombreCancion;
     string ruta = rutaInfoId3;
     ruta = dir.getFolder(ruta);
 
@@ -656,7 +654,7 @@ uint32_t Jukebox::refreshPlayListMetadataFromId3Dir(){
 */
 uint32_t Jukebox::authenticateServers(){
     uint32_t salida = SINERROR;
-    for (int i=0; i < MAXSERVERS; i++){
+    for (int i=0; i < MAXSERVERS && !aborted; i++){
         try{
             int error = arrCloud[i]->authenticate();
             if (error == ERRORREFRESHTOKEN){

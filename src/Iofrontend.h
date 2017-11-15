@@ -201,6 +201,7 @@ class Iofrontend : public Ioutil{
         int accionesLetrasBox(tEvento *evento);
         int accionesAlbumSelec(tEvento *evento);
         int selectTreeAlbum(tEvento *evento);
+        
 
     public :
         Iofrontend();

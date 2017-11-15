@@ -73,7 +73,7 @@ int main(int argc, char *argv[]){
             ioFront->addLocalAlbum(fichParm);
             Traza::print("Parameter: " + fichParm, W_DEBUG);
         } else {
-            ioFront->actualizaciones();
+            //ioFront->actualizaciones(); // Ya no son necesarias las actualizaciones
             ioFront->autenticateAndRefresh();
             tEvento evento;
             ioFront->drawMenu(evento);

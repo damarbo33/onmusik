@@ -51,8 +51,6 @@ Iofrontend::Iofrontend(){
     Traza::print("Fin Constructor de IoFrontend", W_INFO);
 }
 
-
-
 /**
 * Destructor
 */
@@ -72,7 +70,6 @@ Iofrontend::~Iofrontend(){
     Traza::print("Destructor de IoFrontend FIN", W_INFO);
 }
 
-
 /**
 * Inicializa los objetos que se pintaran por pantalla para cada pantalla
 * Debe llamarse a este metodo despues de haber inicializado SDL para que se puedan centrar los componentes correctamente
@@ -85,12 +82,12 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAPREGUNTA]->add("borde", GUIPANELBORDER,0,0,0,0, "Introduzca el dato", false);
     ObjectsMenu[PANTALLAPREGUNTA]->getObjByName("valor")->setColor(cBlanco);
     
-    ObjectsMenu[PANTALLACONFIRMAR]->add("borde", GUIPANELBORDER,0,0,0,0, Constant::toAnsiString("Seleccione una opción"), false);
+    ObjectsMenu[PANTALLACONFIRMAR]->add("borde", GUIPANELBORDER,0,0,0,0, Constant::txtDisplay("Seleccione una opci%C3%B3n"), false);
     ObjectsMenu[PANTALLACONFIRMAR]->add("textosBox", GUITEXTELEMENTSAREA, 0, -50 * zoomText, getWidth()-50, 120, "", true)->setVerContenedor(false);
     ObjectsMenu[PANTALLACONFIRMAR]->add("btnSiConfirma", GUIBUTTON, -(BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
     ObjectsMenu[PANTALLACONFIRMAR]->add("btnNoConfirma", GUIBUTTON, (BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
 
-    ObjectsMenu[PANTALLALOGIN]->add("borde", GUIPANELBORDER,0,0,0,0, Constant::toAnsiString("Seleccione una opcion"), false);
+    ObjectsMenu[PANTALLALOGIN]->add("borde", GUIPANELBORDER,0,0,0,0, Constant::txtDisplay("Seleccione una opci%C3%B3n"), false);
     ObjectsMenu[PANTALLALOGIN]->add("textosBox", GUITEXTELEMENTSAREA, 0, -40 * zoomText, getWidth()-50, 70, "", true)->setVerContenedor(false);
     ObjectsMenu[PANTALLALOGIN]->add("btnGoogle", GUIBUTTON, -(BUTTONSERVERW/2 + 5)*2, 30,BUTTONSERVERW,BUTTONH, "Google", true)->setIcon(google_png);
     ObjectsMenu[PANTALLALOGIN]->add("btnDropbox", GUIBUTTON, 0, 30,BUTTONSERVERW,BUTTONH, "Dropbox", true)->setIcon(dropbox_png);
@@ -113,7 +110,7 @@ void Iofrontend::initUIObjs(){
 
 
     //2, 2, FAMFAMICONW, FAMFAMICONH
-    ObjectsMenu[PANTALLABIENVENIDA]->add("borde", GUIPANEL, 2 + FAMFAMICONW, 2 + FAMFAMICONH,getWidth(),getHeight(), Constant::toAnsiString("Bienvenido!"), false)->setEnabled(false);;
+    ObjectsMenu[PANTALLABIENVENIDA]->add("borde", GUIPANEL, 2 + FAMFAMICONW, 2 + FAMFAMICONH,getWidth(),getHeight(), "Bienvenido!", false)->setEnabled(false);;
     ObjectsMenu[PANTALLABIENVENIDA]->add("textosBox", GUITEXTELEMENTSAREA, 80,50,getWidth() - 80,150, "", false)->setVerContenedor(false);
     ObjectsMenu[PANTALLABIENVENIDA]->add("btnSiConfirma", GUIBUTTON, 80, 200, BUTTONW,BUTTONH, "Entendido!", false)->setIcon(tick);
     ObjectsMenu[PANTALLABIENVENIDA]->add("ImgFlecha", GUIBUTTON, 2 + FAMFAMICONW, 0, 50,50, "Ajustar volumen", false)->setIcon(FlechaEsquinaSupIzq)->setVerContenedor(false);
@@ -132,7 +129,7 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLABROWSER2]->add(OBJLISTABROWSER2, GUILISTBOX, 0, 0, 0, 0, "LISTADODIR", false)->setVerContenedor(false)->setShadow(false);
     ObjectsMenu[PANTALLABROWSER2]->add(BTNACEPTARBROWSER, GUIBUTTON, -(BUTTONW/2 + 5), 0, BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
     ObjectsMenu[PANTALLABROWSER2]->add(BTNCANCELARBROWSER, GUIBUTTON, (BUTTONW/2 + 5), 0, BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
-    ObjectsMenu[PANTALLABROWSER2]->add(ARTDIRBROWSER, GUIARTSURFACE, 0, 0, INPUTW, Constant::getINPUTH(), Constant::toAnsiString("Dirección Browser"), false)->setEnabled(false);
+    ObjectsMenu[PANTALLABROWSER2]->add(ARTDIRBROWSER, GUIARTSURFACE, 0, 0, INPUTW, Constant::getINPUTH(), Constant::txtDisplay("Direcci%C3%B3n Browser"), false)->setEnabled(false);
     ObjectsMenu[PANTALLABROWSER2]->add("comboBrowser", GUICOMBOBOX, 0, 0, 0, 0, "", false);
 
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("panelMedia", GUIPANEL, 0,0,0,0, "", true)->setEnabled(false);
@@ -151,16 +148,16 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("progressBarMedia", GUIPROGRESSBAR, 0,0,0,0, "", true)->setShadow(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("progressBarVolumen", GUIPROGRESSBAR, 0,0,0,0, "", true)->setShadow(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("ImgVol", GUIBUTTON, 0,0,0,0, "Ajustar volumen", true)->setIcon(sound)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnBackward", GUIBUTTON, 0,0,0,0, Constant::toAnsiString("Saltar a canción anterior"), true)->setIcon(control_rewind)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnBackward", GUIBUTTON, 0,0,0,0, Constant::txtDisplay("Saltar a canci%C3%B3n anterior"), true)->setIcon(control_rewind)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnPlay",     GUIBUTTON, 0,0,0,0, "Reproducir", true)->setIcon(control_play)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnStop",     GUIBUTTON, 0,0,0,0, "Parar", true)->setIcon(control_stop)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnForward",  GUIBUTTON, 0,0,0,0, Constant::toAnsiString("Saltar a canción siguiente"), true)->setIcon(control_fastforward)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnForward",  GUIBUTTON, 0,0,0,0, Constant::toAnsiString("Saltar a canci%C3%B3n siguiente"), true)->setIcon(control_fastforward)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnRepeat", GUIBUTTON, 0,0,0,0, "Repetir disco", true)->setIcon(btn_repeat_off)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnRandom", GUIBUTTON, 0,0,0,0, "Aleatorio", true)->setIcon(btn_random_off)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnEqualizer", GUIBUTTON, 0,0,0,0, "Mostrar Ecualizador", true)->setIcon(control_equalizer)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnSwitchEq", GUIBUTTON, 0,0,0,0, "Ecualizador On/Off", true)->setIcon(btn_on)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnResetEq", GUIBUTTON, 0,0,0,0, "Resetear Ecualizador", true)->setIcon(btn_reset_eq)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnLetras",  GUIBUTTON, 0,0,0,0, Constant::toAnsiString("Letra de la canción"), true)->setIcon(fontIco)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnLetras",  GUIBUTTON, 0,0,0,0, Constant::txtDisplay("Letra de la canci%C3%B3n"), true)->setIcon(fontIco)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setVisible(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnResetEq")->setVisible(false);
 
@@ -228,7 +225,7 @@ void Iofrontend::initUIObjs(){
 
     UIPopupMenu * popup1 = addPopup(PANTALLAREPRODUCTOR, "popupAlbum", "albumList");
     if (popup1 != NULL){
-        popup1->addElemLista(Constant::toAnsiString("Eliminar Álbum"), "delete", controller);
+        popup1->addElemLista(Constant::txtDisplay("Eliminar %C3%81lbum"), "delete", controller);
     }
 
     UIPopupMenu * popup2 = addPopup(PANTALLAREPRODUCTOR, "popupUpload", "btnAddContent");
@@ -242,10 +239,10 @@ void Iofrontend::initUIObjs(){
 
 
     vector <ListGroupCol *> miCabecera;
-    miCabecera.push_back(new ListGroupCol(Constant::toAnsiString("Canción"), ""));
+    miCabecera.push_back(new ListGroupCol("Canci%C3%B3n", "")); //Cancion
     miCabecera.push_back(new ListGroupCol("Artista", ""));
-    miCabecera.push_back(new ListGroupCol(Constant::toAnsiString("Álbum"), ""));
-    miCabecera.push_back(new ListGroupCol(Constant::toAnsiString("Duración"), ""));
+    miCabecera.push_back(new ListGroupCol("%C3%81lbum", "")); //Album
+    miCabecera.push_back(new ListGroupCol("Duraci%C3%B3n", "")); //Duracion
     playList->setHeaderLista(miCabecera);
     playList->adjustToHeader(false);
     playList->addHeaderWith(100);
@@ -260,15 +257,15 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLACDDB]->add("listAlbumsCddb", GUILISTGROUPBOX, 0, 0, 0, 0, "LISTADODIR", false)->setVerContenedor(false)->setShadow(false);
     ObjectsMenu[PANTALLACDDB]->add("aceptarCddb", GUIBUTTON, -(BUTTONW/2 + 5), 0, BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
     ObjectsMenu[PANTALLACDDB]->add("cancelarCddb", GUIBUTTON, (BUTTONW/2 + 5), 0, BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
-    ObjectsMenu[PANTALLACDDB]->add("titleCddb", GUIARTSURFACE, 0, 0, INPUTW, Constant::getINPUTH(), Constant::toAnsiString("Más de una coincidencia encontrada. Seleccione un álbum"), false)->setEnabled(false);
+    ObjectsMenu[PANTALLACDDB]->add("titleCddb", GUIARTSURFACE, 0, 0, INPUTW, Constant::getINPUTH(), Constant::txtDisplay("M%C3%A1s de una coincidencia encontrada. Seleccione un %C3%A1lbum"), false)->setEnabled(false);
 
     UIListGroup *listAlbumsCddb = ((UIListGroup *)ObjectsMenu[PANTALLACDDB]->getObjByName("listAlbumsCddb"));
 
     vector <ListGroupCol *> cabeceraAlbumscddb;
-    cabeceraAlbumscddb.push_back(new ListGroupCol(Constant::toAnsiString("Álbum"), ""));
-    cabeceraAlbumscddb.push_back(new ListGroupCol(Constant::toAnsiString("Año"), ""));
-    cabeceraAlbumscddb.push_back(new ListGroupCol(Constant::toAnsiString("Género"), ""));
-    cabeceraAlbumscddb.push_back(new ListGroupCol(Constant::toAnsiString("Id. Disco"), ""));
+    cabeceraAlbumscddb.push_back(new ListGroupCol("%C3%81lbum", ""));
+    cabeceraAlbumscddb.push_back(new ListGroupCol("A%C3%B1o", ""));
+    cabeceraAlbumscddb.push_back(new ListGroupCol("G%C3%A9nero", ""));
+    cabeceraAlbumscddb.push_back(new ListGroupCol("Id. Disco", ""));
     listAlbumsCddb->setHeaderLista(cabeceraAlbumscddb);
     listAlbumsCddb->adjustToHeader(false);
     listAlbumsCddb->addHeaderWith(420);
@@ -1046,7 +1043,7 @@ void Iofrontend::comprobarUnicode(int menu){
 
 /**
 * Establece el nombre del fichero o directorio seleccionado por el explorador de
-* ficheros, en el contenido un campo especificado por parámetro
+* ficheros, en el contenido un campo especificado por parÃ¡metro
 */
 void Iofrontend::setTextFromExplorador(tEvento *evento, UIInput *objCampoEdit){
     try{
@@ -1891,19 +1888,19 @@ int Iofrontend::AddServer(tEvento *evento){
 
     //Si despues de autenticarse, no se ha podido obtener el access token, lo obtenemos manualmente
     if (someErrorToken != MAXSERVERS){
-        string mensaje = "Para usar la aplicación debes dar permisos desde tu cuenta de Google, Dropbox o OneDrive. ";
-        mensaje.append("A continuación se abrirá un explorador. Debes logarte y pulsar el botón de \"PERMITIR\".");
-        mensaje.append("Seguidamente deberás copiar el código obtenido y pegarlo en la ventana de Onmusik que aparecerá a continuación.");
+        string mensaje = "Para usar la aplicaci%C3%B3n debes dar permisos desde tu cuenta de Google, Dropbox o OneDrive. ";
+        mensaje.append("A continuaci%C3%B3n se abrir%C3%A1 un explorador. Debes logarte y pulsar el bot%C3%B3n de \"PERMITIR\".");
+        mensaje.append("Seguidamente deber%C3%A1s copiar el c%C3%B3digo obtenido y pegarlo en la ventana de Onmusik que aparecer%C3%A1 a continuaci%C3%B3n.");
 
-        int serverSelected = casoPANTALLALOGIN(Constant::toAnsiString("Autorizar aplicación"), Constant::toAnsiString(mensaje), false);
+        int serverSelected = casoPANTALLALOGIN(Constant::txtDisplay("Autorizar aplicaci%C3%B3n"), Constant::txtDisplay(mensaje), false);
         if (serverSelected < MAXSERVERS){
             string tmpClient = juke->getServerCloud(serverSelected)->getClientid();
             string tmpSecret = juke->getServerCloud(serverSelected)->getSecret();
             strNameServer = arrNameServers[serverSelected];
 
             juke->getServerCloud(serverSelected)->launchAuthorize(tmpClient);
-            string code = casoPANTALLAPREGUNTA(Constant::toAnsiString("Autorizar aplicación"), 
-                    Constant::toAnsiString("Introduce el campo obtenido de la página de "
+            string code = casoPANTALLAPREGUNTA(Constant::txtDisplay("Autorizar aplicaci%C3%B3n"), 
+                    Constant::txtDisplay("Introduce el campo obtenido de la p%C3%A1gina de "
                     + strNameServer + " (CTRL+V)"));
             
             if (!code.empty()){
@@ -2427,7 +2424,7 @@ void Iofrontend::refrescarAlbums(){
 
     clearScr();
     procesarControles(obj, &eventoNull, NULL);
-    drawTextCent(Constant::toAnsiString("Obteniendo álbums. Espere...").c_str(),0,-70,true,true, cBlanco);
+    drawTextCent(Constant::txtDisplay("Obteniendo %C3%81lbums. Espere...").c_str(),0,-70,true,true, cBlanco);
     flipScr();
     pintarIconoProcesando(true);
     thread->start();
@@ -2536,18 +2533,18 @@ int Iofrontend::selectAlbum(tEvento *evento){
 //        }
 //        procesarControles(obj, &evento, NULL);
 //
-//        string mensaje = "Para usar la aplicación debes dar permisos desde tu cuenta de dropbox. ";
-//        mensaje.append("A continuación se abrirá un explorador. Debes logarte en Dropbox y pulsar el botón de \"PERMITIR\".");
-//        mensaje.append("Seguidamente deberás copiar el código obtenido y pegarlo en la ventana de Onmusik que aparecerá a continuación.");
+//        string mensaje = "Para usar la aplicaciÃ³n debes dar permisos desde tu cuenta de dropbox. ";
+//        mensaje.append("A continuaciÃ³n se abrirÃ¡ un explorador. Debes logarte en Dropbox y pulsar el botÃ³n de \"PERMITIR\".");
+//        mensaje.append("Seguidamente deberÃ¡s copiar el cÃ³digo obtenido y pegarlo en la ventana de Onmusik que aparecerÃ¡ a continuaciÃ³n.");
 //
 //        if (thread->getExitCode() != ERRORCONNECT){
 //            this->accessToken = dropbox->getAccessToken();
 //            //Si despues de autenticarse, no se ha podido obtener el access token, lo obtenemos manualmente
 //            if (this->accessToken.empty()){
-//                bool permiso = casoPANTALLACONFIRMAR("Autorizar aplicación", mensaje);
+//                bool permiso = casoPANTALLACONFIRMAR("Autorizar aplicaciÃ³n", mensaje);
 //                if (permiso){
 //                    dropbox->launchAuthorize(cliendid);
-//                    string code = casoPANTALLAPREGUNTA("Autorizar aplicación", "Introduce el campo obtenido de la página de dropbox (CTRL+V)");
+//                    string code = casoPANTALLAPREGUNTA("Autorizar aplicaciÃ³n", "Introduce el campo obtenido de la pÃ¡gina de dropbox (CTRL+V)");
 //                    if (!code.empty()){
 //                        clearScr(cGrisOscuro);
 //                        procesarControles(obj, &evento, NULL);
@@ -2557,7 +2554,7 @@ int Iofrontend::selectAlbum(tEvento *evento){
 //                }
 //            }
 //        } else {
-//            showMessage("No se ha podido autenticar en dropbox. Revise su conexión o especifique datos de proxy", 4000);
+//            showMessage("No se ha podido autenticar en dropbox. Revise su conexiÃ³n o especifique datos de proxy", 4000);
 //        }
 //        delete thread;
 //        delete dropbox;
@@ -2567,7 +2564,6 @@ int Iofrontend::selectAlbum(tEvento *evento){
 
 int Iofrontend::autenticarServicios(){
     Traza::print("Iofrontend::autenticarServicios", W_INFO);
-    string strNameServer;
     int someErrorToken = 0;
 
     juke->getServerCloud(GOOGLEDRIVESERVER)->setClientid(googleClientId);
@@ -2593,7 +2589,7 @@ int Iofrontend::autenticarServicios(){
 
     pintarIconoProcesando(true);
     while (thread->isRunning() && evento.key != SDLK_ESCAPE && !evento.quit){
-        WaitForKey();
+        evento = WaitForKey();
         procesarControles(obj, &eventoNull, NULL);
         pintarIconoProcesando(false);
     }
@@ -2603,7 +2599,7 @@ int Iofrontend::autenticarServicios(){
     if (evento.key == SDLK_ESCAPE || evento.quit){
         juke->abortServers();
         thread->join();
-        WaitForKey();
+        evento = WaitForKey();
         someErrorToken = MAXSERVERS;
     } else {
         //En el caso de que sea la primera vez que se lanza la aplicacion, no existira
@@ -2725,14 +2721,14 @@ int Iofrontend::uploadToServer(tEvento *evento, int idServer){
 
             bool continuar = true;
             if (nFiles[0] > 5 || nFiles[1] > 30){
-                string msg = "¿Estás seguro de subir " + Constant::TipoToStr(nFiles[0]);
-                msg.append(" álbums y " + Constant::TipoToStr(nFiles[1]) + " canciones?");
-                continuar = casoPANTALLACONFIRMAR("Advertencia", Constant::toAnsiString(msg));
+                string msg = "%C2%BFEst%C3%A1s seguro de subir " + Constant::TipoToStr(nFiles[0]);
+                msg.append(" %C3%A1lbums y " + Constant::TipoToStr(nFiles[1]) + " canciones%3F");
+                continuar = casoPANTALLACONFIRMAR("Advertencia", Constant::txtDisplay(msg));
             }
 
             if (continuar){
-                string msg = "¿Deseas recodificar los ficheros en formato ogg (Ogg Vorbis)?";
-                bool recodificar = casoPANTALLACONFIRMAR("Advertencia", Constant::toAnsiString(msg));
+                string msg = "%C2%BFDeseas recodificar los ficheros en formato ogg (Ogg Vorbis)%3F";
+                bool recodificar = casoPANTALLACONFIRMAR("Advertencia", Constant::txtDisplay(msg));
                 
                 Thread<Jukebox> *thread;
                 if (recodificar){
@@ -2781,14 +2777,14 @@ int Iofrontend::accionAlbumPopup(tEvento *evento){
 
                 bool confirm = false;
 
-                confirm = casoPANTALLACONFIRMAR(Constant::toAnsiString("Borrar Álbum"),
-                                Constant::toAnsiString("¿Está seguro de que desea eliminar: " + text + "?"));
+                confirm = casoPANTALLACONFIRMAR(Constant::txtDisplay("Borrar %C3%A1lbum"),
+                                Constant::txtDisplay("%C2%BFEst%C3%A1 seguro de que desea eliminar: " + text + "%3F"));
 
                 if (confirm){
                     IOauth2 *server = juke->getServerCloud(idservidor);
                     bool res = server->deleteFiles(borrar, server->getAccessToken());
                     if (res){
-                        showMessage(Constant::toAnsiString("Álbum eliminado correctamente"), 2000);
+                        showMessage(Constant::txtDisplay("%C3%81lbum eliminado correctamente"), 2000);
                         tEvento askEvento;
                         this->clearScr(cGrisOscuro);
                         clearEvento(&askEvento);
@@ -2798,7 +2794,7 @@ int Iofrontend::accionAlbumPopup(tEvento *evento){
                         refrescarAlbums();
                     }
                     else
-                        showMessage(Constant::toAnsiString("Error al eliminar el álbum"), 2000);
+                        showMessage(Constant::txtDisplay("Error al eliminar el %C3%81lbum"), 2000);
                 }
             }
         }
@@ -2920,13 +2916,13 @@ void Iofrontend::bienvenida(){
         //objMenu->getObjByName("borde")->setLabel(titulo);
 
         string txtDetalle = "Que emocionante! Parece que es la primera vez que accedes a Onmusik!\n";
-        txtDetalle.append("Empieza subiendo tus canciones haciendo click en el botón indicado con la flecha\n\n");
+        txtDetalle.append("Empieza subiendo tus canciones haciendo click en el Bot%C3%B3n indicado con la flecha\n\n");
         txtDetalle.append("Para subir cada disco, puedes seleccionar la carpeta que contiene todas las canciones");
         txtDetalle.append("o alguna de las canciones contenidas en la carpeta\n");
 
         UITextElementsArea *textElems = (UITextElementsArea *)objMenu->getObjByName("textosBox");
         textElems->setImgDrawed(false);
-        textElems->setFieldText("labelDetalle", txtDetalle);
+        textElems->setFieldText("labelDetalle", Constant::txtDisplay(txtDetalle));
 
         long delay = 0;
         unsigned long before = 0;
@@ -2964,9 +2960,6 @@ void Iofrontend::addLocalAlbum(string ruta){
     Traza::print("Iofrontend::addLocalAlbum. Reproduciendo: " + ruta, W_INFO);
 
     try{
-        UITreeListBox *albumList = ((UITreeListBox *)pantRepr->getObjByName("albumList"));
-        UIListGroup *playList = ((UIListGroup *)pantRepr->getObjByName("playLists"));
-
         Dirutil dir;
         pantRepr->setFocus("playLists");
 
