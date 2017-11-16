@@ -2173,7 +2173,10 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
 */
 bool Iofrontend::bucleReproductor(){
     Traza::print("Iofrontend::bucleReproductor", W_INFO);
-    bool salir = false;
+    bool salir = false; //Control del bucle unicamente
+    //Solo forzamos la salida en el caso de bloqueos. Por ahora solo se pueden producir
+    //cuando esperamos a cargar el buffer del streamming
+    bool salidaForzada = false; 
     long delay = 0;
     unsigned long before = 0;
     unsigned long timer1s = 0;
@@ -2249,41 +2252,42 @@ bool Iofrontend::bucleReproductor(){
         Traza::print("Estado Cancion 0",player->getStatus(), W_PARANOIC);
 
         do{
-                Traza::print("Estado Cancion 1", player->getStatus(), W_PARANOIC);
-                clearScr(cGrisOscuro);
-                //Procesamos los controles de la aplicacion
-                askEvento = WaitForKey();
-                before = SDL_GetTicks();
+            Traza::print("Estado Cancion 1", player->getStatus(), W_PARANOIC);
+            clearScr(cGrisOscuro);
+            //Procesamos los controles de la aplicacion
+            askEvento = WaitForKey();
+            before = SDL_GetTicks();
 
-                //Actualizamos el indicador de la barra de progreso y del tiempo actual
-                if (before - timer1s > 500 && panelMediaVisible){
-                    obj->getObjByName("mediaTimer")->setLabel(Constant::timeFormat(player->getActualPlayTime()/1000));
-                    objProg->setProgressPos(player->getActualPlayTime()/1000);
-                    timer1s = before;
-                }
-                Traza::print("Estado Cancion 2", player->getStatus(), W_PARANOIC);
-                //Procesamos los eventos para cada elemento que pintamos por pantalla
-                procesarControles(obj, &askEvento, &screenEvents);
-                Traza::print("Estado Cancion 3", player->getStatus(), W_PARANOIC);
-                //Si pulsamos escape, paramos la ejecucion
-                salir = (askEvento.isKey && askEvento.key == SDLK_ESCAPE) || 
-                        player->getStatus() == STOPED || player->getStatus() == FINISHEDSONG;
-                
-                //Si estamos esperando para cargar el buffer y pulsamos escape, 
-                //cancelamos el thread de descarga y salimos
-                if (askEvento.isKey && askEvento.key == SDLK_ESCAPE && player->getStatus() == PAUSEDTOLOADBUFFER){
+            //Actualizamos el indicador de la barra de progreso y del tiempo actual
+            if (before - timer1s > 500 && panelMediaVisible){
+                obj->getObjByName("mediaTimer")->setLabel(Constant::timeFormat(player->getActualPlayTime()/1000));
+                objProg->setProgressPos(player->getActualPlayTime()/1000);
+                timer1s = before;
+            }
+            Traza::print("Estado Cancion 2", player->getStatus(), W_PARANOIC);
+            //Procesamos los eventos para cada elemento que pintamos por pantalla
+            procesarControles(obj, &askEvento, &screenEvents);
+            Traza::print("Estado Cancion 3", player->getStatus(), W_PARANOIC);
+            //Si pulsamos escape, paramos la ejecucion
+            salir = player->getStatus() == STOPED || player->getStatus() == FINISHEDSONG;
+
+            if (salir && (player->getStatus() == STOPED
+                    || player->getStatus() == FINISHEDSONG))
+                Traza::print("Saliendo por fin de cancion",player->getStatus(), W_DEBUG);
+
+            Traza::print("Estado Cancion 4", player->getStatus(), W_PARANOIC);
+
+            //Si estamos esperando para cargar el buffer y pulsamos escape, 
+            //cancelamos el thread de descarga y salimos
+            if (player->getStatus() == PAUSEDTOLOADBUFFER){
+                if ((askEvento.isKey && askEvento.key == SDLK_ESCAPE) || askEvento.quit){
                     player->stop();
                     player->setSongDownloaded(true);
                     while(threadPlayer->isRunning()){};
                     salir = true;
+                    salidaForzada = true;
                 }
-
-                Traza::print("Estado Cancion 4", player->getStatus(), W_PARANOIC);
-
-                if (salir && (player->getStatus() == STOPED
-                        || player->getStatus() == FINISHEDSONG))
-                    Traza::print("Saliendo por fin de cancion",player->getStatus(), W_DEBUG);
-
+            } else {
                 if ((askEvento.isKey && askEvento.key == SDLK_SPACE) || askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_START)){
                     player->pause();
                     timerPanelMedia = SDL_GetTicks();
@@ -2299,54 +2303,57 @@ bool Iofrontend::bucleReproductor(){
                         player->rewind(10000);
                         timerPanelMedia = SDL_GetTicks();
                     }
-                } else if (askEvento.resize){
-                    clearScr(cGrisOscuro);
-                    setDinamicSizeObjects();
-                } else if (askEvento.isMouseMove){
-                    if (askEvento.mouse_y > calculaPosPanelMedia()){
-                        timerPanelMedia = SDL_GetTicks();
-                    }
-                } else if (askEvento.quit){
-                    Traza::print("Estado Cancion 5 stop", player->getStatus(), W_PARANOIC);
-                    player->stop();
-                    while(threadPlayer->isRunning()){};
-                    salir = true;
-                    exit(0);
                 }
+            }
 
-                Traza::print("Estado Cancion 6", player->getStatus(), W_PARANOIC);
-                refreshSpectrum(player);
-
-                Traza::print("Estado Cancion 7", player->getStatus(), W_PARANOIC);
-                //Recargamos la cancion si se ha terminado la descarga de la misma
-                //y no se habia obtenido informacion del tiempo total de la cancion
-                if (threadDownloader != NULL){
-                    //Comprobamos si se ha terminado la descarga en cualquier caso
-                    if (!threadDownloader->isRunning()){
-                        reloadSong(posAlbumSelected, posSongSelected);
-                        player->setSongDownloaded(true);
-                        threadDownloader = NULL;
-                    }
+            if (askEvento.resize){
+                clearScr(cGrisOscuro);
+                setDinamicSizeObjects();
+            } else if (askEvento.isMouseMove){
+                if (askEvento.mouse_y > calculaPosPanelMedia()){
+                    timerPanelMedia = SDL_GetTicks();
                 }
+            } else if (askEvento.quit){
+                Traza::print("Estado Cancion 5 stop", player->getStatus(), W_PARANOIC);
+                player->stop();
+                while(threadPlayer->isRunning()){};
+                salir = true;
+                exit(0);
+            }
 
-                Traza::print("Estado Cancion 8", player->getStatus(), W_PARANOIC);
-                flipScr();
-                delay = before - SDL_GetTicks() + TIMETOLIMITFRAME;
-                if(delay > 0) SDL_Delay(delay);
-            } while (!salir);
+            Traza::print("Estado Cancion 6", player->getStatus(), W_PARANOIC);
+            refreshSpectrum(player);
 
-            //Reseteamos la barra de progreso
-            obj->getObjByName("mediaTimerTotal")->setLabel(Constant::timeFormat(0));
-            obj->getObjByName("mediaTimer")->setLabel(Constant::timeFormat(0));
-            objProg->setProgressMax(0);
-            objProg->setProgressPos(0);
-            player->setSongDownloaded(true);
-            player->stop();
-            Traza::print("Fin del bucle de reproductor", W_DEBUG);
+            Traza::print("Estado Cancion 7", player->getStatus(), W_PARANOIC);
+            //Recargamos la cancion si se ha terminado la descarga de la misma
+            //y no se habia obtenido informacion del tiempo total de la cancion
+            if (threadDownloader != NULL){
+                //Comprobamos si se ha terminado la descarga en cualquier caso
+                if (!threadDownloader->isRunning()){
+                    reloadSong(posAlbumSelected, posSongSelected);
+                    player->setSongDownloaded(true);
+                    threadDownloader = NULL;
+                }
+            }
+
+            Traza::print("Estado Cancion 8", player->getStatus(), W_PARANOIC);
+            flipScr();
+            delay = before - SDL_GetTicks() + TIMETOLIMITFRAME;
+            if(delay > 0) SDL_Delay(delay);
+        } while (!salir);
+
+        //Reseteamos la barra de progreso
+        obj->getObjByName("mediaTimerTotal")->setLabel(Constant::timeFormat(0));
+        obj->getObjByName("mediaTimer")->setLabel(Constant::timeFormat(0));
+        objProg->setProgressMax(0);
+        objProg->setProgressPos(0);
+        player->setSongDownloaded(true);
+        //player->stop();
+        Traza::print("Fin del bucle de reproductor", W_DEBUG);
     } catch (Excepcion &e){
         Traza::print("Excepcion en bucle de reproductor: " + string(e.getMessage()), W_ERROR);
     }
-    return salir;
+    return salidaForzada;
 }
 
 /**
