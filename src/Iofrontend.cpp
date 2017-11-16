@@ -151,7 +151,7 @@ void Iofrontend::initUIObjs(){
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnBackward", GUIBUTTON, 0,0,0,0, Constant::txtDisplay("Saltar a canci%C3%B3n anterior"), true)->setIcon(control_rewind)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnPlay",     GUIBUTTON, 0,0,0,0, "Reproducir", true)->setIcon(control_play)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnStop",     GUIBUTTON, 0,0,0,0, "Parar", true)->setIcon(control_stop)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnForward",  GUIBUTTON, 0,0,0,0, Constant::toAnsiString("Saltar a canci%C3%B3n siguiente"), true)->setIcon(control_fastforward)->setVerContenedor(false);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnForward",  GUIBUTTON, 0,0,0,0, Constant::txtDisplay("Saltar a canci%C3%B3n siguiente"), true)->setIcon(control_fastforward)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnRepeat", GUIBUTTON, 0,0,0,0, "Repetir disco", true)->setIcon(btn_repeat_off)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnRandom", GUIBUTTON, 0,0,0,0, "Aleatorio", true)->setIcon(btn_random_off)->setVerContenedor(false);
     ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnEqualizer", GUIBUTTON, 0,0,0,0, "Mostrar Ecualizador", true)->setIcon(control_equalizer)->setVerContenedor(false);
@@ -2042,6 +2042,7 @@ void Iofrontend::setPanelMediaVisible(bool var){
 int Iofrontend::startSongPlaylist(tEvento *evento){
     Traza::print("Iofrontend::startSongPlaylist", W_INFO);
     UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
+    bool salir = false;
     do{
         string cancion = playList->getValue(playList->getLastSelectedPos());
         playList->setImgDrawed(false);
@@ -2105,11 +2106,11 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
                     this->flipScr();
                     SDL_Delay(20);
                 }
-                bucleReproductor();
+                salir = bucleReproductor();
             }
         } else {
             Traza::print("Lanzando reproduccion de ficheros local", W_DEBUG);
-            bucleReproductor();
+            salir = bucleReproductor();
             Traza::print("Finalizando reproduccion de ficheros local", W_DEBUG);
         }
 
@@ -2160,8 +2161,11 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
                 playList->nextSelectedPos();
             }
         }
-    } while (player->getStatus() != STOPED && playList->getPosActualLista() < playList->getSize());
-
+    } while (!salir && player->getStatus() != STOPED && playList->getPosActualLista() < playList->getSize());
+    
+    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setIcon(control_play);
+    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setImgDrawed(false);
+    
     return 0;
 }
 /**
@@ -2262,8 +2266,17 @@ bool Iofrontend::bucleReproductor(){
                 procesarControles(obj, &askEvento, &screenEvents);
                 Traza::print("Estado Cancion 3", player->getStatus(), W_PARANOIC);
                 //Si pulsamos escape, paramos la ejecucion
-                salir = (askEvento.isKey && askEvento.key == SDLK_ESCAPE) || player->getStatus() == STOPED
-                        || player->getStatus() == FINISHEDSONG;
+                salir = (askEvento.isKey && askEvento.key == SDLK_ESCAPE) || 
+                        player->getStatus() == STOPED || player->getStatus() == FINISHEDSONG;
+                
+                //Si estamos esperando para cargar el buffer y pulsamos escape, 
+                //cancelamos el thread de descarga y salimos
+                if (askEvento.isKey && askEvento.key == SDLK_ESCAPE && player->getStatus() == PAUSEDTOLOADBUFFER){
+                    player->stop();
+                    player->setSongDownloaded(true);
+                    while(threadPlayer->isRunning()){};
+                    salir = true;
+                }
 
                 Traza::print("Estado Cancion 4", player->getStatus(), W_PARANOIC);
 
@@ -2302,26 +2315,18 @@ bool Iofrontend::bucleReproductor(){
                 }
 
                 Traza::print("Estado Cancion 6", player->getStatus(), W_PARANOIC);
-//                if(player->getNeed_refresh()){
-                    refreshSpectrum(player);
-//                }
+                refreshSpectrum(player);
 
                 Traza::print("Estado Cancion 7", player->getStatus(), W_PARANOIC);
                 //Recargamos la cancion si se ha terminado la descarga de la misma
                 //y no se habia obtenido informacion del tiempo total de la cancion
                 if (threadDownloader != NULL){
-//                    if (lenSongSec == 0 && !threadDownloader->isRunning()){
-//                        reloadSong(posAlbumSelected, posSongSelected);
-//                    }
-//                    //Comprobamos si se ha terminado la descarga en cualquier caso
+                    //Comprobamos si se ha terminado la descarga en cualquier caso
                     if (!threadDownloader->isRunning()){
                         reloadSong(posAlbumSelected, posSongSelected);
                         player->setSongDownloaded(true);
                         threadDownloader = NULL;
                     }
-//                    if (!threadDownloader->isRunning()){
-//                        reloadSong(posAlbumSelected, posSongSelected);
-//                    }
                 }
 
                 Traza::print("Estado Cancion 8", player->getStatus(), W_PARANOIC);
@@ -2336,11 +2341,12 @@ bool Iofrontend::bucleReproductor(){
             objProg->setProgressMax(0);
             objProg->setProgressPos(0);
             player->setSongDownloaded(true);
+            player->stop();
             Traza::print("Fin del bucle de reproductor", W_DEBUG);
     } catch (Excepcion &e){
         Traza::print("Excepcion en bucle de reproductor: " + string(e.getMessage()), W_ERROR);
     }
-    return true;
+    return salir;
 }
 
 /**
