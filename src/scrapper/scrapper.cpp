@@ -59,6 +59,7 @@ uint32_t Scrapper::getLyricsSong(){
                 
             } else {
                 textElems->setFieldText("LetraCancion", "");
+				((TextElement *)textElems->getTextVector()->at(0))->setIco(-1);
             }
             textElems->setOffsetDesplazamiento(0);
             textElems->setImgDrawed(false);
