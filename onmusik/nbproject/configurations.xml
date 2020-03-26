@@ -76,7 +76,7 @@
   <confs>
     <conf name="Linux_Debug" type="1">
       <toolsSet>
-        <compilerSet>default</compilerSet>
+        <compilerSet>MinGW2_64|MinGW</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
@@ -219,7 +219,7 @@
     </conf>
     <conf name="Debug2" type="1">
       <toolsSet>
-        <compilerSet>MinGW2_64|MinGW</compilerSet>
+        <compilerSet>MinGW64|MinGW</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
@@ -227,20 +227,10 @@
         <cTool>
           <standard>10</standard>
           <incDir>
-            <pElem>../../../ExternalLibs/crosslib/src/ziputils/zlib</pElem>
             <pElem>../../../ExternalLibs/crosslib/src/uiobjects</pElem>
-            <pElem>../../../ExternalLibs/crosslib/src/uiobjects/common</pElem>
-            <pElem>../../../ExternalLibs/crosslib/src/sqllite</pElem>
-            <pElem>../../../ExternalLibs/crosslib/src/libjpeg</pElem>
-            <pElem>../../../ExternalLibs/crosslib/src/ziputils/unzip</pElem>
-            <pElem>../../../ExternalLibs/crosslib/src/tidy/include</pElem>
-            <pElem>../../../ExternalLibs/crosslib/src/tidy/src</pElem>
-            <pElem>../../../ExternalLibs/crosslib/src/gumbo-parser-master/src</pElem>
             <pElem>../../../ExternalLibs/crosslib/src/httpcurl</pElem>
-            <pElem>../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include</pElem>
             <pElem>../../../ExternalLibs/crosslib/src/rijndael</pElem>
-            <pElem>../../MP3Play/src</pElem>
-            <pElem>../../BmpRLE</pElem>
+            <pElem>../../../ExternalLibs/crosslib/src/audioplayer</pElem>
             <pElem>../src</pElem>
           </incDir>
           <preprocessorList>
@@ -251,20 +241,10 @@
         <ccTool>
           <standard>8</standard>
           <incDir>
-            <pElem>../../../ExternalLibs/crosslib/src/ziputils/zlib</pElem>
             <pElem>../../../ExternalLibs/crosslib/src/uiobjects</pElem>
-            <pElem>../../../ExternalLibs/crosslib/src/uiobjects/common</pElem>
-            <pElem>../../../ExternalLibs/crosslib/src/sqllite</pElem>
-            <pElem>../../../ExternalLibs/crosslib/src/libjpeg</pElem>
-            <pElem>../../../ExternalLibs/crosslib/src/ziputils/unzip</pElem>
-            <pElem>../../../ExternalLibs/crosslib/src/tidy/include</pElem>
-            <pElem>../../../ExternalLibs/crosslib/src/tidy/src</pElem>
-            <pElem>../../../ExternalLibs/crosslib/src/gumbo-parser-master/src</pElem>
             <pElem>../../../ExternalLibs/crosslib/src/httpcurl</pElem>
-            <pElem>../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include</pElem>
             <pElem>../../../ExternalLibs/crosslib/src/rijndael</pElem>
-            <pElem>../../MP3Play/src</pElem>
-            <pElem>../../BmpRLE</pElem>
+            <pElem>../../../ExternalLibs/crosslib/src/audioplayer</pElem>
             <pElem>../src</pElem>
           </incDir>
           <commandLine>-fpermissive</commandLine>
@@ -275,14 +255,15 @@
         </ccTool>
         <linkerTool>
           <linkerAddLib>
-            <pElem>../../../ExternalLibs/crosslib/crosslib/dist/Debug2/MinGW2_64-Windows</pElem>
+            <pElem>../../../ExternalLibs/crosslib/crosslib/dist/Debug2/MinGW64-Windows</pElem>
           </linkerAddLib>
           <linkerCopySharedLibs>true</linkerCopySharedLibs>
           <linkerLibItems>
             <linkerLibLibItem>crosslib</linkerLibLibItem>
-            <linkerOptionItem>-lsdl_gfx -lmingw32 -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image -lcurl -lws2_32 </linkerOptionItem>
+            <linkerOptionItem>-lmingw32 -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image</linkerOptionItem>
             <linkerOptionItem>-lavutil -lavformat -lavcodec -lswscale -lswresample</linkerOptionItem>
-            <linkerOptionItem>-ljsoncpp</linkerOptionItem>
+            <linkerOptionItem>-ljsoncpp -lsdl_gfx -lcurl -lws2_32 -lgumbo -ltinyxml -ltidy</linkerOptionItem>
+            <linkerOptionItem>-lz -lminizip</linkerOptionItem>
           </linkerLibItems>
           <commandLine>resource.res</commandLine>
         </linkerTool>

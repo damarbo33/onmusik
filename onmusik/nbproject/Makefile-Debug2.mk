@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=MinGW2_64-Windows
+CND_PLATFORM=MinGW64-Windows
 CND_DLIB_EXT=dll
 CND_CONF=Debug2
 CND_DISTDIR=dist
@@ -64,7 +64,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../../../ExternalLibs/crosslib/crosslib/dist/Debug2/MinGW2_64-Windows -lcrosslib -lsdl_gfx -lmingw32 -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image -lcurl -lws2_32 -lavutil -lavformat -lavcodec -lswscale -lswresample -ljsoncpp
+LDLIBSOPTIONS=-L../../../ExternalLibs/crosslib/crosslib/dist/Debug2/MinGW64-Windows -lcrosslib -lmingw32 -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image -lavutil -lavformat -lavcodec -lswscale -lswresample -ljsoncpp -lsdl_gfx -lcurl -lws2_32 -lgumbo -ltinyxml -ltidy -lz -lminizip
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -77,37 +77,37 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/onmusik.exe: ${OBJECTFILES}
 ${OBJECTDIR}/_ext/5f719cc8/Icogestor.o: ../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/5f719cc8
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/ziputils/zlib -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/uiobjects/common -I../../../ExternalLibs/crosslib/src/sqllite -I../../../ExternalLibs/crosslib/src/libjpeg -I../../../ExternalLibs/crosslib/src/ziputils/unzip -I../../../ExternalLibs/crosslib/src/tidy/include -I../../../ExternalLibs/crosslib/src/tidy/src -I../../../ExternalLibs/crosslib/src/gumbo-parser-master/src -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include -I../../../ExternalLibs/crosslib/src/rijndael -I../../MP3Play/src -I../../BmpRLE -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/5f719cc8/Icogestor.o ../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp
+	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/5f719cc8/Icogestor.o ../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp
 
 ${OBJECTDIR}/_ext/5f719cc8/Ioutil.o: ../../../ExternalLibs/crosslib/src/uiobjects/common/Ioutil.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/5f719cc8
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/ziputils/zlib -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/uiobjects/common -I../../../ExternalLibs/crosslib/src/sqllite -I../../../ExternalLibs/crosslib/src/libjpeg -I../../../ExternalLibs/crosslib/src/ziputils/unzip -I../../../ExternalLibs/crosslib/src/tidy/include -I../../../ExternalLibs/crosslib/src/tidy/src -I../../../ExternalLibs/crosslib/src/gumbo-parser-master/src -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include -I../../../ExternalLibs/crosslib/src/rijndael -I../../MP3Play/src -I../../BmpRLE -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/5f719cc8/Ioutil.o ../../../ExternalLibs/crosslib/src/uiobjects/common/Ioutil.cpp
+	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/5f719cc8/Ioutil.o ../../../ExternalLibs/crosslib/src/uiobjects/common/Ioutil.cpp
 
 ${OBJECTDIR}/_ext/787d0a1/AudioCD_Helpers.o: ../../MP3Play/src/audiocd/AudioCD_Helpers.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/787d0a1
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/ziputils/zlib -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/uiobjects/common -I../../../ExternalLibs/crosslib/src/sqllite -I../../../ExternalLibs/crosslib/src/libjpeg -I../../../ExternalLibs/crosslib/src/ziputils/unzip -I../../../ExternalLibs/crosslib/src/tidy/include -I../../../ExternalLibs/crosslib/src/tidy/src -I../../../ExternalLibs/crosslib/src/gumbo-parser-master/src -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include -I../../../ExternalLibs/crosslib/src/rijndael -I../../MP3Play/src -I../../BmpRLE -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/787d0a1/AudioCD_Helpers.o ../../MP3Play/src/audiocd/AudioCD_Helpers.cpp
+	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/787d0a1/AudioCD_Helpers.o ../../MP3Play/src/audiocd/AudioCD_Helpers.cpp
 
 ${OBJECTDIR}/_ext/787d0a1/CAudioCD.o: ../../MP3Play/src/audiocd/CAudioCD.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/787d0a1
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/ziputils/zlib -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/uiobjects/common -I../../../ExternalLibs/crosslib/src/sqllite -I../../../ExternalLibs/crosslib/src/libjpeg -I../../../ExternalLibs/crosslib/src/ziputils/unzip -I../../../ExternalLibs/crosslib/src/tidy/include -I../../../ExternalLibs/crosslib/src/tidy/src -I../../../ExternalLibs/crosslib/src/gumbo-parser-master/src -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include -I../../../ExternalLibs/crosslib/src/rijndael -I../../MP3Play/src -I../../BmpRLE -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/787d0a1/CAudioCD.o ../../MP3Play/src/audiocd/CAudioCD.cpp
+	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/787d0a1/CAudioCD.o ../../MP3Play/src/audiocd/CAudioCD.cpp
 
 ${OBJECTDIR}/_ext/7e2b91f9/audioplayer.o: ../../MP3Play/src/audioplayer.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/7e2b91f9
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/ziputils/zlib -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/uiobjects/common -I../../../ExternalLibs/crosslib/src/sqllite -I../../../ExternalLibs/crosslib/src/libjpeg -I../../../ExternalLibs/crosslib/src/ziputils/unzip -I../../../ExternalLibs/crosslib/src/tidy/include -I../../../ExternalLibs/crosslib/src/tidy/src -I../../../ExternalLibs/crosslib/src/gumbo-parser-master/src -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include -I../../../ExternalLibs/crosslib/src/rijndael -I../../MP3Play/src -I../../BmpRLE -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/7e2b91f9/audioplayer.o ../../MP3Play/src/audioplayer.cpp
+	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/7e2b91f9/audioplayer.o ../../MP3Play/src/audioplayer.cpp
 
 ${OBJECTDIR}/_ext/7e2b91f9/biquad.o: ../../MP3Play/src/biquad.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/7e2b91f9
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/ziputils/zlib -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/uiobjects/common -I../../../ExternalLibs/crosslib/src/sqllite -I../../../ExternalLibs/crosslib/src/libjpeg -I../../../ExternalLibs/crosslib/src/ziputils/unzip -I../../../ExternalLibs/crosslib/src/tidy/include -I../../../ExternalLibs/crosslib/src/tidy/src -I../../../ExternalLibs/crosslib/src/gumbo-parser-master/src -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include -I../../../ExternalLibs/crosslib/src/rijndael -I../../MP3Play/src -I../../BmpRLE -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/7e2b91f9/biquad.o ../../MP3Play/src/biquad.cpp
+	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/7e2b91f9/biquad.o ../../MP3Play/src/biquad.cpp
 
 ${OBJECTDIR}/_ext/79c6d69e/Fft.o: ../../MP3Play/src/fft/Fft.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/79c6d69e
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/ziputils/zlib -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/uiobjects/common -I../../../ExternalLibs/crosslib/src/sqllite -I../../../ExternalLibs/crosslib/src/libjpeg -I../../../ExternalLibs/crosslib/src/ziputils/unzip -I../../../ExternalLibs/crosslib/src/tidy/include -I../../../ExternalLibs/crosslib/src/tidy/src -I../../../ExternalLibs/crosslib/src/gumbo-parser-master/src -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include -I../../../ExternalLibs/crosslib/src/rijndael -I../../MP3Play/src -I../../BmpRLE -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/79c6d69e/Fft.o ../../MP3Play/src/fft/Fft.cpp
+	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/79c6d69e/Fft.o ../../MP3Play/src/fft/Fft.cpp
 
 : ../resource.rc
 	@echo Performing Custom Build Step
@@ -116,32 +116,32 @@ ${OBJECTDIR}/_ext/79c6d69e/Fft.o: ../../MP3Play/src/fft/Fft.cpp
 ${OBJECTDIR}/_ext/511e4115/Iofrontend.o: ../src/Iofrontend.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/511e4115
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/ziputils/zlib -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/uiobjects/common -I../../../ExternalLibs/crosslib/src/sqllite -I../../../ExternalLibs/crosslib/src/libjpeg -I../../../ExternalLibs/crosslib/src/ziputils/unzip -I../../../ExternalLibs/crosslib/src/tidy/include -I../../../ExternalLibs/crosslib/src/tidy/src -I../../../ExternalLibs/crosslib/src/gumbo-parser-master/src -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include -I../../../ExternalLibs/crosslib/src/rijndael -I../../MP3Play/src -I../../BmpRLE -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511e4115/Iofrontend.o ../src/Iofrontend.cpp
+	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511e4115/Iofrontend.o ../src/Iofrontend.cpp
 
 ${OBJECTDIR}/_ext/511e4115/Transcode.o: ../src/Transcode.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/511e4115
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/ziputils/zlib -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/uiobjects/common -I../../../ExternalLibs/crosslib/src/sqllite -I../../../ExternalLibs/crosslib/src/libjpeg -I../../../ExternalLibs/crosslib/src/ziputils/unzip -I../../../ExternalLibs/crosslib/src/tidy/include -I../../../ExternalLibs/crosslib/src/tidy/src -I../../../ExternalLibs/crosslib/src/gumbo-parser-master/src -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include -I../../../ExternalLibs/crosslib/src/rijndael -I../../MP3Play/src -I../../BmpRLE -I../src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511e4115/Transcode.o ../src/Transcode.cpp
+	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511e4115/Transcode.o ../src/Transcode.cpp
 
 ${OBJECTDIR}/_ext/511e4115/jukebox.o: ../src/jukebox.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/511e4115
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/ziputils/zlib -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/uiobjects/common -I../../../ExternalLibs/crosslib/src/sqllite -I../../../ExternalLibs/crosslib/src/libjpeg -I../../../ExternalLibs/crosslib/src/ziputils/unzip -I../../../ExternalLibs/crosslib/src/tidy/include -I../../../ExternalLibs/crosslib/src/tidy/src -I../../../ExternalLibs/crosslib/src/gumbo-parser-master/src -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include -I../../../ExternalLibs/crosslib/src/rijndael -I../../MP3Play/src -I../../BmpRLE -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511e4115/jukebox.o ../src/jukebox.cpp
+	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511e4115/jukebox.o ../src/jukebox.cpp
 
 ${OBJECTDIR}/_ext/511e4115/main.o: ../src/main.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/511e4115
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/ziputils/zlib -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/uiobjects/common -I../../../ExternalLibs/crosslib/src/sqllite -I../../../ExternalLibs/crosslib/src/libjpeg -I../../../ExternalLibs/crosslib/src/ziputils/unzip -I../../../ExternalLibs/crosslib/src/tidy/include -I../../../ExternalLibs/crosslib/src/tidy/src -I../../../ExternalLibs/crosslib/src/gumbo-parser-master/src -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include -I../../../ExternalLibs/crosslib/src/rijndael -I../../MP3Play/src -I../../BmpRLE -I../src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511e4115/main.o ../src/main.cpp
+	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511e4115/main.o ../src/main.cpp
 
 ${OBJECTDIR}/_ext/e0359366/scrapper.o: ../src/scrapper/scrapper.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/e0359366
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/ziputils/zlib -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/uiobjects/common -I../../../ExternalLibs/crosslib/src/sqllite -I../../../ExternalLibs/crosslib/src/libjpeg -I../../../ExternalLibs/crosslib/src/ziputils/unzip -I../../../ExternalLibs/crosslib/src/tidy/include -I../../../ExternalLibs/crosslib/src/tidy/src -I../../../ExternalLibs/crosslib/src/gumbo-parser-master/src -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include -I../../../ExternalLibs/crosslib/src/rijndael -I../../MP3Play/src -I../../BmpRLE -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/e0359366/scrapper.o ../src/scrapper/scrapper.cpp
+	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/e0359366/scrapper.o ../src/scrapper/scrapper.cpp
 
 ${OBJECTDIR}/_ext/e14879cf/updater.o: ../src/updater/updater.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/e14879cf
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/ziputils/zlib -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/uiobjects/common -I../../../ExternalLibs/crosslib/src/sqllite -I../../../ExternalLibs/crosslib/src/libjpeg -I../../../ExternalLibs/crosslib/src/ziputils/unzip -I../../../ExternalLibs/crosslib/src/tidy/include -I../../../ExternalLibs/crosslib/src/tidy/src -I../../../ExternalLibs/crosslib/src/gumbo-parser-master/src -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include -I../../../ExternalLibs/crosslib/src/rijndael -I../../MP3Play/src -I../../BmpRLE -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/e14879cf/updater.o ../src/updater/updater.cpp
+	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/e14879cf/updater.o ../src/updater/updater.cpp
 
 # Subprojects
 .build-subprojects:
