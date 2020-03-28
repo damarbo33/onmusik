@@ -23,6 +23,7 @@ bool procesarTeclado(tEvento *evento, Iofrontend *ioFront){
 */
 void Terminate(void)
 {
+    Traza::print("Terminate main app", W_DEBUG);
 #ifdef UNIX
 //    chdir("/home/pi");
 //    execl("/bin/sh", "/bin/sh", NULL);

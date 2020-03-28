@@ -19,11 +19,19 @@
                     <type>1</type>
                 </confElem>
                 <confElem>
-                    <name>Debug2</name>
+                    <name>Debug64</name>
                     <type>1</type>
                 </confElem>
                 <confElem>
-                    <name>Release</name>
+                    <name>Debug32</name>
+                    <type>1</type>
+                </confElem>
+                <confElem>
+                    <name>Release32</name>
+                    <type>1</type>
+                </confElem>
+                <confElem>
+                    <name>Release64</name>
                     <type>1</type>
                 </confElem>
             </confList>

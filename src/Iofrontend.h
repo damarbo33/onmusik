@@ -32,10 +32,13 @@
 #include "beans/listgroupcol.h"
 #include "uilistcommon.h"
 #include "UITreeListBox.h"
+#include <chrono>
+#include <thread>
 
 
 const unsigned int MAXSONG_REPEAT_AVOID = 20;
 const unsigned int ALPHABACKGROUND = 235;
+const int MAX_STOP_TIMEOUT = 8000;
 
 
 
@@ -201,6 +204,8 @@ class Iofrontend : public Ioutil{
         int accionesLetrasBox(tEvento *evento);
         int accionesAlbumSelec(tEvento *evento);
         int selectTreeAlbum(tEvento *evento);
+        bool waitFinishThread(Thread<AudioPlayer> *thread, int timeout);
+        bool waitFinishThread(Thread<Jukebox> *thread, int timeout);
         
 
     public :

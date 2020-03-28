@@ -1043,7 +1043,7 @@ void Iofrontend::comprobarUnicode(int menu){
 
 /**
 * Establece el nombre del fichero o directorio seleccionado por el explorador de
-* ficheros, en el contenido un campo especificado por parÃ¡metro
+* ficheros, en el contenido un campo especificado por parÃƒÂ¡metro
 */
 void Iofrontend::setTextFromExplorador(tEvento *evento, UIInput *objCampoEdit){
     try{
@@ -2052,10 +2052,7 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
             if (threadPlayer->isRunning()){
                 Traza::print("Iofrontend::startSongPlaylist. Terminando Thread de reproduccion...", W_DEBUG);;
                 player->stop();
-                while(threadPlayer->isRunning()){
-                    SDL_Delay(20);
-                }
-//                threadPlayer->join();
+                waitFinishThread(threadPlayer, MAX_STOP_TIMEOUT);
                 Traza::print("Iofrontend::startSongPlaylist. Reproduccion terminada.", W_DEBUG);
             }
             delete threadPlayer;
@@ -2067,10 +2064,7 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
         if (threadDownloader != NULL){
             if (threadDownloader->isRunning()){
                 juke->abortDownload();
-                while(threadDownloader->isRunning()){
-                    SDL_Delay(20);
-                }
-//                threadDownloader->join();
+                waitFinishThread(threadDownloader, MAX_STOP_TIMEOUT);
             }
             delete threadDownloader;
             threadDownloader = NULL;
@@ -2281,9 +2275,12 @@ bool Iofrontend::bucleReproductor(){
             //cancelamos el thread de descarga y salimos
             if (player->getStatus() == PAUSEDTOLOADBUFFER){
                 if ((askEvento.isKey && askEvento.key == SDLK_ESCAPE) || askEvento.quit){
+                    Traza::print("Estado Cancion 5 stop", player->getStatus(), W_DEBUG);
                     player->stop();
                     player->setSongDownloaded(true);
-                    while(threadPlayer->isRunning()){};
+                    Traza::print("Esperando a que termine el thread", player->getStatus(), W_DEBUG);
+                    waitFinishThread(threadPlayer, MAX_STOP_TIMEOUT);
+                    Traza::print("Thread Terminado", player->getStatus(), W_DEBUG);
                     salir = true;
                     salidaForzada = true;
                 }
@@ -2314,9 +2311,11 @@ bool Iofrontend::bucleReproductor(){
                     timerPanelMedia = SDL_GetTicks();
                 }
             } else if (askEvento.quit){
-                Traza::print("Estado Cancion 5 stop", player->getStatus(), W_PARANOIC);
+                Traza::print("Estado Cancion 5.1 stop", player->getStatus(), W_DEBUG);
                 player->stop();
-                while(threadPlayer->isRunning()){};
+                Traza::print("Esperando a que termine el thread", player->getStatus(), W_DEBUG);
+                waitFinishThread(threadPlayer, MAX_STOP_TIMEOUT);
+                Traza::print("Thread Terminado", player->getStatus(), W_DEBUG);
                 salir = true;
                 exit(0);
             }
@@ -2493,7 +2492,7 @@ int Iofrontend::selectAlbum(tEvento *evento){
 
 
         tEvento evento;
-        while (thread->isRunning()){
+        while (thread->isRunning() && evento.key != SDLK_ESCAPE && !evento.quit){
             evento = WaitForKey();
             procesarControles(obj, &evento, NULL);
             pintarIconoProcesando(false);
@@ -2546,18 +2545,18 @@ int Iofrontend::selectAlbum(tEvento *evento){
 //        }
 //        procesarControles(obj, &evento, NULL);
 //
-//        string mensaje = "Para usar la aplicaciÃ³n debes dar permisos desde tu cuenta de dropbox. ";
-//        mensaje.append("A continuaciÃ³n se abrirÃ¡ un explorador. Debes logarte en Dropbox y pulsar el botÃ³n de \"PERMITIR\".");
-//        mensaje.append("Seguidamente deberÃ¡s copiar el cÃ³digo obtenido y pegarlo en la ventana de Onmusik que aparecerÃ¡ a continuaciÃ³n.");
+//        string mensaje = "Para usar la aplicaciÃƒÂ³n debes dar permisos desde tu cuenta de dropbox. ";
+//        mensaje.append("A continuaciÃƒÂ³n se abrirÃƒÂ¡ un explorador. Debes logarte en Dropbox y pulsar el botÃƒÂ³n de \"PERMITIR\".");
+//        mensaje.append("Seguidamente deberÃƒÂ¡s copiar el cÃƒÂ³digo obtenido y pegarlo en la ventana de Onmusik que aparecerÃƒÂ¡ a continuaciÃƒÂ³n.");
 //
 //        if (thread->getExitCode() != ERRORCONNECT){
 //            this->accessToken = dropbox->getAccessToken();
 //            //Si despues de autenticarse, no se ha podido obtener el access token, lo obtenemos manualmente
 //            if (this->accessToken.empty()){
-//                bool permiso = casoPANTALLACONFIRMAR("Autorizar aplicaciÃ³n", mensaje);
+//                bool permiso = casoPANTALLACONFIRMAR("Autorizar aplicaciÃƒÂ³n", mensaje);
 //                if (permiso){
 //                    dropbox->launchAuthorize(cliendid);
-//                    string code = casoPANTALLAPREGUNTA("Autorizar aplicaciÃ³n", "Introduce el campo obtenido de la pÃ¡gina de dropbox (CTRL+V)");
+//                    string code = casoPANTALLAPREGUNTA("Autorizar aplicaciÃƒÂ³n", "Introduce el campo obtenido de la pÃƒÂ¡gina de dropbox (CTRL+V)");
 //                    if (!code.empty()){
 //                        clearScr(cGrisOscuro);
 //                        procesarControles(obj, &evento, NULL);
@@ -2567,7 +2566,7 @@ int Iofrontend::selectAlbum(tEvento *evento){
 //                }
 //            }
 //        } else {
-//            showMessage("No se ha podido autenticar en dropbox. Revise su conexiÃ³n o especifique datos de proxy", 4000);
+//            showMessage("No se ha podido autenticar en dropbox. Revise su conexiÃƒÂ³n o especifique datos de proxy", 4000);
 //        }
 //        delete thread;
 //        delete dropbox;
@@ -3490,7 +3489,7 @@ int Iofrontend::selectTreeAlbum(tEvento *evento){
         pintarIconoProcesando(true);
 
         tEvento evento;
-        while (thread->isRunning()){
+        while (thread->isRunning() && evento.key != SDLK_ESCAPE && !evento.quit){
             evento = WaitForKey();
             procesarControles(obj, &evento, NULL);
             pintarIconoProcesando(false);
@@ -3512,3 +3511,34 @@ int Iofrontend::selectTreeAlbum(tEvento *evento){
     return 0;
 }
 
+/**
+ * 
+ * @param thread
+ * @param timeout
+ * @return 
+ */
+bool Iofrontend::waitFinishThread(Thread<AudioPlayer> *thread, int timeout){
+    bool ret = true;
+    unsigned long before = SDL_GetTicks();
+    while (thread->isRunning() && ret){
+        std::this_thread::sleep_for(std::chrono::milliseconds(90));
+        ret = SDL_GetTicks() - before < timeout;
+    }
+    return ret;
+}
+
+/**
+ * 
+ * @param thread
+ * @param timeout
+ * @return 
+ */
+bool Iofrontend::waitFinishThread(Thread<Jukebox> *thread, int timeout){
+    bool ret = true;
+    unsigned long before = SDL_GetTicks();
+    while (thread->isRunning() && ret){
+        std::this_thread::sleep_for(std::chrono::milliseconds(90));
+        ret = SDL_GetTicks() - before < timeout;
+    }
+    return ret;
+}

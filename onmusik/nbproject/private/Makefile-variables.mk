@@ -4,5 +4,7 @@
 # NOCDDL
 #
 # Linux_Debug configuration
-# Debug2 configuration
-# Release configuration
+# Debug64 configuration
+# Debug32 configuration
+# Release32 configuration
+# Release64 configuration
