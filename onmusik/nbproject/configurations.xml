@@ -32,6 +32,8 @@
         <logicalFolder name="updater" displayName="updater" projectFiles="true">
           <itemPath>../src/updater/updater.cpp</itemPath>
         </logicalFolder>
+        <itemPath>../../../ExternalLibs/crosslib/src/uiobjects/common/BaseFrontend.cpp</itemPath>
+        <itemPath>../../../ExternalLibs/crosslib/src/uiobjects/common/BaseFrontend.h</itemPath>
         <itemPath>../src/Iofrontend.cpp</itemPath>
         <itemPath>../src/Transcode.cpp</itemPath>
         <itemPath>../src/jukebox.cpp</itemPath>
@@ -122,6 +124,16 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/BaseFrontend.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/BaseFrontend.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp"
             ex="false"
             tool="1"
@@ -210,6 +222,16 @@
           <commandLine>resource64.res</commandLine>
         </linkerTool>
       </compileType>
+      <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/BaseFrontend.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/BaseFrontend.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp"
             ex="false"
             tool="1"
@@ -303,6 +325,16 @@
           <commandLine>resource32.res</commandLine>
         </linkerTool>
       </compileType>
+      <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/BaseFrontend.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/BaseFrontend.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp"
             ex="false"
             tool="1"
@@ -420,8 +452,48 @@
                             perm="755"
                             owner="root"
                             group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe"
+                            from="${OUTPUT_PATH}.exe"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe"
+                            from="${OUTPUT_PATH}.exe"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe"
+                            from="${OUTPUT_PATH}.exe"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe"
+                            from="${OUTPUT_PATH}.exe"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe"
+                            from="${OUTPUT_PATH}.exe"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
         </packFileList>
       </packaging>
+      <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/BaseFrontend.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/BaseFrontend.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp"
             ex="false"
             tool="1"
@@ -515,6 +587,16 @@
           <commandLine>resource64.res</commandLine>
         </linkerTool>
       </compileType>
+      <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/BaseFrontend.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/BaseFrontend.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp"
             ex="false"
             tool="1"

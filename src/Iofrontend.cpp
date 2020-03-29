@@ -20,32 +20,19 @@ const int MAXDBGAIN = 20;
 */
 Iofrontend::Iofrontend(){
     Traza::print("Constructor de IoFrontend", W_INFO);
-    convColor = new Colorutil();
-    imgGestor = new ImagenGestor();
-
-    Traza::print("Creando objetos de cada menu", W_INFO);
-    for (int i=0; i < MAXMENU; i++){
-        ObjectsMenu[i] = new tmenu_gestor_objects(this->getWidth(), this->getHeight()); //Inicializo el puntero asignado a cada menu. En el constructor de esta clase,                                                    //se crean tantos objetos como se defina en la constante MAXOBJECTS
-    }
-
-    for (int i=0; i < MAXMENU*MAXOBJECTS; i++){
-        pt2Func[i] = NULL;
-    }
-    propertiesPt2Func.size = 0;
-
+    initUIObjs();
+    setSelMenu("PANTALLAREPRODUCTOR");
+    
     juke = new Jukebox();
     player = new AudioPlayer();
     scrapper = new Scrapper();
-    juke->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
     Constant::setExecMethod(launch_create_process);
-    Traza::print("Asignando elementos y acciones", W_INFO);
-    initUIObjs();
+    juke->setObjectsMenu(getMenu("PANTALLAREPRODUCTOR"));
     posAlbumSelected = 0;
     posSongSelected = 0;
     threadPlayer = NULL;
     threadDownloader = NULL;
     threadLyrics = NULL;
-    setSelMenu(PANTALLAREPRODUCTOR);
     tEvento evento;
     drawMenu(evento);
     Traza::print("Fin Constructor de IoFrontend", W_INFO);
@@ -56,14 +43,6 @@ Iofrontend::Iofrontend(){
 */
 Iofrontend::~Iofrontend(){
     Traza::print("Destructor de IoFrontend", W_INFO);
-    delete convColor;
-
-//  A los objetos no los podemos eliminar porque no fueron creados dinamicamente
-    Traza::print("Eliminando objetos de cada Menu", W_INFO);
-    for (int i=0; i < MAXMENU; i++){
-        Traza::print("Eliminando menu: ", i, W_PARANOIC);
-        delete ObjectsMenu[i];
-    }
     delete juke;
     delete player;
     delete scrapper;
@@ -76,26 +55,15 @@ Iofrontend::~Iofrontend(){
 **/
 
 void Iofrontend::initUIObjs(){
-    ObjectsMenu[PANTALLAPREGUNTA]->add("valor", GUIINPUTWIDE, 0, -20 * zoomText, INPUTW, Constant::getINPUTH(), "Dato:", true);
-    ObjectsMenu[PANTALLAPREGUNTA]->add("btnAceptarPregunta", GUIBUTTON, -(BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
-    ObjectsMenu[PANTALLAPREGUNTA]->add("btnCancelarPregunta", GUIBUTTON, (BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
-    ObjectsMenu[PANTALLAPREGUNTA]->add("borde", GUIPANELBORDER,0,0,0,0, "Introduzca el dato", false);
-    ObjectsMenu[PANTALLAPREGUNTA]->getObjByName("valor")->setColor(cBlanco);
-    
-    ObjectsMenu[PANTALLACONFIRMAR]->add("borde", GUIPANELBORDER,0,0,0,0, Constant::txtDisplay("Seleccione una opci%C3%B3n"), false);
-    ObjectsMenu[PANTALLACONFIRMAR]->add("textosBox", GUITEXTELEMENTSAREA, 0, -50 * zoomText, getWidth()-50, 120, "", true)->setVerContenedor(false);
-    ObjectsMenu[PANTALLACONFIRMAR]->add("btnSiConfirma", GUIBUTTON, -(BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
-    ObjectsMenu[PANTALLACONFIRMAR]->add("btnNoConfirma", GUIBUTTON, (BUTTONW/2 + 5), 30,BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
+    tmenu_gestor_objects *obj = createMenu("PANTALLALOGIN");
+    obj->add("borde", GUIPANELBORDER,0,0,0,0, Constant::txtDisplay("Seleccione una opci%C3%B3n"), false);
+    obj->add("textosBox", GUITEXTELEMENTSAREA, 0, -40 * zoomText, getWidth()-50, 70, "", true)->setVerContenedor(false);
+    obj->add("btnGoogle", GUIBUTTON, -(BUTTONSERVERW/2 + 5)*2, 30,BUTTONSERVERW,BUTTONH, "Google", true)->setIcon(google_png);
+    obj->add("btnDropbox", GUIBUTTON, 0, 30,BUTTONSERVERW,BUTTONH, "Dropbox", true)->setIcon(dropbox_png);
+    obj->add("btnOnedrive", GUIBUTTON, (BUTTONSERVERW/2 + 5)*2, 30,BUTTONSERVERW,BUTTONH, "OneDrive", true)->setIcon(onedrive_png);
+    obj->add("btnLoginCancel", GUIBUTTON, 0, 80,BUTTONSERVERW,BUTTONH, "Cancelar", true)->setIcon(cross);
 
-    ObjectsMenu[PANTALLALOGIN]->add("borde", GUIPANELBORDER,0,0,0,0, Constant::txtDisplay("Seleccione una opci%C3%B3n"), false);
-    ObjectsMenu[PANTALLALOGIN]->add("textosBox", GUITEXTELEMENTSAREA, 0, -40 * zoomText, getWidth()-50, 70, "", true)->setVerContenedor(false);
-    ObjectsMenu[PANTALLALOGIN]->add("btnGoogle", GUIBUTTON, -(BUTTONSERVERW/2 + 5)*2, 30,BUTTONSERVERW,BUTTONH, "Google", true)->setIcon(google_png);
-    ObjectsMenu[PANTALLALOGIN]->add("btnDropbox", GUIBUTTON, 0, 30,BUTTONSERVERW,BUTTONH, "Dropbox", true)->setIcon(dropbox_png);
-    ObjectsMenu[PANTALLALOGIN]->add("btnOnedrive", GUIBUTTON, (BUTTONSERVERW/2 + 5)*2, 30,BUTTONSERVERW,BUTTONH, "OneDrive", true)->setIcon(onedrive_png);
-    ObjectsMenu[PANTALLALOGIN]->add("btnLoginCancel", GUIBUTTON, 0, 80,BUTTONSERVERW,BUTTONH, "Cancelar", true)->setIcon(cross);
-
-    UITextElementsArea *infoTextRom = (UITextElementsArea *)ObjectsMenu[PANTALLACONFIRMAR]->getObjByName("textosBox");
-    
+    UITextElementsArea *infoTextRom = (UITextElementsArea *)obj->getObjByName("textosBox");
     TextElement detalleElement;
     detalleElement.setName("labelDetalle");
     detalleElement.setUseMaxLabelMargin(true);
@@ -103,68 +71,54 @@ void Iofrontend::initUIObjs(){
     infoTextRom->setTextColor(cBlanco);
     infoTextRom->setColor(cNegro);
 
-    infoTextRom = (UITextElementsArea *)ObjectsMenu[PANTALLALOGIN]->getObjByName("textosBox");
-    infoTextRom->addField(&detalleElement);
-    infoTextRom->setTextColor(cBlanco);
-    infoTextRom->setColor(cNegro);
+    obj = createMenu("PANTALLABIENVENIDA");
+    obj->add("borde", GUIPANEL, 2 + FAMFAMICONW, 2 + FAMFAMICONH,getWidth(),getHeight(), "Bienvenido!", false)->setEnabled(false);;
+    obj->add("textosBox", GUITEXTELEMENTSAREA, 80,50,getWidth() - 80,150, "", false)->setVerContenedor(false);
+    obj->add("btnSiConfirma", GUIBUTTON, 80, 200, BUTTONW,BUTTONH, "Entendido!", false)->setIcon(tick);
+    obj->add("ImgFlecha", GUIBUTTON, 2 + FAMFAMICONW, 0, 50,50, "Ajustar volumen", false)->setIcon(FlechaEsquinaSupIzq)->setVerContenedor(false);
 
-
-    //2, 2, FAMFAMICONW, FAMFAMICONH
-    ObjectsMenu[PANTALLABIENVENIDA]->add("borde", GUIPANEL, 2 + FAMFAMICONW, 2 + FAMFAMICONH,getWidth(),getHeight(), "Bienvenido!", false)->setEnabled(false);;
-    ObjectsMenu[PANTALLABIENVENIDA]->add("textosBox", GUITEXTELEMENTSAREA, 80,50,getWidth() - 80,150, "", false)->setVerContenedor(false);
-    ObjectsMenu[PANTALLABIENVENIDA]->add("btnSiConfirma", GUIBUTTON, 80, 200, BUTTONW,BUTTONH, "Entendido!", false)->setIcon(tick);
-    ObjectsMenu[PANTALLABIENVENIDA]->add("ImgFlecha", GUIBUTTON, 2 + FAMFAMICONW, 0, 50,50, "Ajustar volumen", false)->setIcon(FlechaEsquinaSupIzq)->setVerContenedor(false);
-
-    UITextElementsArea *textLabel = (UITextElementsArea *)ObjectsMenu[PANTALLABIENVENIDA]->getObjByName("textosBox");
+    UITextElementsArea *textLabel = (UITextElementsArea *)obj->getObjByName("textosBox");
     textLabel->addField(&detalleElement);
     textLabel->setTextColor(cBlanco);
 
-    UIPanel *panel = (UIPanel *)ObjectsMenu[PANTALLABIENVENIDA]->getObjByName("borde");
+    UIPanel *panel = (UIPanel *)obj->getObjByName("borde");
     panel->setColor(cNegro);
     panel->setAlpha(ALPHABACKGROUND);
 
-
-    ObjectsMenu[PANTALLABROWSER2]->add("ImgFondo", GUIPICTURE, 0, Constant::getINPUTH(), 0, 0, "ImgFondo", true)->setEnabled(false);
-    ObjectsMenu[PANTALLABROWSER2]->getObjByName("ImgFondo")->setAlpha(150);
-    ObjectsMenu[PANTALLABROWSER2]->add(OBJLISTABROWSER2, GUILISTBOX, 0, 0, 0, 0, "LISTADODIR", false)->setVerContenedor(false)->setShadow(false);
-    ObjectsMenu[PANTALLABROWSER2]->add(BTNACEPTARBROWSER, GUIBUTTON, -(BUTTONW/2 + 5), 0, BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
-    ObjectsMenu[PANTALLABROWSER2]->add(BTNCANCELARBROWSER, GUIBUTTON, (BUTTONW/2 + 5), 0, BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
-    ObjectsMenu[PANTALLABROWSER2]->add(ARTDIRBROWSER, GUIARTSURFACE, 0, 0, INPUTW, Constant::getINPUTH(), Constant::txtDisplay("Direcci%C3%B3n Browser"), false)->setEnabled(false);
-    ObjectsMenu[PANTALLABROWSER2]->add("comboBrowser", GUICOMBOBOX, 0, 0, 0, 0, "", false);
-
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("panelMedia", GUIPANEL, 0,0,0,0, "", true)->setEnabled(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("statusMessage",  GUILABEL,  0,0,0,0, "", false)->setEnabled(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("albumList", GUITREELISTBOX, 0,0,0,0, "", true)->setEnabled(true);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("playLists", GUILISTGROUPBOX, 0,0,0,0, "", true)->setEnabled(true);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("LetrasBox", GUITEXTELEMENTSAREA, 0,0,0,0, "Letras", true)->setVerContenedor(true);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("spectrum", GUISPECTRUM, 0,0,0,0, "", true)->setEnabled(true);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("labelVol",  GUILABEL,  0,0,0,0, "100%", false)->setEnabled(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnAddContent",  GUIBUTTON, 0,0,0,0, "Subir nuevo disco", true)->setIcon(add)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnOpenLocal",  GUIBUTTON, 0,0,0,0, "Abrir fichero local", true)->setIcon(folder)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnAddServer",  GUIBUTTON, 0,0,0,0, "Conectar a Google, Dropbox...", true)->setIcon(server_add)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnAddCD",  GUIBUTTON, 0,0,0,0, "Convertir y subir CD", true)->setIcon(cd_add)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("mediaTimerTotal",  GUILABEL,  0,0,0,0, "0:00:00", false)->setEnabled(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("mediaTimer",  GUILABEL,  0,0,0,0, "0:00:00", false)->setEnabled(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("progressBarMedia", GUIPROGRESSBAR, 0,0,0,0, "", true)->setShadow(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("progressBarVolumen", GUIPROGRESSBAR, 0,0,0,0, "", true)->setShadow(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("ImgVol", GUIBUTTON, 0,0,0,0, "Ajustar volumen", true)->setIcon(sound)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnBackward", GUIBUTTON, 0,0,0,0, Constant::txtDisplay("Saltar a canci%C3%B3n anterior"), true)->setIcon(control_rewind)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnPlay",     GUIBUTTON, 0,0,0,0, "Reproducir", true)->setIcon(control_play)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnStop",     GUIBUTTON, 0,0,0,0, "Parar", true)->setIcon(control_stop)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnForward",  GUIBUTTON, 0,0,0,0, Constant::txtDisplay("Saltar a canci%C3%B3n siguiente"), true)->setIcon(control_fastforward)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnRepeat", GUIBUTTON, 0,0,0,0, "Repetir disco", true)->setIcon(btn_repeat_off)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnRandom", GUIBUTTON, 0,0,0,0, "Aleatorio", true)->setIcon(btn_random_off)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnEqualizer", GUIBUTTON, 0,0,0,0, "Mostrar Ecualizador", true)->setIcon(control_equalizer)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnSwitchEq", GUIBUTTON, 0,0,0,0, "Ecualizador On/Off", true)->setIcon(btn_on)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnResetEq", GUIBUTTON, 0,0,0,0, "Resetear Ecualizador", true)->setIcon(btn_reset_eq)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->add("btnLetras",  GUIBUTTON, 0,0,0,0, Constant::txtDisplay("Letra de la canci%C3%B3n"), true)->setIcon(fontIco)->setVerContenedor(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setVisible(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnResetEq")->setVisible(false);
+    obj = createMenu("PANTALLAREPRODUCTOR");
+    obj->add("panelMedia", GUIPANEL, 0,0,0,0, "", true)->setEnabled(false);
+    obj->add("statusMessage",  GUILABEL,  0,0,0,0, "", false)->setEnabled(false);
+    obj->add("albumList", GUITREELISTBOX, 0,0,0,0, "", true)->setEnabled(true);
+    obj->add("playLists", GUILISTGROUPBOX, 0,0,0,0, "", true)->setEnabled(true);
+    obj->add("LetrasBox", GUITEXTELEMENTSAREA, 0,0,0,0, "Letras", true)->setVerContenedor(true);
+    obj->add("spectrum", GUISPECTRUM, 0,0,0,0, "", true)->setEnabled(true);
+    obj->add("labelVol",  GUILABEL,  0,0,0,0, "100%", false)->setEnabled(false);
+    obj->add("btnAddContent",  GUIBUTTON, 0,0,0,0, "Subir nuevo disco", true)->setIcon(add)->setVerContenedor(false);
+    obj->add("btnOpenLocal",  GUIBUTTON, 0,0,0,0, "Abrir fichero local", true)->setIcon(folder)->setVerContenedor(false);
+    obj->add("btnAddServer",  GUIBUTTON, 0,0,0,0, "Conectar a Google, Dropbox...", true)->setIcon(server_add)->setVerContenedor(false);
+    obj->add("btnAddCD",  GUIBUTTON, 0,0,0,0, "Convertir y subir CD", true)->setIcon(cd_add)->setVerContenedor(false);
+    obj->add("mediaTimerTotal",  GUILABEL,  0,0,0,0, "0:00:00", false)->setEnabled(false);
+    obj->add("mediaTimer",  GUILABEL,  0,0,0,0, "0:00:00", false)->setEnabled(false);
+    obj->add("progressBarMedia", GUIPROGRESSBAR, 0,0,0,0, "", true)->setShadow(false);
+    obj->add("progressBarVolumen", GUIPROGRESSBAR, 0,0,0,0, "", true)->setShadow(false);
+    obj->add("ImgVol", GUIBUTTON, 0,0,0,0, "Ajustar volumen", true)->setIcon(sound)->setVerContenedor(false);
+    obj->add("btnBackward", GUIBUTTON, 0,0,0,0, Constant::txtDisplay("Saltar a canci%C3%B3n anterior"), true)->setIcon(control_rewind)->setVerContenedor(false);
+    obj->add("btnPlay",     GUIBUTTON, 0,0,0,0, "Reproducir", true)->setIcon(control_play)->setVerContenedor(false);
+    obj->add("btnStop",     GUIBUTTON, 0,0,0,0, "Parar", true)->setIcon(control_stop)->setVerContenedor(false);
+    obj->add("btnForward",  GUIBUTTON, 0,0,0,0, Constant::txtDisplay("Saltar a canci%C3%B3n siguiente"), true)->setIcon(control_fastforward)->setVerContenedor(false);
+    obj->add("btnRepeat", GUIBUTTON, 0,0,0,0, "Repetir disco", true)->setIcon(btn_repeat_off)->setVerContenedor(false);
+    obj->add("btnRandom", GUIBUTTON, 0,0,0,0, "Aleatorio", true)->setIcon(btn_random_off)->setVerContenedor(false);
+    obj->add("btnEqualizer", GUIBUTTON, 0,0,0,0, "Mostrar Ecualizador", true)->setIcon(control_equalizer)->setVerContenedor(false);
+    obj->add("btnSwitchEq", GUIBUTTON, 0,0,0,0, "Ecualizador On/Off", true)->setIcon(btn_on)->setVerContenedor(false);
+    obj->add("btnResetEq", GUIBUTTON, 0,0,0,0, "Resetear Ecualizador", true)->setIcon(btn_reset_eq)->setVerContenedor(false);
+    obj->add("btnLetras",  GUIBUTTON, 0,0,0,0, Constant::txtDisplay("Letra de la canci%C3%B3n"), true)->setIcon(fontIco)->setVerContenedor(false);
+    obj->getObjByName("btnSwitchEq")->setVisible(false);
+    obj->getObjByName("btnResetEq")->setVisible(false);
 
     for(int i=NBIQUADFILTERS - 1; i >= 0; i--){
         //Se anyade el slider
-        ObjectsMenu[PANTALLAREPRODUCTOR]->add("filtroAudio" + Constant::TipoToStr(i), GUISLIDER, 0,0,0,0, frecsEQStr[i], true)->setShadow(false);
-        UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio" + Constant::TipoToStr(i));
+        obj->add("filtroAudio" + Constant::TipoToStr(i), GUISLIDER, 0,0,0,0, frecsEQStr[i], true)->setShadow(false);
+        UISlider *objfilterGraves = (UISlider *)obj->getObjByName("filtroAudio" + Constant::TipoToStr(i));
         objfilterGraves->setVisible(false);
         objfilterGraves->setProgressMax(MAXDBGAIN);
         objfilterGraves->setProgressPos(MAXDBGAIN/2);
@@ -172,14 +126,14 @@ void Iofrontend::initUIObjs(){
         objfilterGraves->setTextColor(cBlanco);
     }
 
-    //ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("panelMedia")->setAlpha(150);
-    ((UIPanel *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("panelMedia"))->setColor(cGrisOscuro);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("statusMessage")->setTextColor(cBlanco);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimerTotal")->setTextColor(cBlanco);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimer")->setTextColor(cBlanco);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("labelVol")->setTextColor(cBlanco);
+    //obj->getObjByName("panelMedia")->setAlpha(150);
+    ((UIPanel *)obj->getObjByName("panelMedia"))->setColor(cGrisOscuro);
+    obj->getObjByName("statusMessage")->setTextColor(cBlanco);
+    obj->getObjByName("mediaTimerTotal")->setTextColor(cBlanco);
+    obj->getObjByName("mediaTimer")->setTextColor(cBlanco);
+    obj->getObjByName("labelVol")->setTextColor(cBlanco);
 
-    UITextElementsArea *LetrasArea = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
+    UITextElementsArea *LetrasArea = (UITextElementsArea *)obj->getObjByName("LetrasBox");
     TextElement titleElement;
     t_posicion posLetras(10,10,0,0);
     titleElement.setPos(posLetras);
@@ -203,39 +157,39 @@ void Iofrontend::initUIObjs(){
     LetrasArea->setColor(cNegroClaro);
     LetrasArea->setIntervalDespl(Constant::getMENUSPACE()*2);
     
-    //ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("NewWindowIco")->setIcon(new_window) ;
+    //obj->getObjByName("NewWindowIco")->setIcon(new_window) ;
 
 
-    ((UIProgressBar *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarMedia"))->setTypeHint(HINT_TIME);
-    UISpectrum *objSpectrum = (UISpectrum *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum");
+    ((UIProgressBar *)obj->getObjByName("progressBarMedia"))->setTypeHint(HINT_TIME);
+    UISpectrum *objSpectrum = (UISpectrum *)obj->getObjByName("spectrum");
     objSpectrum->setColor(cGrisOscuro);
     objSpectrum->setColorFondo(cGrisClaro);
 
-    UIProgressBar *objProg = (UIProgressBar *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarVolumen");
+    UIProgressBar *objProg = (UIProgressBar *)obj->getObjByName("progressBarVolumen");
     objProg->setProgressMax(SDL_MIX_MAXVOLUME);
     objProg->setProgressPos(SDL_MIX_MAXVOLUME);
 
 
-    UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
-    UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
+    UITreeListBox *albumList = ((UITreeListBox *)obj->getObjByName("albumList"));
+    UIListGroup *playList = ((UIListGroup *)obj->getObjByName("playLists"));
     albumList->setColor(cGrisOscuro);
     albumList->setTextColor(cBlanco);
     albumList->setEnableLastSelected(true);
     playList->setEnableLastSelected(true);
 
-    UIPopupMenu * popup1 = addPopup(PANTALLAREPRODUCTOR, "popupAlbum", "albumList");
+    UIPopupMenu * popup1 = addPopup("PANTALLAREPRODUCTOR", "popupAlbum", "albumList");
     if (popup1 != NULL){
         popup1->addElemLista(Constant::txtDisplay("Eliminar %C3%81lbum"), "delete", controller);
     }
 
-    UIPopupMenu * popup2 = addPopup(PANTALLAREPRODUCTOR, "popupUpload", "btnAddContent");
+    UIPopupMenu * popup2 = addPopup("PANTALLAREPRODUCTOR", "popupUpload", "btnAddContent");
     if (popup2 != NULL){
         popup2->addElemLista("Subir a Dropbox", "dropbox", dropbox_png, DROPBOXSERVER);
         popup2->addElemLista("Subir a Google", "google", google_png, GOOGLEDRIVESERVER);
         popup2->addElemLista("Subir a Onedrive", "onedrive", onedrive_png, ONEDRIVESERVER);
     }
 
-    UIPopupMenu * popup3 = addPopup(PANTALLAREPRODUCTOR, "popupUploadCD", "btnAddCD");
+    UIPopupMenu * popup3 = addPopup("PANTALLAREPRODUCTOR", "popupUploadCD", "btnAddCD");
 
 
     vector <ListGroupCol *> miCabecera;
@@ -252,14 +206,16 @@ void Iofrontend::initUIObjs(){
     playList->setColor(cNegroClaro);
     playList->setTextColor(cBlanco);
 
-    ((UISpectrum *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum"))->calcZoom(ALBUMWIDTH);
+    ((UISpectrum *)obj->getObjByName("spectrum"))->calcZoom(ALBUMWIDTH);
 
-    ObjectsMenu[PANTALLACDDB]->add("listAlbumsCddb", GUILISTGROUPBOX, 0, 0, 0, 0, "LISTADODIR", false)->setVerContenedor(false)->setShadow(false);
-    ObjectsMenu[PANTALLACDDB]->add("aceptarCddb", GUIBUTTON, -(BUTTONW/2 + 5), 0, BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
-    ObjectsMenu[PANTALLACDDB]->add("cancelarCddb", GUIBUTTON, (BUTTONW/2 + 5), 0, BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
-    ObjectsMenu[PANTALLACDDB]->add("titleCddb", GUIARTSURFACE, 0, 0, INPUTW, Constant::getINPUTH(), Constant::txtDisplay("M%C3%A1s de una coincidencia encontrada. Seleccione un %C3%A1lbum"), false)->setEnabled(false);
+    createMenu("PANTALLACDDB");
+    obj = getMenu("PANTALLACDDB");
+    obj->add("listAlbumsCddb", GUILISTGROUPBOX, 0, 0, 0, 0, "LISTADODIR", false)->setVerContenedor(false)->setShadow(false);
+    obj->add("aceptarCddb", GUIBUTTON, -(BUTTONW/2 + 5), 0, BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
+    obj->add("cancelarCddb", GUIBUTTON, (BUTTONW/2 + 5), 0, BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
+    obj->add("titleCddb", GUIARTSURFACE, 0, 0, INPUTW, Constant::getINPUTH(), Constant::txtDisplay("M%C3%A1s de una coincidencia encontrada. Seleccione un %C3%A1lbum"), false)->setEnabled(false);
 
-    UIListGroup *listAlbumsCddb = ((UIListGroup *)ObjectsMenu[PANTALLACDDB]->getObjByName("listAlbumsCddb"));
+    UIListGroup *listAlbumsCddb = ((UIListGroup *)obj->getObjByName("listAlbumsCddb"));
 
     vector <ListGroupCol *> cabeceraAlbumscddb;
     cabeceraAlbumscddb.push_back(new ListGroupCol("%C3%81lbum", ""));
@@ -279,16 +235,17 @@ void Iofrontend::initUIObjs(){
     int desp = 110;
     string msgLabel = Constant::toAnsiString(string("Especifique los datos siguientes para poder hacer una llamada ") +
                      string("a la base de datos de cddb (freedb.org) mediante la que obtener los datos de los CD's que introduzca"));
+    
+    obj = createMenu("PANTALLACDDBDATA");
+    obj->add("lblDataCDDB",  GUITEXTELEMENTSAREA,  0, -220 * zoomText + desp, INPUTW, Constant::getINPUTH()*5, "asdasd", true)->setEnabled(false);
+    obj->add("inputUsuario", GUIINPUTWIDE, 0, -140 * zoomText + desp, INPUTW, Constant::getINPUTH(), "Usuario:", true);
+    obj->add("inputHostname", GUIINPUTWIDE, 0, -100 * zoomText + desp, INPUTW, Constant::getINPUTH(), "Nombre PC:", true);
+    obj->add("btnAceptarCDDB", GUIBUTTON, -(BUTTONW/2 + 5), 30 + desp,BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
+    obj->add("btnCancelarCDDB", GUIBUTTON, (BUTTONW/2 + 5), 30 + desp,BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
+    obj->add("borde", GUIPANELBORDER,0,0,0,0, "Rellene el formulario", false);
+    obj->getObjByName("lblDataCDDB")->setTextColor(cBlanco);
 
-    ObjectsMenu[PANTALLACDDBDATA]->add("lblDataCDDB",  GUITEXTELEMENTSAREA,  0, -220 * zoomText + desp, INPUTW, Constant::getINPUTH()*5, "asdasd", true)->setEnabled(false);
-    ObjectsMenu[PANTALLACDDBDATA]->add("inputUsuario", GUIINPUTWIDE, 0, -140 * zoomText + desp, INPUTW, Constant::getINPUTH(), "Usuario:", true);
-    ObjectsMenu[PANTALLACDDBDATA]->add("inputHostname", GUIINPUTWIDE, 0, -100 * zoomText + desp, INPUTW, Constant::getINPUTH(), "Nombre PC:", true);
-    ObjectsMenu[PANTALLACDDBDATA]->add("btnAceptarCDDB", GUIBUTTON, -(BUTTONW/2 + 5), 30 + desp,BUTTONW,BUTTONH, "Aceptar", true)->setIcon(tick);
-    ObjectsMenu[PANTALLACDDBDATA]->add("btnCancelarCDDB", GUIBUTTON, (BUTTONW/2 + 5), 30 + desp,BUTTONW,BUTTONH, "Cancelar", true)->setIcon(cross);
-    ObjectsMenu[PANTALLACDDBDATA]->add("borde", GUIPANELBORDER,0,0,0,0, "Rellene el formulario", false);
-    ObjectsMenu[PANTALLACDDBDATA]->getObjByName("lblDataCDDB")->setTextColor(cBlanco);
-
-    UITextElementsArea *LetrasCDDB = (UITextElementsArea *)ObjectsMenu[PANTALLACDDBDATA]->getObjByName("lblDataCDDB");
+    UITextElementsArea *LetrasCDDB = (UITextElementsArea *)obj->getObjByName("lblDataCDDB");
     TextElement cddbElement;
     t_posicion posLetrascddb(5,5,0,0);
     cddbElement.setPos(posLetrascddb);
@@ -304,309 +261,54 @@ void Iofrontend::initUIObjs(){
     LetrasCDDB->setColor(cNegroClaro);
     LetrasCDDB->setIntervalDespl(Constant::getMENUSPACE()*2);
 
-
+    //Iniciamos los objetos de la clase base
+    BaseFrontend::initUIObjs();
     //Establecemos los elementos que se redimensionan
     setDinamicSizeObjects();
-    //Botones para la pantalla de los directorios
-    addEvent(BTNACEPTARBROWSER, &Iofrontend::marcarBotonSeleccionado);
-    addEvent(BTNCANCELARBROWSER, &Iofrontend::marcarBotonSeleccionado);
-    addEvent(OBJLISTABROWSER2, &Iofrontend::accionesListaExplorador);
-    addEvent("btnAceptarPregunta", &Iofrontend::simularIntro);
-    addEvent("btnCancelarPregunta", &Iofrontend::simularEscape);
-    //Botones para la pantalla de confirmacion
-    addEvent("btnSiConfirma", &Iofrontend::marcarBotonSeleccionado);
-    addEvent("btnNoConfirma", &Iofrontend::marcarBotonSeleccionado);
 
-    addEvent("btnGoogle", &Iofrontend::marcarBotonSeleccionado);
-    addEvent("btnDropbox", &Iofrontend::marcarBotonSeleccionado);
-    addEvent("btnOnedrive", &Iofrontend::marcarBotonSeleccionado);
-    addEvent("btnLoginCancel", &Iofrontend::marcarBotonSeleccionado);
-    addEvent("aceptarCddb", &Iofrontend::marcarBotonSeleccionado);
-    addEvent("cancelarCddb", &Iofrontend::marcarBotonSeleccionado);
+    addEvent("btnGoogle", static_cast<typept2Func>(&Iofrontend::marcarBotonSeleccionado));
+    addEvent("btnDropbox", static_cast<typept2Func>(&Iofrontend::marcarBotonSeleccionado));
+    addEvent("btnOnedrive", static_cast<typept2Func>(&Iofrontend::marcarBotonSeleccionado));
+    addEvent("btnLoginCancel", static_cast<typept2Func>(&Iofrontend::marcarBotonSeleccionado));
+    addEvent("aceptarCddb", static_cast<typept2Func>(&Iofrontend::marcarBotonSeleccionado));
+    addEvent("cancelarCddb", static_cast<typept2Func>(&Iofrontend::marcarBotonSeleccionado));
 
     //Botones para la pantalla de video
-    addEvent("btnPlay",  &Iofrontend::accionesMediaPause);
-    addEvent("btnStop",  &Iofrontend::accionesMediaStop);
-    addEvent("btnForward",  &Iofrontend::accionesMediaAvanzar);
-    addEvent("btnBackward",  &Iofrontend::accionesMediaRetroceder);
-    addEvent("progressBarMedia", &Iofrontend::mediaClicked);
-    addEvent("btnAddContent", &Iofrontend::showPopupUpload);
-    addEvent("btnAddCD", &Iofrontend::showPopupUploadCD);
-    addEvent("btnOpenLocal", &Iofrontend::openLocalDisc);
-    addEvent("btnAddServer", &Iofrontend::btnActionAddServer);
-    addEvent("albumList", &Iofrontend::selectTreeAlbum);
-    addEvent("playLists", &Iofrontend::accionesPlaylist);
-    addEvent("popupAlbum", &Iofrontend::accionAlbumPopup);
-    addEvent("popupUpload", &Iofrontend::accionUploadPopup);
-    addEvent("popupUploadCD", &Iofrontend::accionUploadCDPopup);
-    addEvent("progressBarVolumen", &Iofrontend::accionVolumen);
-    addEvent("ImgVol", &Iofrontend::accionVolumenMute);
-    addEvent("btnRepeat", &Iofrontend::accionRepeat);
-    addEvent("btnRandom", &Iofrontend::accionRandom);
-    addEvent("comboBrowser", &Iofrontend::accionCombo);
-    addEvent("btnEqualizer", &Iofrontend::accionesEqualizer);
-    addEvent("filtroAudio0", &Iofrontend::accionesfiltroAudio0);
-    addEvent("filtroAudio1", &Iofrontend::accionesfiltroAudio1);
-    addEvent("filtroAudio2", &Iofrontend::accionesfiltroAudio2);
-    addEvent("filtroAudio3", &Iofrontend::accionesfiltroAudio3);
-    addEvent("filtroAudio4", &Iofrontend::accionesfiltroAudio4);
-    addEvent("filtroAudio5", &Iofrontend::accionesfiltroAudio5);
-    addEvent("filtroAudio6", &Iofrontend::accionesfiltroAudio6);
-    addEvent("filtroAudio7", &Iofrontend::accionesfiltroAudio7);
-    addEvent("filtroAudio8", &Iofrontend::accionesfiltroAudio8);
-    addEvent("btnResetEq", &Iofrontend::accionesResetFiltros);
-    addEvent("btnSwitchEq", &Iofrontend::accionesSwitchFiltros);
-    addEvent("btnLetras", &Iofrontend::accionesLetras);
-    addEvent("btnAceptarCDDB", &Iofrontend::accionesCddbAceptar);
-    addEvent("btnCancelarCDDB", &Iofrontend::accionesCddbCancelar);
-    addEvent("LetrasBox", &Iofrontend::accionesLetrasBox);
-}
-
-/**
-* Con el menu pasado por parametro lo dibujamos entero
-*/
-bool Iofrontend::drawMenu(tEvento evento){
-    Traza::print("Iofrontend::drawMenu Inicio", W_PARANOIC);
-    bool salir = false;
-    this->clearScr(cGrisOscuro);
-    Traza::print("Iofrontend::clearScr Fin", W_PARANOIC);
-    //Realiza las acciones de cada elemento de pantalla
-    salir = casoDEFAULT(evento);
-    //Muestra un mensaje durante un tiempo determinado
-    showAutoMessage();
-    //Muestra el contador de cuadros por pantalla
-    if (SHOWFPS) fps();
-    Traza::print("Iofrontend::drawMenu Fin", W_PARANOIC);
-    this->flipScr();
-    return salir;
-}
-
-/**
-*
-*/
-int Iofrontend::casoDEFAULT(tEvento evento){
-    tmenu_gestor_objects *objMenu = ObjectsMenu[this->getSelMenu()];
-    bool salir = procesarControles(objMenu, &evento, NULL);
-    return salir;
-}
-
-
-
-/**
-* Se encarga de procesar las introducciones de teclas o de joystick para cambiar el contenido
-* de los botones, inputs, checks, ... y almacenar en ellos los datos correpondientes.
-*/
-bool Iofrontend::procesarControles(tmenu_gestor_objects *objMenu, tEvento *evento, tscreenobj *screenEvents){
-    Traza::print("procesarControles: Inicio", W_PARANOIC);
-    bool execFunc = true;
-    bool drawComp = true;
-    if (screenEvents != NULL){
-        execFunc = screenEvents->execFunctions;
-        drawComp = screenEvents->drawComponents;
-    }
-
-    //Se procesan los eventos de cada uno de los objetos de un menu
-    Object *object;
-
-    if (execFunc){
-        //Se llama al action del objeto que esta seleccionado en este momento.
-        //Cada objeto tiene el suyo propio o heredado de Object
-        objMenu->procEvent(*evento);
-        //objMenu->procAllEvent(*evento);
-        //Mostramos popups si es necesario
-        procesarPopups(objMenu, evento);
-        //Hacemos llamada para hacer otros procesados. Por ahora solo en la pantalla de seleccion
-        //de roms
-        procesarMenuActual(objMenu, evento);
-    }
-
-    int posBoton = 0;
-    bool salir = false;
-    bool botonPulsado = false;
-    int estado = 0;
-    vector<Object *> objPostProcesado;
-    int cursorPrincipal = -1;
-    bool updateCursor = false;
-
-    //Recorremos todos los objetos para dibujarlos por pantalla
-    try{
-         //Procesando el redimensionado de ventana
-        if (evento->resize)
-            resizeMenu();
-
-        //PINTAMOS ANTES DE PROCESAR LAS ACCIONES. NO SE SI ESTO ES BUENA IDEA
-        for (int i=0;i<objMenu->getSize();i++){
-            object = objMenu->getObjByPos(i);
-            //Finalmente dibujamos el objeto
-            if (drawComp && object != NULL){
-                if (object->getObjectType() == GUICOMBOBOX){
-                    objPostProcesado.push_back(object);
-                } else {
-                    drawObject(object, evento);
-                }
-            }
-        }
-        //Para los objetos que son prioritarios de pintar, lo hacemos en ultimo lugar
-        //para que se dibujen sobre el resto
-        for(vector<Object *>::iterator it = objPostProcesado.begin(); it < objPostProcesado.end(); ++it){
-            Object * obj = *it;
-            drawObject(obj, evento);
-        }
-        objPostProcesado.clear();
-
-        //Procesamos las acciones
-        for (int i=0;i<objMenu->getSize();i++){
-            object = objMenu->getObjByPos(i);
-
-            if (execFunc && object != NULL){
-                if (!object->isPopup()){
-                    switch(object->getObjectType()){
-                        case GUIBUTTON:
-                            //En el caso de los botones tambien procesamos sus eventos
-                            botonPulsado = procesarBoton(object, objMenu);
-                            estado = evento->mouse_state;
-                            if (botonPulsado && ( (evento->isMouse && estado == SDL_RELEASED) || evento->isKey || evento->isJoy)){ //Comprobamos si se ha pulsado el elemento
-                                posBoton = findEventPos(object->getName());  //Buscamos la posicion del elemento en el array de punteros a funcion
-                                if (posBoton >= 0){ //Si hemos encontrado una funcion
-                                    if (this->pt2Func[posBoton] != NULL){
-                                        //Forzamos a que se actualicen todos los elementos
-                                        objMenu->resetElements();
-                                        /**Los botones no pueden hacer que se salga de la aplicacion. Solo ejecutamos la funcion*/
-                                        //salir = (*this.*pt2Func[posBoton])(evento); //Ejecutamos la funcion especificada en el puntero a funcion almacenado
-                                        (*this.*pt2Func[posBoton])(evento); //Ejecutamos la funcion especificada en el puntero a funcion almacenado
-                                        Traza::print("procesarControles: Evento lanzado para " + object->getName(), W_INFO);
-                                    }
-                                }
-                            }
-                            break;
-                        case GUILISTBOX:
-                        case GUIPROGRESSBAR:
-                        case GUISLIDER:
-                        case GUIPOPUPMENU:
-                        case GUILISTGROUPBOX:
-                        case GUICOMBOBOX:
-                        case GUITEXTELEMENTSAREA:
-                        case GUITREELISTBOX:
-                            if (procesarBoton(object, objMenu)){ //Comprobamos si se ha pulsado el elemento
-                                posBoton = findEventPos(object->getName());  //Buscamos la posicion del elemento en el array de punteros a funcion
-                                if (posBoton >= 0){ //Si hemos encontrado una funcion
-                                    if (this->pt2Func[posBoton] != NULL){
-                                        //Forzamos a que se actualicen todos los elementos
-                                        objMenu->resetElements();
-                                        salir = (*this.*pt2Func[posBoton])(evento); //Ejecutamos la funcion especificada en el puntero a funcion almacenado
-                                        Traza::print("procesarControles: Evento lanzado para " + object->getName(), W_INFO);
-                                    }
-                                }
-                            }
-                            break;
-                        default:
-                            break;
-                    } // FIN CASE
-                }
-            } // FIN IF
-//            //Finalmente dibujamos el objeto
-            /**Aqui iba el dibujado del objeto para aprovechar el bucle pero esto
-            * daba problemas. Se corrige para que tenga su propio bucle al inicio
-            * de las acciones
-            */
-            //Comprobamos si el objeto esta lanzando un evento para cambiar el mouse.
-            //Solo aceptamos el primer objeto que pida cambiar el mouse
-            if (object->getCursor() >= 0){
-                updateCursor = true;
-                if (cursorPrincipal < 0){
-                    cursorPrincipal = object->getCursor();
-                }
-            }
-        }
-        if (!updateCursor){
-            //Reseteamos el cursor al que hay por defecto
-            cursorPrincipal = cursor_arrow;
-        }
-        //Dibujamos el cursor solo si procede
-        this->pintarCursor(evento->mouse_x, evento->mouse_y, cursorPrincipal);
-
-    } catch (Excepcion &e) {
-         Traza::print("Excepcion procesarControles: " + string(e.getMessage()), W_ERROR);
-    }
-    return salir;
-}
-
-
-
-/**
-*
-*/
-int Iofrontend::accionesMenu(tEvento *evento){
-    bool salir = false;
-
-    try{
-        int menu = this->getSelMenu();
-        tmenu_gestor_objects *objsMenu = ObjectsMenu[menu];
-        Object *object = objsMenu->getObjByPos(objsMenu->getFocus());
-
-        if (object != NULL){
-            if (object->getObjectType() == GUILISTBOX ||
-                object->getObjectType() == GUIPOPUPMENU ||
-                object->getObjectType() == GUILISTGROUPBOX){
-
-                UIListCommon *objList = (UIListCommon *)object;
-                unsigned int pos = objList->getPosActualLista();
-                string valorSelec = objList->getValue(pos);
-                int destino = objList->getDestino(pos);
-                objList->setImgDrawed(false);
-
-                if (valorSelec.compare("salir") == 0){
-                    salir = true;
-                } else if (destino != -1){
-                    this->cargaMenuFromLista(objList, evento);
-                }
-            }
-        }
-    } catch (Excepcion &e) {
-         Traza::print("Excepcion accionesMenu" + string(e.getMessage()), W_ERROR);
-    }
-    return salir;
-}
-
-/**
-*
-*/
-void Iofrontend::cargaMenuFromLista(UIListCommon *obj, tEvento *evento){
-
-    if (obj->getPosActualLista() < 0){
-        obj->setPosActualLista(0);
-    } else {
-        int menucarga = obj->getDestino(obj->getPosActualLista());
-        string valorSelec = obj->getValue(obj->getPosActualLista());
-        //Si hemos pulsado el boton de volver (que es el ultimo de la lista)
-        //reiniciamos la posicion por si volvemos a entrar
-        if (obj->getPosActualLista() >= obj->getSize() - 1){
-            obj->setPosActualLista(0);
-            obj->calcularScrPos();
-        }
-        //Ahora cargamos el siguiente menu
-        cargaMenu(menucarga, valorSelec, evento);
-    }
-}
-
-/**
-*
-*/
-void Iofrontend::cargaMenu(int menucarga, string valorSelec, tEvento *evento){
-    comprobarUnicode(menucarga);
-    if (menucarga >= 0 && menucarga <= MAXMENU){
-        this->setSelMenu(menucarga);
-        //Damos el foco al primer elemento que haya en el menu
-        this->ObjectsMenu[menucarga]->setFirstFocus();
-    }
-
-    tmenu_gestor_objects *objsMenu = ObjectsMenu[menucarga];
-    UIListCommon *objTemp = NULL;
-
-    switch (menucarga){
-        default:
-            break;
-    }
+    addEvent("btnPlay",  static_cast<typept2Func>(&Iofrontend::accionesMediaPause));
+    addEvent("btnStop",  static_cast<typept2Func>(&Iofrontend::accionesMediaStop));
+    addEvent("btnForward",  static_cast<typept2Func>(&Iofrontend::accionesMediaAvanzar));
+    addEvent("btnBackward",  static_cast<typept2Func>(&Iofrontend::accionesMediaRetroceder));
+    addEvent("progressBarMedia", static_cast<typept2Func>(&Iofrontend::mediaClicked));
+    addEvent("btnAddContent", static_cast<typept2Func>(&Iofrontend::showPopupUpload));
+    addEvent("btnAddCD", static_cast<typept2Func>(&Iofrontend::showPopupUploadCD));
+    addEvent("btnOpenLocal", static_cast<typept2Func>(&Iofrontend::openLocalDisc));
+    addEvent("btnAddServer", static_cast<typept2Func>(&Iofrontend::btnActionAddServer));
+    addEvent("albumList", static_cast<typept2Func>(&Iofrontend::selectTreeAlbum));
+    addEvent("playLists", static_cast<typept2Func>(&Iofrontend::accionesPlaylist));
+    addEvent("popupAlbum", static_cast<typept2Func>(&Iofrontend::accionAlbumPopup));
+    addEvent("popupUpload", static_cast<typept2Func>(&Iofrontend::accionUploadPopup));
+    addEvent("popupUploadCD", static_cast<typept2Func>(&Iofrontend::accionUploadCDPopup));
+    addEvent("progressBarVolumen", static_cast<typept2Func>(&Iofrontend::accionVolumen));
+    addEvent("ImgVol", static_cast<typept2Func>(&Iofrontend::accionVolumenMute));
+    addEvent("btnRepeat", static_cast<typept2Func>(&Iofrontend::accionRepeat));
+    addEvent("btnRandom", static_cast<typept2Func>(&Iofrontend::accionRandom));
+    addEvent("comboBrowser", static_cast<typept2Func>(&Iofrontend::accionCombo));
+    addEvent("btnEqualizer", static_cast<typept2Func>(&Iofrontend::accionesEqualizer));
+    addEvent("filtroAudio0", static_cast<typept2Func>(&Iofrontend::accionesfiltroAudio0));
+    addEvent("filtroAudio1", static_cast<typept2Func>(&Iofrontend::accionesfiltroAudio1));
+    addEvent("filtroAudio2", static_cast<typept2Func>(&Iofrontend::accionesfiltroAudio2));
+    addEvent("filtroAudio3", static_cast<typept2Func>(&Iofrontend::accionesfiltroAudio3));
+    addEvent("filtroAudio4", static_cast<typept2Func>(&Iofrontend::accionesfiltroAudio4));
+    addEvent("filtroAudio5", static_cast<typept2Func>(&Iofrontend::accionesfiltroAudio5));
+    addEvent("filtroAudio6", static_cast<typept2Func>(&Iofrontend::accionesfiltroAudio6));
+    addEvent("filtroAudio7", static_cast<typept2Func>(&Iofrontend::accionesfiltroAudio7));
+    addEvent("filtroAudio8", static_cast<typept2Func>(&Iofrontend::accionesfiltroAudio8));
+    addEvent("btnResetEq", static_cast<typept2Func>(&Iofrontend::accionesResetFiltros));
+    addEvent("btnSwitchEq", static_cast<typept2Func>(&Iofrontend::accionesSwitchFiltros));
+    addEvent("btnLetras", static_cast<typept2Func>(&Iofrontend::accionesLetras));
+    addEvent("btnAceptarCDDB", static_cast<typept2Func>(&Iofrontend::accionesCddbAceptar));
+    addEvent("btnCancelarCDDB", static_cast<typept2Func>(&Iofrontend::accionesCddbCancelar));
+    addEvent("LetrasBox", static_cast<typept2Func>(&Iofrontend::accionesLetrasBox));
 }
 
 /**
@@ -635,841 +337,68 @@ int Iofrontend::accionesCargaPantalla(tEvento *evento){
     return false;
 }
 
-
-
-/**
-* El campo checked del control se da valor desde la llamada al procEvent del respectivo menu
-* En esta funcion se comprueba el valor checked para saber si se ha pulsado el elemento
-*/
-bool Iofrontend::procesarBoton(Object * obj, tmenu_gestor_objects *gestorMenu){
-    try{
-        //Traza::print("Checkeando name: " + string(name) + " valor: " + string(objMenu->getObjByName(name)->isChecked()?"S":"N"), W_ERROR);
-        if (obj->getObjectType() == GUICOMBOBOX){
-            if (((UIComboBox *)obj)->isValueChanged()){
-                ((UIComboBox *)obj)->setValueChanged(false);
-                ((UIComboBox *)obj)->setChecked(false);
-                ((UIComboBox *)obj)->setFocus(false);
-                gestorMenu->findNextFocus();
-                return true;
-            }
-        } else if (obj->isChecked()){
-            obj->setChecked(false);
-            return true;
-        }
-    } catch (Excepcion &e) {
-         Traza::print("Excepcion procesarBoton" + string(e.getMessage()), W_ERROR);
-    }
-    return false;
-}
-
-/**
-* Se simula que se ha pulsado la tecla Intro o el boton aceptar del joystick
-*/
-int Iofrontend::simularEscape(tEvento *evento){
-    evento->isKey = true;
-    evento->key = SDLK_ESCAPE;
-    evento->isJoy = true;
-    evento->joy = JOY_BUTTON_START;
-    return true;
-}
-
-/**
-* Se simula que se ha pulsado la tecla Intro o el boton aceptar del joystick
-*/
-int Iofrontend::simularIntro(tEvento *evento){
-    evento->isKey = true;
-    evento->key = SDLK_RETURN;
-    evento->isJoy = true;
-    evento->joy = JOY_BUTTON_A;
-    return true;
-}
-
-/**
-*
-*/
-int Iofrontend::marcarBotonSeleccionado(tEvento *evento){
-
-    int menu = getSelMenu();
-    tmenu_gestor_objects *objMenu = ObjectsMenu[menu];
-    int pos = objMenu->getFocus();
-
-    Traza::print("marcarBotonSeleccionado: " + objMenu->getObjByPos(pos)->getName(), W_DEBUG);
-    if (pos >= 0){
-        objMenu->getObjByPos(pos)->setTag("selected");
-        return true;
-    }
-    return false;
-}
-
-/**
-* Se asigna la funcion especificada al boton con el nombre especificado.
-* No deberian haber botones del mismo nombre
-*/
-void Iofrontend::addEvent(string nombre, typept2Func funcion){
-    addEvent(nombre, funcion, -1);
-}
-
-/**
-*
-*/
-void Iofrontend::addEvent(string nombre, typept2Func funcion, int parms){
-    if (propertiesPt2Func.size < MAXMENU*MAXOBJECTS){
-        propertiesPt2Func.name.push_back(nombre);
-        propertiesPt2Func.parms.push_back(Constant::TipoToStr(parms));
-        pt2Func[propertiesPt2Func.size] = funcion;
-        propertiesPt2Func.size++;
-    }
-}
-
-/**
-* Se busca la posicion del puntero a funcion asociado con el nombre del boton
-*/
-int Iofrontend::findEventPos(string nombre){
-
-    int i=0;
-
-    while (i < propertiesPt2Func.size){
-        if (nombre.compare(propertiesPt2Func.name[i]) == 0)
-            return i;
-        i++;
-    }
-    return -1;
-}
-
-/**
-* Se busca la posicion del puntero a funcion asociado con el nombre del boton y se modifica
-*/
-void Iofrontend::setEvent(string nombre, typept2Func funcion){
-    int pos = findEventPos(nombre);
-    if (pos != -1){
-        pt2Func[pos] = funcion;
-    }
-}
-
-void Iofrontend::setEvent(string nombre, typept2Func funcion, int parms){
-    int pos = findEventPos(nombre);
-    if (pos != -1){
-        pt2Func[pos] = funcion;
-        propertiesPt2Func.parms[pos] = Constant::TipoToStr(parms);
-    }
-}
-
-
-/**
-*
-*/
-void Iofrontend::popUpMenu(tEvento evento){
-}
-
-/**
-* Con el menu pasado por parametro lo dibujamos entero
-*/
-void Iofrontend::resizeMenu(){
-    for (int i=0; i< MAXMENU; i++){
-        ObjectsMenu[i]->setAreaObjMenu(getWidth(),getHeight());
-    }
-    setDinamicSizeObjects();
-}
-
 /**
 *
 */
 void Iofrontend::setDinamicSizeObjects(){
     try{
-        //Calculamos el tamanyo del titulo de los elementos que lo tengan, y redimensionamos el elemento
-        //lista que tenga ese menu con el total de la ventana que queda
-        for (int i=0; i<MAXMENU; i++){
-            try{
-                Object *posibleObj = NULL;
-                posibleObj = ObjectsMenu[i]->getObjByName(TITLESCREEN);
-                //Caso especial de redimension
-                if(posibleObj != NULL)
-                    posibleObj->setTam( 0, 0, this->getWidth(),Constant::getINPUTH());
+        BaseFrontend::setDinamicSizeObjects();
 
-                int j = 0;
-
-                while (j < ObjectsMenu[i]->getSize()){
-                    posibleObj = ObjectsMenu[i]->getObjByPos(j);
-                    if(posibleObj != NULL){
-                        if (posibleObj->getObjectType() == GUILISTBOX || ObjectsMenu[i]->getObjByPos(j)->getObjectType() == GUIPICTURE
-                            || posibleObj->getObjectType() == GUILISTGROUPBOX){
-                            posibleObj->setTam(0,Constant::getINPUTH(), this->getWidth(), this->getHeight()-Constant::getINPUTH());
-                        }
-
-                        if (ObjectsMenu[i]->getObjByPos(j)->getObjectType() == GUILISTBOX){
-                            ((UIList *)posibleObj)->calcularScrPos();
-                        } else if (ObjectsMenu[i]->getObjByPos(j)->getObjectType() == GUILISTGROUPBOX){
-                            ((UIListGroup *)posibleObj)->calcularScrPos();
-                        }
-                    }
-                    j++;
-                }
-            } catch (Excepcion &e){}
-        }
-
-        //Redimension para el browser de directorios2
-        ObjectsMenu[PANTALLABROWSER2]->getObjByName(OBJLISTABROWSER2)->setTam(0, Constant::getINPUTH() + COMBOHEIGHT + 4,this->getWidth(), this->getHeight() - BUTTONH - Constant::getINPUTH() - COMBOHEIGHT - 10 - 4);
-        ObjectsMenu[PANTALLABROWSER2]->getObjByName("comboBrowser")->setTam(1, Constant::getINPUTH() + 4, 160, 100);
-        ObjectsMenu[PANTALLABROWSER2]->getObjByName(BTNACEPTARBROWSER)->setTam( (this->getWidth() / 2) -(BUTTONW + 5), this->getHeight() - BUTTONH - 5, BUTTONW,BUTTONH);
-        ObjectsMenu[PANTALLABROWSER2]->getObjByName(BTNCANCELARBROWSER)->setTam( (this->getWidth() / 2) + 5, this->getHeight() - BUTTONH - 5, BUTTONW,BUTTONH);
-        ObjectsMenu[PANTALLABROWSER2]->getObjByName(ARTDIRBROWSER)->setTam( 0, 0, this->getWidth(), Constant::getINPUTH());
-
-
-        ObjectsMenu[PANTALLACDDB]->getObjByName("listAlbumsCddb")->setTam(0, Constant::getINPUTH() + COMBOHEIGHT + 4,this->getWidth(), this->getHeight() - BUTTONH - Constant::getINPUTH() - COMBOHEIGHT - 10 - 4);
-        ObjectsMenu[PANTALLACDDB]->getObjByName("aceptarCddb")->setTam( (this->getWidth() / 2) -(BUTTONW + 5), this->getHeight() - BUTTONH - 5, BUTTONW,BUTTONH);
-        ObjectsMenu[PANTALLACDDB]->getObjByName("cancelarCddb")->setTam( (this->getWidth() / 2) + 5, this->getHeight() - BUTTONH - 5, BUTTONW,BUTTONH);
-        ObjectsMenu[PANTALLACDDB]->getObjByName("titleCddb")->setTam( 0, 0, this->getWidth(), Constant::getINPUTH());
+        getMenu("PANTALLACDDB")->getObjByName("listAlbumsCddb")->setTam(0, Constant::getINPUTH() + COMBOHEIGHT + 4,this->getWidth(), this->getHeight() - BUTTONH - Constant::getINPUTH() - COMBOHEIGHT - 10 - 4);
+        getMenu("PANTALLACDDB")->getObjByName("aceptarCddb")->setTam( (this->getWidth() / 2) -(BUTTONW + 5), this->getHeight() - BUTTONH - 5, BUTTONW,BUTTONH);
+        getMenu("PANTALLACDDB")->getObjByName("cancelarCddb")->setTam( (this->getWidth() / 2) + 5, this->getHeight() - BUTTONH - 5, BUTTONW,BUTTONH);
+        getMenu("PANTALLACDDB")->getObjByName("titleCddb")->setTam( 0, 0, this->getWidth(), Constant::getINPUTH());
 
         //Redimension para la pantalla de videos multimedia
         int desp = (this->getWidth() / 2) - FAMFAMICONW*2 - BUTTONW/2;
         int bottom = this->getHeight() - FAMFAMICONH - ICOBOTTOMSPACE;
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("panelMedia")->setTam(0, calculaPosPanelMedia(), this->getWidth(), this->getHeight() - calculaPosPanelMedia());
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnBackward")->setTam(desp += (BUTTONW/2), bottom, FAMFAMICONW, FAMFAMICONH);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setTam(desp += FAMFAMICONW, bottom, FAMFAMICONW, FAMFAMICONH);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnStop")->setTam(desp += FAMFAMICONW, bottom, FAMFAMICONW, FAMFAMICONH);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnForward")->setTam(desp += FAMFAMICONW, bottom, FAMFAMICONW, FAMFAMICONH);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnRepeat")->setTam(desp += FAMFAMICONW, bottom, FAMFAMICONW, FAMFAMICONH);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnRandom")->setTam(desp += FAMFAMICONW, bottom, FAMFAMICONW, FAMFAMICONH);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("statusMessage")->setTam(desp += FAMFAMICONW*2, bottom, this->getWidth() - desp, FAMFAMICONH);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("ImgVol")->setTam(TIMEW- FAMFAMICONW, bottom, FAMFAMICONW, FAMFAMICONH);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarVolumen")->setTam(TIMEW + SEPTIMER, bottom + 2, TIMEW, PROGRESSHEIGHT);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("labelVol")->setTam(2*(TIMEW + SEPTIMER), bottom +1 , TIMEW, PROGRESSHEIGHT);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnAddContent")->setTam(2, 2, FAMFAMICONW, FAMFAMICONH);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnEqualizer")->setTam(FAMFAMICONW + 4, 2, FAMFAMICONW, FAMFAMICONH);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnLetras")->setTam(FAMFAMICONW * 2 + 4, 2, FAMFAMICONW, FAMFAMICONH);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnOpenLocal")->setTam(FAMFAMICONW * 3 + 4, 2, FAMFAMICONW, FAMFAMICONH);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnAddServer")->setTam(FAMFAMICONW * 4 + 4, 2, FAMFAMICONW, FAMFAMICONH);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnAddCD")->setTam(FAMFAMICONW * 5 + 4, 2, FAMFAMICONW, FAMFAMICONH);
-
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarMedia")->setTam( TIMEW + SEPTIMER, bottom - PROGRESSSEPBOTTOM, this->getWidth() - TIMEW*2 - SEPTIMER*2, PROGRESSHEIGHT);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimer")->setTam(SEPTIMER, bottom - PROGRESSSEPBOTTOM, TIMEW, FAMFAMICONH);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("mediaTimerTotal")->setTam(this->getWidth() - TIMEW, bottom - PROGRESSSEPBOTTOM, TIMEW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("panelMedia")->setTam(0, calculaPosPanelMedia(), this->getWidth(), this->getHeight() - calculaPosPanelMedia());
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnBackward")->setTam(desp += (BUTTONW/2), bottom, FAMFAMICONW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnPlay")->setTam(desp += FAMFAMICONW, bottom, FAMFAMICONW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnStop")->setTam(desp += FAMFAMICONW, bottom, FAMFAMICONW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnForward")->setTam(desp += FAMFAMICONW, bottom, FAMFAMICONW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnRepeat")->setTam(desp += FAMFAMICONW, bottom, FAMFAMICONW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnRandom")->setTam(desp += FAMFAMICONW, bottom, FAMFAMICONW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("statusMessage")->setTam(desp += FAMFAMICONW*2, bottom, this->getWidth() - desp, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("ImgVol")->setTam(TIMEW- FAMFAMICONW, bottom, FAMFAMICONW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("progressBarVolumen")->setTam(TIMEW + SEPTIMER, bottom + 2, TIMEW, PROGRESSHEIGHT);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("labelVol")->setTam(2*(TIMEW + SEPTIMER), bottom +1 , TIMEW, PROGRESSHEIGHT);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnAddContent")->setTam(2, 2, FAMFAMICONW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnEqualizer")->setTam(FAMFAMICONW + 4, 2, FAMFAMICONW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnLetras")->setTam(FAMFAMICONW * 2 + 4, 2, FAMFAMICONW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnOpenLocal")->setTam(FAMFAMICONW * 3 + 4, 2, FAMFAMICONW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnAddServer")->setTam(FAMFAMICONW * 4 + 4, 2, FAMFAMICONW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnAddCD")->setTam(FAMFAMICONW * 5 + 4, 2, FAMFAMICONW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("progressBarMedia")->setTam( TIMEW + SEPTIMER, bottom - PROGRESSSEPBOTTOM, this->getWidth() - TIMEW*2 - SEPTIMER*2, PROGRESSHEIGHT);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("mediaTimer")->setTam(SEPTIMER, bottom - PROGRESSSEPBOTTOM, TIMEW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("mediaTimerTotal")->setTam(this->getWidth() - TIMEW, bottom - PROGRESSSEPBOTTOM, TIMEW, FAMFAMICONH);
         
-        UITreeListBox *albumList = ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList");
+        UITreeListBox *albumList = getMenu("PANTALLAREPRODUCTOR")->getObjByName("albumList");
         albumList->setTam(0, FAMFAMICONH + 2, ALBUMWIDTH, calculaPosPanelMedia() - FAMFAMICONH - 2 - ALBUMWIDTH);
         albumList->calcularScrPos();
         albumList->setImgDrawed(false);
         
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum")->setTam(0, FAMFAMICONH + 2 + calculaPosPanelMedia() - FAMFAMICONH - 2 - ALBUMWIDTH, ALBUMWIDTH, ALBUMWIDTH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("spectrum")->setTam(0, FAMFAMICONH + 2 + calculaPosPanelMedia() - FAMFAMICONH - 2 - ALBUMWIDTH, ALBUMWIDTH, ALBUMWIDTH);
 
         int yFiltros = FAMFAMICONH + 2 + calculaPosPanelMedia() - FAMFAMICONH - 2 - ALBUMWIDTH;
 
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setTam(2, yFiltros + 2, FAMFAMICONW, FAMFAMICONH);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnResetEq")->setTam(4 + FAMFAMICONW, yFiltros + 2, FAMFAMICONW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnSwitchEq")->setTam(2, yFiltros + 2, FAMFAMICONW, FAMFAMICONH);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnResetEq")->setTam(4 + FAMFAMICONW, yFiltros + 2, FAMFAMICONW, FAMFAMICONH);
 
         int xFilter = 0;
         for(int i=0; i < NBIQUADFILTERS; i++){
-            UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio" + Constant::TipoToStr(i));
+            UISlider *objfilterGraves = (UISlider *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("filtroAudio" + Constant::TipoToStr(i));
             xFilter = (ALBUMWIDTH - 10) / 2 + (i - 4) * 21;
             objfilterGraves->setTam(xFilter, yFiltros + 25, 10, ALBUMWIDTH - 50);
         }
 
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists")->setTam(ALBUMWIDTH, 0, this->getWidth() - ALBUMWIDTH, calculaPosPanelMedia());
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox")->setTam(ALBUMWIDTH, 0, this->getWidth() - ALBUMWIDTH, calculaPosPanelMedia());
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("NewWindowIco")->setTam(ALBUMWIDTH, 0, 45,45);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("playLists")->setTam(ALBUMWIDTH, 0, this->getWidth() - ALBUMWIDTH, calculaPosPanelMedia());
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("LetrasBox")->setTam(ALBUMWIDTH, 0, this->getWidth() - ALBUMWIDTH, calculaPosPanelMedia());
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("NewWindowIco")->setTam(ALBUMWIDTH, 0, 45,45);
         
     } catch (Excepcion &e){
         Traza::print("setDinamicSizeObjects: " + string(e.getMessage()), W_ERROR);
     }
-}
-
-/**
-*
-*/
-bool Iofrontend::casoPANTALLACONFIRMAR(string titulo, string txtDetalle){
-    ignoreButtonRepeats = true;
-    Traza::print("casoPANTALLACONFIRMAR: Inicio", W_INFO);
-    bool salir = false;
-    tEvento askEvento;
-    clearEvento(&askEvento);
-    bool salida = false;
-    int menuInicial = getSelMenu();
-
-    //Procesamos el menu antes de continuar para que obtengamos la captura
-    //de pantalla que usaremos de fondo
-    procesarControles(ObjectsMenu[menuInicial], &askEvento, NULL);
-    SDL_Rect iconRectFondo = {0, 0, this->getWidth(), this->getHeight()};
-    SDL_Surface *mySurface = NULL;
-    drawRectAlpha(iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h , cNegro, ALPHABACKGROUND);
-    takeScreenShot(&mySurface, iconRectFondo);
-
-    //Seguidamente cambiamos la pantalla a la de la confirmacion
-    setSelMenu(PANTALLACONFIRMAR);
-    tmenu_gestor_objects *objMenu = ObjectsMenu[PANTALLACONFIRMAR];
-    objMenu->getObjByName("borde")->setLabel(titulo);
-
-    UITextElementsArea *textElems = (UITextElementsArea *)objMenu->getObjByName("textosBox");
-    textElems->setImgDrawed(false);
-    textElems->setFieldText("labelDetalle", txtDetalle);
-
-    int len = fontStrLen(txtDetalle);
-    if (len < this->getWidth()){
-        textElems->setW(len + 4 * INPUTBORDER + TEXLABELTEXTSPACE);
-        textElems->setH(Constant::getMENUSPACE() + 2*INPUTBORDER);
-        objMenu->centrarObjeto(textElems);
-//        textElems->setX(this->getWidth() - len/2);
-    } else {
-        textElems->setTam(0, -50 * zoomText, getWidth()-50, 120);
-        objMenu->centrarObjeto(textElems);
-    }
-
-    long delay = 0;
-    unsigned long before = 0;
-    objMenu->setFocus(0);
-
-    do{
-        before = SDL_GetTicks();
-        askEvento = WaitForKey();
-//        clearScr(cBgScreen);
-        printScreenShot(&mySurface, iconRectFondo);
-
-        procesarControles(objMenu, &askEvento, NULL);
-
-        flipScr();
-        salir = (askEvento.isJoy && askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_B)) ||
-        (askEvento.isKey && askEvento.key == SDLK_ESCAPE);
-
-        if (objMenu->getObjByName("btnSiConfirma")->getTag().compare("selected") == 0){
-            salir = true;
-            salida = true;
-            objMenu->getObjByName("btnSiConfirma")->setTag("");
-            Traza::print("Detectado SI pulsado", W_DEBUG);
-        } else if (objMenu->getObjByName("btnNoConfirma")->getTag().compare("selected") == 0){
-            salir = true;
-            salida = false;
-            objMenu->getObjByName("btnNoConfirma")->setTag("");
-            Traza::print("Detectado NO pulsado", W_DEBUG);
-        }
-
-        delay = before - SDL_GetTicks() + TIMETOLIMITFRAME;
-        if(delay > 0) SDL_Delay(delay);
-    } while (!salir);
-
-    setSelMenu(menuInicial);
-    return salida;
-}
-
-/**
-*
-*/
-string Iofrontend::casoPANTALLAPREGUNTA(string titulo, string label){
-    ignoreButtonRepeats = true;
-    Traza::print("casoPANTALLAPREGUNTA: Inicio", W_INFO);
-    bool salir = false;
-    tEvento askEvento;
-    clearEvento(&askEvento);
-    string salida = "";
-    int menuAnt = getSelMenu();
-    setSelMenu(PANTALLAPREGUNTA);
-
-    tmenu_gestor_objects *objMenu = ObjectsMenu[PANTALLAPREGUNTA];
-    objMenu->getObjByName("valor")->setLabel(label);
-    ((UIInput *)objMenu->getObjByName("valor"))->setText("");
-    objMenu->getObjByName("borde")->setLabel(titulo);
-
-
-    long delay = 0;
-    unsigned long before = 0;
-
-    do{
-        before = SDL_GetTicks();
-        askEvento = WaitForKey();
-        clearScr(cBgScreen);
-        procesarControles(objMenu, &askEvento, NULL);
-
-        flipScr();
-        salir = (askEvento.isJoy && askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_B)) ||
-        (askEvento.isKey && askEvento.key == SDLK_ESCAPE);
-
-        UIInput *input = (UIInput *)objMenu->getObjByName("valor");
-
-        if (input->getSize() > 0 &&
-            ( (askEvento.isKey && askEvento.key == SDLK_RETURN)
-              || (askEvento.isJoy && askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_A))) ){
-            salida = input->getText();
-            salir = true;
-        }
-
-        delay = before - SDL_GetTicks() + TIMETOLIMITFRAME;
-        if(delay > 0) SDL_Delay(delay);
-    } while (!salir);
-    setSelMenu(menuAnt);
-
-    return salida;
-}
-
-
-/**
-*
-*/
-int Iofrontend::accionesGotoPantalla(tEvento *evento){
-    int menu = this->getSelMenu();
-    tmenu_gestor_objects *objsMenu = ObjectsMenu[menu];
-    Object *object = objsMenu->getObjByPos(objsMenu->getFocus());
-
-    int posBoton = findEventPos(object->getName());  //Buscamos la posicion del elemento en el array de punteros a funcion
-    if (posBoton >= 0){ //Si hemos encontrado una funcion
-        int posMenu = Constant::strToTipo<int>(propertiesPt2Func.parms[posBoton]);
-        if (posMenu >= 0){
-            this->setSelMenu(posMenu);
-            this->ObjectsMenu[posMenu]->findNextFocus();
-            comprobarUnicode(posMenu);
-            return posMenu;
-        }
-    }
-    return false;
-}
-
-/**
-* En este metodo se comprueba si tenemos que activar unicode para que
-* las teclas del teclado se traduzcan sin problemas de dependencia de layouts
-*/
-void Iofrontend::comprobarUnicode(int menu){
-
-    tmenu_gestor_objects *objsMenu = ObjectsMenu[menu];
-    int i=0;
-    bool found = false;
-
-    while (i < objsMenu->getSize() && !found){
-        if (objsMenu->getObjByPos(i) != NULL)
-            if (objsMenu->getObjByPos(i)->getObjectType() == GUIINPUTWIDE)
-                found = true;
-        i++;
-    }
-
-    Traza::print("comprobarUnicode: " + Constant::TipoToStr(menu) + ((found == true) ? " UNICODE=S":" UNICODE=N"), W_PARANOIC);
-    SDL_EnableUNICODE(found);
-}
-
-/**
-* Establece el nombre del fichero o directorio seleccionado por el explorador de
-* ficheros, en el contenido un campo especificado por parÃƒÂ¡metro
-*/
-void Iofrontend::setTextFromExplorador(tEvento *evento, UIInput *objCampoEdit){
-    try{
-        Traza::print("Iofrontend::setTextFromExplorador", W_INFO);
-        Dirutil dir;
-        tmenu_gestor_objects *objMenu = ObjectsMenu[this->getSelMenu()];
-        //Si el objeto ya tiene datos, comprobamos si existe el directorio que supuestamente contiene
-        string uri = dir.getFolder(objCampoEdit->getText());
-        if (dir.existe(uri)){
-            //Si resulta que existe, hacemos un cambio de directorio para que se muestre
-            //el contenido del directorio nada mas pulsar en el boton
-            dir.changeDirAbsolute(uri.c_str());
-        }
-        //Abrimos el explorador de archivos y esperamos a que el usuario seleccione un fichero
-        //o directorio
-        string fichName = showExplorador(evento);
-        //Si se ha seleccionado algo, establecemos el texto en el objeto que hemos recibido por parametro
-        if (!fichName.empty()){
-            objCampoEdit->setText(fichName);
-            objMenu->setFocus(objCampoEdit->getName());
-        }
-    } catch (Excepcion &e){
-        Traza::print("setTextFromExplorador: " + string(e.getMessage()), W_ERROR);
-    }
-}
-
-/**
-*
-*/
-string Iofrontend::showExplorador(tEvento *evento){
-    Traza::print("showExplorador: Inicio", W_INFO);
-    bool salir = false;
-    tEvento askEvento;
-    clearEvento(&askEvento);
-    int menuInicio = this->getSelMenu();
-    this->setSelMenu(PANTALLABROWSER2);
-    tmenu_gestor_objects *objMenu = ObjectsMenu[PANTALLABROWSER2];
-    UIList *obj = NULL;
-    ignoreButtonRepeats = true;
-    string fileUri = "";
-    string fileTempSelec = "";
-    Dirutil dir;
-    static string lastDirOpened;
-
-    try{
-        loadComboUnidades("comboBrowser", PANTALLABROWSER2, -1);
-        obj = (UIList *)objMenu->getObjByName(OBJLISTABROWSER2);
-        obj->setFocus(true);
-        obj->setTag("");
-        obj->setPosActualLista(-1);
-        //Forzamos a que se actualicen todos los elementos
-        objMenu->resetElements();
-        //Seleccionamos a la lista que esta en primer lugar
-        //objMenu->findNextFocus();
-        ObjectsMenu[PANTALLABROWSER2]->setFocus(OBJLISTABROWSER2);
-
-        if (!lastDirOpened.empty()){
-            dir.changeDirAbsolute(dir.getFolder(lastDirOpened).c_str());
-        }
-
-        long delay = 0;
-        unsigned long before = 0;
-        this->accionesListaExplorador(evento);
-
-        do{
-            before = SDL_GetTicks();
-            askEvento = WaitForKey();
-            clearScr(cBlanco);
-            int pos = obj->getPosActualLista();
-            //Carga de imagenes de fondo en la pantalla del explorador de ficheros
-            if (pos >= 0){
-                fileTempSelec = obj->getListNames()->get(pos);
-                string ruta = dir.getDirActual() +  Constant::getFileSep() + fileTempSelec;
-                UIPicture *objPict = (UIPicture *)objMenu->getObjByName("ImgFondo");
-
-                if (objPict->getImgGestor()->getRuta().compare(ruta) != 0){
-                    if (dir.findIcon(fileTempSelec.c_str()) == page_white_picture){
-                        objPict->loadImgFromFile(ruta);
-                        objPict->getImgGestor()->setBestfit(false);
-                    } else {
-                        if (objPict->getImgGestor()->clearFile())
-                            objPict->setImgDrawed(false);
-                    }
-                    obj->setImgDrawed(false);
-                    objMenu->getObjByName(BTNACEPTARBROWSER)->setImgDrawed(false);
-                    objMenu->getObjByName(BTNCANCELARBROWSER)->setImgDrawed(false);
-                    objPict->getImgGestor()->setRuta(ruta);
-                }
-            }
-
-            procesarControles(objMenu, &askEvento, NULL);
-            if (objMenu->getFocus() < 0){
-                objMenu->findNextFocus();
-            }
-
-            //fps();
-            flipScr();
-            salir = (askEvento.isJoy && askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_B)) ||
-            ( ((askEvento.isKey && askEvento.key == SDLK_ESCAPE) || !obj->getTag().empty())
-             || objMenu->getObjByName(BTNACEPTARBROWSER)->getTag().compare("selected") == 0
-             || objMenu->getObjByName(BTNCANCELARBROWSER)->getTag().compare("selected") == 0);
-
-
-            delay = before - SDL_GetTicks() + TIMETOLIMITFRAME;
-            if(delay > 0) SDL_Delay(delay);
-        } while (!salir);
-
-    } catch (Excepcion &e){
-        Traza::print("Error en showExplorador: " + string(e.getMessage()), W_ERROR);
-    }
-
-    this->setSelMenu(menuInicio);
-    string fileSelec;
-    string diractual = dir.getDirActual();
-
-    if (obj != NULL){
-        // En el caso de que se haya pulsado el boton aceptar, obtenemos el elemento seleccionado
-        if (objMenu->getObjByName(BTNACEPTARBROWSER)->getTag().compare("selected") == 0){
-            int pos = obj->getPosActualLista();
-            if (pos >= 0){
-                fileSelec = obj->getListNames()->get(pos);
-                bool tieneFileSep = diractual.substr(diractual.length()-1).compare(Constant::getFileSep()) == 0;
-                obj->setTag(diractual + (!tieneFileSep ? Constant::getFileSep() : "") + fileSelec);
-            }
-        }
-        fileUri = obj->getTag();
-    }
-
-    try{
-        objMenu->getObjByName(BTNCANCELARBROWSER)->setTag("");
-        objMenu->getObjByName(BTNACEPTARBROWSER)->setTag("");
-    } catch (Excepcion &e){
-        Traza::print("showExplorador: reseteando botones: " + string(e.getMessage()), W_ERROR);
-    }
-
-    //No queremos que se seleccionen directorios incorrectos
-    if (fileSelec.compare("..") == 0){
-//        obj->setTag("");
-//        showMessage("Directorio no valido.", 2000);
-//        fileUri = showExplorador(evento);
-        fileUri = fileUri.substr(0, fileUri.find_last_of(tempFileSep));
-    }
-    lastDirOpened = fileUri;
-    return fileUri;
-}
-
-/**
-*
-*/
-int Iofrontend::accionesListaExplorador(tEvento *evento){
-
-    string fileSelec = "";
-
-    try{
-        Traza::print("Iofrontend::accionesListaExplorador", W_INFO);
-        tmenu_gestor_objects *objMenu = ObjectsMenu[PANTALLABROWSER2];
-        UIList * obj = (UIList *)objMenu->getObjByName(OBJLISTABROWSER2);
-        Dirutil dir;
-        bool dirChanged = false;
-        string diractual;
-        int pos = obj->getPosActualLista();
-
-        if (evento == NULL){
-            pos = 0;
-            dirChanged = true;
-        } else if (pos >= 0){
-            string fileSelec = obj->getListNames()->get(pos);
-            string valorSelec = obj->getListValues()->get(pos);
-            Traza::print("cambiando al directorio: " + fileSelec, W_DEBUG);
-            if (Constant::strToTipo<int>(valorSelec) == TIPODIRECTORIO){
-                dirChanged = dir.changeDirRelative(fileSelec.c_str());
-            } else {
-                diractual = dir.getDirActual();
-                obj->setTag(diractual + tempFileSep + fileSelec);
-            }
-        }
-
-        //Reseteamos la posicion del explorador para el siguiente directorio
-        obj->setPosActualLista(0);
-        obj->calcularScrPos();
-        //Actualizamos la barra principal con la ruta actual
-        diractual = dir.getDirActual();
-
-        ((UIArt *)objMenu->getObjByName(ARTDIRBROWSER))->setLabel(diractual);
-
-        if (dirChanged || pos < 0){
-            //Obtenemos el directorio actual y sus elementos
-            listaSimple<FileProps> *filelist = new listaSimple<FileProps>();
-            unsigned int numFiles = dir.listarDir(diractual.c_str(), filelist);
-            Traza::print("Ficheros: " + Constant::TipoToStr(numFiles), W_DEBUG);
-
-            if (filelist != NULL && numFiles > 0){
-                //Hacemos espacio en la lista para que la asignacion sea rapida
-                obj->resizeLista(numFiles);
-                //Recorremos la lista de ficheros y lo incluimos en el objeto de lista para mostrar los datos
-                for (unsigned int i = 0; i < numFiles; i++){
-                    obj->addElemLista(filelist->get(i).filename , Constant::TipoToStr(filelist->get(i).filetype), filelist->get(i).ico );
-                }
-            } else {
-               obj->resizeLista(1);
-               obj->addElemLista(".." , Constant::TipoToStr(TIPODIRECTORIO), folder);
-            }
-            delete filelist;
-        }
-
-
-    }catch (Excepcion &e){
-        Traza::print("accionesListaExplorador: " + string (e.getMessage()), W_ERROR);
-    }
-
-    ObjectsMenu[PANTALLABROWSER2]->setFocus(OBJLISTABROWSER2);
-    return true;
-}
-
-/**
-*
-*/
-void Iofrontend::loadComboUnidades(string objName, int pantalla, int types){
-    Traza::print("Iofrontend::loadComboUnidades", W_INFO);
-    UIList *combo = (UIList *)ObjectsMenu[pantalla]->getObjByName(objName);
-    combo->clearLista();
-    combo->setPosActualLista(0);
-    vector<t_drive *> drives;
-
-    Dirutil dir;
-    dir.getDrives(&drives);
-    int actualDrive = 0;
-    string actualDir = dir.getDirActual();
-
-    for (int i=0; i < drives.size(); i++){
-        if (types == -1 || types == drives.at(i)->driveType){
-            combo->addElemLista(drives.at(i)->drive.substr(0,2)
-                                + " (" + drives.at(i)->driveTypeString + ") "
-                                + drives.at(i)->label, drives.at(i)->drive, drives.at(i)->ico);
-            if (actualDir.find(drives.at(i)->drive) != string::npos){
-                actualDrive = i;
-            }
-        }
-    }
-    combo->setPosActualLista(actualDrive);
-    combo->calcularScrPos();
-}
-
-/**
-*
-*/
-int Iofrontend::accionCombo(tEvento *evento){
-    Traza::print("Iofrontend::accionCombo", W_INFO);
-    UIComboBox *combo = (UIComboBox *)ObjectsMenu[PANTALLABROWSER2]->getObjByName("comboBrowser");
-    string unidad = combo->getValue(combo->getPosActualLista());
-    Traza::print("Iofrontend::accionCombo. Drive: " + unidad, W_DEBUG);
-    Dirutil dir;
-    bool cambioDir = dir.changeDirAbsolute(unidad.c_str());
-
-    if (cambioDir){
-        Traza::print("Iofrontend::accionCombo. EXITO Drive: " + unidad, W_DEBUG);
-    } else {
-        Traza::print("Iofrontend::accionCombo. ERROR Drive: " + unidad, W_ERROR);
-    }
-
-    clearEvento(evento);
-    this->accionesListaExplorador(NULL);
-    ObjectsMenu[PANTALLABROWSER2]->setFocus(OBJLISTABROWSER2);
-    return 0;
-}
-
-/**
-* Carga el resultado de la seleccion del explorador de archivos en un campo de texto
-* - El objeto boton que llama a este metodo debe tener el campo tag rellenado con el campo de destino
-*   En el que se quiere que se guarde el resultado
-*/
-int Iofrontend::loadDirFromExplorer(tEvento *evento){
-
-    try{
-        Traza::print("Iofrontend::loadDirFromExplorer", W_INFO);
-        //Obtenemos los objetos del menu actual
-        tmenu_gestor_objects *objMenu = ObjectsMenu[this->getSelMenu()];
-        //Obtenemos el objeto que ha sido seleccionado y que tiene el foco
-        Object *obj = objMenu->getObjByPos(objMenu->getFocus());
-        //Obtenemos el tag del elemento que indica en que campo deberemos dar valor a la seleccion
-        //que hagamos del explorador de archivos
-        string tag = obj->getTag();
-        if (!tag.empty()){
-            setTextFromExplorador(evento, (UIInput *)objMenu->getObjByName(tag));
-        } else {
-            Traza::print("loadDirFromExplorer. El objeto: " + obj->getLabel() + " no tiene tag asociado " +
-                         "que indique donde cargar el texto del explorador", W_ERROR);
-        }
-    } catch (Excepcion &e){
-        Traza::print("loadDirFromExplorer: " + string(e.getMessage()), W_ERROR);
-    }
-    return 0;
-}
-
-/**
-*
-*/
-UIPopupMenu * Iofrontend::addPopup(int pantalla, string popupName, string callerName){
-    UIPopupMenu * popup1 = NULL;
-
-    try{
-        tmenu_gestor_objects *objMenu = ObjectsMenu[pantalla];
-        objMenu->getObjByName(callerName)->setPopupName(popupName);
-        ObjectsMenu[pantalla]->add(popupName, GUIPOPUPMENU, 0, 0, 170, 100, popupName, false)->setVisible(false);
-        popup1 = (UIPopupMenu *) objMenu->getObjByName(popupName);
-        popup1->setFont(getFont());
-        popup1->setAutosize(true);
-    } catch (Excepcion &e){
-        Traza::print("addPopup: " + string(e.getMessage()), W_ERROR);
-    }
-
-    return popup1;
-}
-
-/**
-* Desde este menu podremos mostrar por pantalla la informacion de las roms de cada emulador
-*/
-bool Iofrontend::procesarMenuActual(tmenu_gestor_objects *objMenu, tEvento *evento){
-    return true;
-}
-
-/**
-* Muestra el menu pasado por parametro como si fuera emergente, dejando el menu anterior
-* difuminado sobre el fondo
-*/
-void Iofrontend::showMenuEmergente(int menu, string objImagenFondo){
-    try{
-         Traza::print("Iofrontend::showMenuEmergente", W_INFO);
-        //Procesamos el menu actual para que se vuelva a repintar
-        procesarControles(ObjectsMenu[getSelMenu()], new tEvento(), NULL);
-        //Seleccionamos el menu que queremos mostrar como si fuese emergente
-        tmenu_gestor_objects *objMenu = ObjectsMenu[menu];
-        //Realizamos una captura de pantalla en el objeto imagen de fondo del menu de destino
-        UIPicture * fondoImg = (UIPicture *) objMenu->getObjByName(objImagenFondo);
-        //Le damos un toque mas oscuro a la imagen
-        fondoImg->setAlpha(150);
-        //Obtenemos una captura de la pantalla entera
-        takeScreenShot(&fondoImg->getImgGestor()->surface);
-        //Seleccionamos el menu de destino y procesamos sus controles para que se pinten
-        setSelMenu(menu);
-        tEvento askEvento;
-        clearEvento(&askEvento);
-        procesarControles(objMenu, &askEvento, NULL);
-    } catch (Excepcion &e) {
-         Traza::print("Excepcion showMenuEmergente: " + string(e.getMessage()), W_ERROR);
-    }
-
-}
-
-/**
-*
-*/
-bool Iofrontend::procesarPopups(tmenu_gestor_objects *objMenu, tEvento *evento){
-        Object *object = objMenu->getObjByPos(objMenu->getFocus());
-        if (object != NULL){
-            try{
-                //Comprobamos si el elemento que estamos pintando deberia mostrar su menu de popup
-                if (object->isPopup() && object->isFocus()){
-                    Traza::print("procesarPopups", W_DEBUG);
-                    //Obtenemos el objeto popup
-                    UIPopupMenu *objPopup = (UIPopupMenu *)objMenu->getObjByName(object->getPopupName());
-                    //Mostramos el popup
-                    objPopup->setVisible(true);
-                    //Seteamos la posicion del menu popup
-                    if (evento->mouse_x > 0 && evento->mouse_y > 0){
-                        //Si no tenemos espacio horizontal por la derecha, intentamos mostrar el popup por
-                        //la izquierda del lugar clickado
-                        if (evento->mouse_x + objPopup->getW() > this->getWidth()){
-                            objPopup->setX(evento->mouse_x - objPopup->getW());
-                        } else {
-                            objPopup->setX(evento->mouse_x);
-                        }
-                        //Si no tenemos espacio vertical por debajo, intentamos mostrar el popup por
-                        //encima del lugar clickado
-                        if (evento->mouse_y + objPopup->getH() > this->getHeight()){
-                            objPopup->setY(evento->mouse_y - objPopup->getH());
-                        } else {
-                            objPopup->setY(evento->mouse_y);
-                        }
-                    }
-                    //Asignamos el elemento que ha llamado al popup
-                    objPopup->setCallerPopup(objMenu->getObjByPos(objMenu->getFocus()));
-                    //Damos el foco al popup
-                    objMenu->setFocus(object->getPopupName());
-                    //Evitamos que el elemento procese cualquier evento mientras aparezca el popup
-                    object->setEnabled(false);
-                    //Forzamos a que se refresque el elemento padre que lanzo el popup
-                    object->setImgDrawed(false);
-                }
-            } catch (Excepcion &e) {
-                Traza::print("Excepcion en popup: " + object->getPopupName() + ". " + string(e.getMessage()), W_ERROR);
-            }
-        }
-
-    return true;
-}
-
-
-
-/**
-* Copia el texto seleccionado desde un popup al elemento que lo llama. Por ahora solo lo hace
-* en campos input.
-*/
-int Iofrontend::accionCopiarTextoPopup(tEvento *evento){
-    Traza::print("accionCopiarTextoPopup", W_INFO);
-    //Se obtiene el objeto menupopup que en principio esta seleccionado
-    int menu = this->getSelMenu();
-    tmenu_gestor_objects *objsMenu = ObjectsMenu[menu];
-    Object *obj = objsMenu->getObjByPos(objsMenu->getFocus());
-    //Comprobamos que efectivamente, el elemento es un popup
-    if (obj->getObjectType() == GUIPOPUPMENU){
-        UIPopupMenu *objPopup = (UIPopupMenu *)obj;
-        //Obtenemos el valor del elemento seleccionado en el popup
-        string selected = objPopup->getListValues()->get(objPopup->getPosActualLista());
-        if (objPopup->getCallerPopup() != NULL){
-            //Obtenemos el objeto llamador
-            if (objPopup->getCallerPopup()->getObjectType() == GUIINPUTWIDE){
-                UIInput *objInput = (UIInput *)objPopup->getCallerPopup();
-                //Anyadimos el texto al input
-                objInput->setText(objInput->getText() + selected);
-                //Devolvemos el foco al elemento que llamo al popup
-                objsMenu->setFocus(objPopup->getCallerPopup()->getName());
-            }
-        }
-    }
-    return 0;
 }
 
 /**
@@ -1520,28 +449,20 @@ bool SongsReproduced::isReproduced(unsigned int pos){
 /**                                ACCIONES DE LOS CAMPOS DE LA APLICACION                                     */
 /***************************************************************************************************************/
 
-/**
-*
-*/
-string Iofrontend::casoJOYBUTTONS(tEvento *evento){
-    ignoreButtonRepeats = true;
-    configButtonsJOY(evento);
-    return "";
-}
 
 /**
 *
 */
 int Iofrontend::accionesMediaAvanzar(tEvento *evento){
     Traza::print("Iofrontend::accionesMediaAvanzar", W_INFO);
-    UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
+    UIListGroup *playList = ((UIListGroup *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("playLists"));
     if (player->getStatus() != STOPED && playList->getPosActualLista() < playList->getSize() - 1){
         playList->nextSelectedPos();
         startSongPlaylist(evento);
         return 0;
     } else {
         player->setStatus(FINISHEDALBUM);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("statusMessage")->setLabel("");
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("statusMessage")->setLabel("");
         return 1;
     }
 
@@ -1553,7 +474,7 @@ int Iofrontend::accionesMediaAvanzar(tEvento *evento){
 int Iofrontend::accionesMediaRetroceder(tEvento *evento){
     Traza::print("Iofrontend::accionesMediaRetroceder", W_INFO);
     if (player->getStatus() != STOPED){
-        UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
+        UIListGroup *playList = ((UIListGroup *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("playLists"));
         playList->prevSelectedPos();
         startSongPlaylist(evento);
         return 0;
@@ -1566,21 +487,21 @@ int Iofrontend::accionesMediaRetroceder(tEvento *evento){
 */
 int Iofrontend::accionesMediaPause(tEvento *evento){
     Traza::print("Iofrontend::accionesMediaPause", W_INFO);
-    UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
+    UIListGroup *playList = ((UIListGroup *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("playLists"));
     if (player->getStatus() == PLAYING){
         player->pause();
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("statusMessage")->setLabel("Pausado");
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setIcon(control_play);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setImgDrawed(false);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("statusMessage")->setLabel("Pausado");
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnPlay")->setIcon(control_play);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnPlay")->setImgDrawed(false);
     } else if (player->getStatus() == PAUSED){
         player->pause();
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setIcon(control_pause);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setImgDrawed(false);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("statusMessage")->setLabel(playList->getCol(playList->getLastSelectedPos(), 0)->getTexto());
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnPlay")->setIcon(control_pause);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnPlay")->setImgDrawed(false);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("statusMessage")->setLabel(playList->getCol(playList->getLastSelectedPos(), 0)->getTexto());
     } else {
         accionesPlaylist(evento);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setIcon(control_pause);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setImgDrawed(false);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnPlay")->setIcon(control_pause);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnPlay")->setImgDrawed(false);
     }
     return 0;
 }
@@ -1589,7 +510,7 @@ int Iofrontend::accionesMediaPause(tEvento *evento){
 *
 */
 int Iofrontend::accionesfiltroAudio0(tEvento *evento){
-    UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio0");
+    UISlider *objfilterGraves = (UISlider *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("filtroAudio0");
     player->setFilter(0, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
     return 0;
 }
@@ -1598,7 +519,7 @@ int Iofrontend::accionesfiltroAudio0(tEvento *evento){
 *
 */
 int Iofrontend::accionesfiltroAudio1(tEvento *evento){
-    UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio1");
+    UISlider *objfilterGraves = (UISlider *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("filtroAudio1");
     player->setFilter(1, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
     return 0;
 }
@@ -1607,7 +528,7 @@ int Iofrontend::accionesfiltroAudio1(tEvento *evento){
 *
 */
 int Iofrontend::accionesfiltroAudio2(tEvento *evento){
-    UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio2");
+    UISlider *objfilterGraves = (UISlider *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("filtroAudio2");
     player->setFilter(2, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
     return 0;
 }
@@ -1616,7 +537,7 @@ int Iofrontend::accionesfiltroAudio2(tEvento *evento){
 *
 */
 int Iofrontend::accionesfiltroAudio3(tEvento *evento){
-    UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio3");
+    UISlider *objfilterGraves = (UISlider *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("filtroAudio3");
     player->setFilter(3, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
     return 0;
 }
@@ -1625,7 +546,7 @@ int Iofrontend::accionesfiltroAudio3(tEvento *evento){
 *
 */
 int Iofrontend::accionesfiltroAudio4(tEvento *evento){
-    UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio4");
+    UISlider *objfilterGraves = (UISlider *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("filtroAudio4");
     player->setFilter(4, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
     return 0;
 }
@@ -1634,7 +555,7 @@ int Iofrontend::accionesfiltroAudio4(tEvento *evento){
 *
 */
 int Iofrontend::accionesfiltroAudio5(tEvento *evento){
-    UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio5");
+    UISlider *objfilterGraves = (UISlider *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("filtroAudio5");
     player->setFilter(5, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
     return 0;
 }
@@ -1643,7 +564,7 @@ int Iofrontend::accionesfiltroAudio5(tEvento *evento){
 *
 */
 int Iofrontend::accionesfiltroAudio6(tEvento *evento){
-    UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio6");
+    UISlider *objfilterGraves = (UISlider *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("filtroAudio6");
     player->setFilter(6, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
     return 0;
 }
@@ -1652,7 +573,7 @@ int Iofrontend::accionesfiltroAudio6(tEvento *evento){
 *
 */
 int Iofrontend::accionesfiltroAudio7(tEvento *evento){
-    UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio7");
+    UISlider *objfilterGraves = (UISlider *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("filtroAudio7");
     player->setFilter(7, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
     return 0;
 }
@@ -1661,7 +582,7 @@ int Iofrontend::accionesfiltroAudio7(tEvento *evento){
 *
 */
 int Iofrontend::accionesfiltroAudio8(tEvento *evento){
-    UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio8");
+    UISlider *objfilterGraves = (UISlider *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("filtroAudio8");
     player->setFilter(8, objfilterGraves->getProgressPos() - MAXDBGAIN / 2);
     return 0;
 }
@@ -1671,7 +592,7 @@ int Iofrontend::accionesfiltroAudio8(tEvento *evento){
 int Iofrontend::accionesResetFiltros(tEvento *evento){
     Traza::print("Iofrontend::accionesResetFiltros", W_INFO);
     for(int i=0; i < NBIQUADFILTERS; i++){
-        UISlider *objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio" + Constant::TipoToStr(i));
+        UISlider *objfilterGraves = (UISlider *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("filtroAudio" + Constant::TipoToStr(i));
         objfilterGraves->setProgressPos(MAXDBGAIN/2);
     }
     accionesfiltroAudio0(evento);
@@ -1693,14 +614,14 @@ int Iofrontend::accionesSwitchFiltros(tEvento *evento){
     Traza::print("Iofrontend::accionesSwitchFiltros", W_INFO);
     player->setEqualizerOn(!player->isEqualizerOn());
     if (!player->isEqualizerOn()){
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setIcon(btn_off);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnSwitchEq")->setIcon(btn_off);
     } else {
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setIcon(btn_on);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnSwitchEq")->setIcon(btn_on);
     }
 
     UISlider *objfilterGraves;
     for(int i=0; i < NBIQUADFILTERS; i++){
-        objfilterGraves = (UISlider *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio" + Constant::TipoToStr(i));
+        objfilterGraves = (UISlider *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("filtroAudio" + Constant::TipoToStr(i));
         objfilterGraves->setEnabled(player->isEqualizerOn());
     }
 
@@ -1711,18 +632,18 @@ int Iofrontend::accionesSwitchFiltros(tEvento *evento){
 */
 int Iofrontend::accionesLetras(tEvento *evento){
     Traza::print("Iofrontend::accionesLetras", W_INFO);
-    UIListGroup *objPlayList = (UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists");
-    UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
+    UIListGroup *objPlayList = (UIListGroup *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("playLists");
+    UITextElementsArea *textElems = (UITextElementsArea *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("LetrasBox");
 
     objPlayList->setVisible(!objPlayList->isVisible());
     textElems->setVisible(!objPlayList->isVisible());
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("NewWindowIco")->setVisible(textElems->isVisible());
+    getMenu("PANTALLAREPRODUCTOR")->getObjByName("NewWindowIco")->setVisible(textElems->isVisible());
 
     if (textElems->isVisible()){
         getLyricsFromActualSong();
-        ObjectsMenu[PANTALLAREPRODUCTOR]->setFocus("LetrasBox");
+        getMenu("PANTALLAREPRODUCTOR")->setFocus("LetrasBox");
     } else {
-        ObjectsMenu[PANTALLAREPRODUCTOR]->setFocus("playLists");
+        getMenu("PANTALLAREPRODUCTOR")->setFocus("playLists");
     }
     return 0;
 }
@@ -1734,8 +655,8 @@ int Iofrontend::accionesLetras(tEvento *evento){
 */
 void Iofrontend::getLyricsFromActualSong(){
     Traza::print("Iofrontend::getLyricsFromActualSong", W_INFO);
-    UIListGroup *objPlayList = (UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists");
-    UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
+    UIListGroup *objPlayList = (UIListGroup *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("playLists");
+    UITextElementsArea *textElems = (UITextElementsArea *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("LetrasBox");
     if (textElems->isVisible()){
         string cancion = objPlayList->getCol(objPlayList->getLastSelectedPos(), 0)->getTexto();
         string Artist = objPlayList->getCol(objPlayList->getLastSelectedPos(), 1)->getValor();
@@ -1744,7 +665,7 @@ void Iofrontend::getLyricsFromActualSong(){
             threadLyrics = NULL;
         }
         //Lanzamos el thread para obtener las letras
-        scrapper->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
+        scrapper->setObjectsMenu(getMenu("PANTALLAREPRODUCTOR"));
         scrapper->setArtist(Artist);
         scrapper->setTrack(cancion);
         threadLyrics = new Thread<Scrapper>(scrapper, &Scrapper::getLyrics);
@@ -1758,18 +679,18 @@ void Iofrontend::getLyricsFromActualSong(){
 int Iofrontend::accionesEqualizer(tEvento *evento){
     Traza::print("Iofrontend::accionesEqualizer", W_INFO);
     player->setEqualizerVisible(!player->isEqualizerVisible());
-    UISpectrum *objSpectrum = (UISpectrum *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum");
+    UISpectrum *objSpectrum = (UISpectrum *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("spectrum");
 
-    Object *btnEq = ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnEqualizer");
+    Object *btnEq = getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnEqualizer");
 
 
     if (!player->isEqualizerVisible()){
         btnEq->setIcon(control_equalizer);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setVisible(false);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnResetEq")->setVisible(false);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnSwitchEq")->setVisible(false);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnResetEq")->setVisible(false);
 
         for(int i=0; i < NBIQUADFILTERS; i++){
-            ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio" + Constant::TipoToStr(i))->setVisible(false);
+            getMenu("PANTALLAREPRODUCTOR")->getObjByName("filtroAudio" + Constant::TipoToStr(i))->setVisible(false);
         }
         objSpectrum->setEnabled(true);
         player->setViewSpectrum(true);
@@ -1780,11 +701,11 @@ int Iofrontend::accionesEqualizer(tEvento *evento){
         objSpectrum->setEnabled(false);
         objSpectrum->setImgDrawed(false);
         btnEq->setIcon(control_equalizer_blue);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnSwitchEq")->setVisible(true);
-        ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnResetEq")->setVisible(true);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnSwitchEq")->setVisible(true);
+        getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnResetEq")->setVisible(true);
 
         for(int i=0; i < NBIQUADFILTERS; i++){
-            ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("filtroAudio" + Constant::TipoToStr(i))->setVisible(true);
+            getMenu("PANTALLAREPRODUCTOR")->getObjByName("filtroAudio" + Constant::TipoToStr(i))->setVisible(true);
         }
     }
 
@@ -1801,7 +722,7 @@ int Iofrontend::accionesMediaStop(tEvento *evento){
         threadPlayer->join();
 
     Traza::print("Iofrontend::accionesMediaStop. Thread terminado. Actualizando pantalla", W_DEBUG);
-    tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+    tmenu_gestor_objects *obj = getMenu("PANTALLAREPRODUCTOR");
     UIProgressBar *objProg = (UIProgressBar *)obj->getObjByName("progressBarMedia");
     obj->getObjByName("mediaTimerTotal")->setLabel(Constant::timeFormat(0));
     obj->getObjByName("mediaTimer")->setLabel(Constant::timeFormat(0));
@@ -1819,11 +740,11 @@ int Iofrontend::accionesMediaStop(tEvento *evento){
 */
 int Iofrontend::accionesPlaylist(tEvento *evento){
     Traza::print("Iofrontend::accionesPlaylist", W_INFO);
-    UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
+    UIListGroup *playList = ((UIListGroup *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("playLists"));
     playList->refreshLastSelectedPos();
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setIcon(control_pause);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setImgDrawed(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->setFocus("playLists");
+    getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnPlay")->setIcon(control_pause);
+    getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnPlay")->setImgDrawed(false);
+    getMenu("PANTALLAREPRODUCTOR")->setFocus("playLists");
     startSongPlaylist(evento);
     return 0;
 }
@@ -1880,8 +801,8 @@ int Iofrontend::AddServer(tEvento *evento){
     juke->getServerCloud(ONEDRIVESERVER)->setSecret(onedriveSecret);
     
 
-    this->setSelMenu(PANTALLAREPRODUCTOR);
-    tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+    this->setSelMenu("PANTALLAREPRODUCTOR");
+    tmenu_gestor_objects *obj = getMenu("PANTALLAREPRODUCTOR");
 
     //Comprobamos si ha habido algun error en la obtencion del accesstoken
     someErrorToken = comprobarTokenServidores();
@@ -1919,9 +840,9 @@ int Iofrontend::AddServer(tEvento *evento){
 *
 */
 int Iofrontend::showPopupUpload(tEvento *evento){
-    ObjectsMenu[PANTALLAREPRODUCTOR]->setFocus("btnAddContent");
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnAddContent")->setPopup(true);
-    procesarPopups(ObjectsMenu[PANTALLAREPRODUCTOR], evento);
+    getMenu("PANTALLAREPRODUCTOR")->setFocus("btnAddContent");
+    getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnAddContent")->setPopup(true);
+    procesarPopups(getMenu("PANTALLAREPRODUCTOR"), evento);
     return 0;
 }
 
@@ -1930,7 +851,7 @@ int Iofrontend::showPopupUpload(tEvento *evento){
 */
 int Iofrontend::mediaClicked(tEvento *evento){
     Traza::print("Iofrontend::mediaClicked", W_INFO);
-    UIProgressBar * objProg = (UIProgressBar *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarMedia");
+    UIProgressBar * objProg = (UIProgressBar *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("progressBarMedia");
     Traza::print("Pos pulsada barra de tiempo", objProg->getProgressPos(), W_DEBUG);
     
     if (player->isSongDownloaded() && objProg->getProgressMax() > 0 && player->getStatus() == PLAYING){
@@ -1946,14 +867,14 @@ int Iofrontend::mediaClicked(tEvento *evento){
 */
 int Iofrontend::accionVolumen(tEvento *evento){
     Traza::print("Iofrontend::accionVolumen", W_INFO);
-    UIProgressBar * objProg = (UIProgressBar *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarVolumen");
-    UIButton * objMute = (UIButton *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("ImgVol");
+    UIProgressBar * objProg = (UIProgressBar *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("progressBarVolumen");
+    UIButton * objMute = (UIButton *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("ImgVol");
     Traza::print("Pos pulsada volumen: ", objProg->getProgressPos(), W_DEBUG);
 
     int percent = (objProg->getProgressPos() / (float)objProg->getProgressMax()) * 100;
 
     player->setVol(objProg->getProgressPos());
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("labelVol")->setLabel(Constant::TipoToStr(percent) + "%");
+    getMenu("PANTALLAREPRODUCTOR")->getObjByName("labelVol")->setLabel(Constant::TipoToStr(percent) + "%");
 
     if (objMute->getIcon() == sound_mute){
         objMute->setIcon(sound);
@@ -1964,7 +885,7 @@ int Iofrontend::accionVolumen(tEvento *evento){
 
 int Iofrontend::accionRepeat(tEvento *evento){
     Traza::print("Iofrontend::accionRepeat", W_INFO);
-    UIButton * objButton = (UIButton *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnRepeat");
+    UIButton * objButton = (UIButton *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnRepeat");
     if (objButton->getIcon() == btn_repeat_off){
         objButton->setIcon(btn_repeat);
     } else if (objButton->getIcon() == btn_repeat){
@@ -1976,7 +897,7 @@ int Iofrontend::accionRepeat(tEvento *evento){
 
 int Iofrontend::accionRandom(tEvento *evento){
     Traza::print("Iofrontend::accionRandom", W_INFO);
-    UIButton * objButton = (UIButton *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnRandom");
+    UIButton * objButton = (UIButton *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnRandom");
     if (objButton->getIcon() == btn_random_off){
         objButton->setIcon(btn_random);
     } else if (objButton->getIcon() == btn_random){
@@ -1990,8 +911,8 @@ int Iofrontend::accionRandom(tEvento *evento){
 */
 int Iofrontend::accionVolumenMute(tEvento *evento){
     Traza::print("Iofrontend::accionVolumenMute", W_INFO);
-    UIProgressBar * objProg = (UIProgressBar *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("progressBarVolumen");
-    UIButton * objMute = (UIButton *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("ImgVol");
+    UIProgressBar * objProg = (UIProgressBar *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("progressBarVolumen");
+    UIButton * objMute = (UIButton *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("ImgVol");
     static int volAnt = 0;
 
     if (objMute->getIcon() == sound){
@@ -2004,10 +925,10 @@ int Iofrontend::accionVolumenMute(tEvento *evento){
     }
     player->setVol(objProg->getProgressPos());
     int percent = (objProg->getProgressPos() / (float)objProg->getProgressMax()) * 100;
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("labelVol")->setLabel(Constant::TipoToStr(percent) + "%");
+    getMenu("PANTALLAREPRODUCTOR")->getObjByName("labelVol")->setLabel(Constant::TipoToStr(percent) + "%");
 
     objMute->setImgDrawed(false);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("labelVol")->setImgDrawed(false);
+    getMenu("PANTALLAREPRODUCTOR")->getObjByName("labelVol")->setImgDrawed(false);
     return 0;
 }
 
@@ -2017,7 +938,7 @@ int Iofrontend::accionVolumenMute(tEvento *evento){
 void Iofrontend::setPanelMediaVisible(bool var){
     Traza::print("Iofrontend::setPanelMediaVisible", W_INFO);
     try{
-        tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+        tmenu_gestor_objects *obj = getMenu("PANTALLAREPRODUCTOR");
         obj->getObjByName("panelMedia")->setVisible(var);
         obj->getObjByName("btnBackward")->setVisible(var);
         obj->getObjByName("btnPlay")->setVisible(var);
@@ -2041,7 +962,7 @@ void Iofrontend::setPanelMediaVisible(bool var){
 */
 int Iofrontend::startSongPlaylist(tEvento *evento){
     Traza::print("Iofrontend::startSongPlaylist", W_INFO);
-    UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
+    UIListGroup *playList = ((UIListGroup *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("playLists"));
     bool salir = false;
     do{
         string cancion = playList->getValue(playList->getLastSelectedPos());
@@ -2079,7 +1000,7 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
         //Comprobamos si estamos intentando reproducir una cancion del disco
         //duro o de dropbox
         if (!dir.existe(cancion)){
-            UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
+            UITreeListBox *albumList = ((UITreeListBox *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("albumList"));
             int idservidor = albumList->getDestino(albumList->getLastSelectedPos());
             juke->setServerSelected(idservidor);
             //Creamos el thread
@@ -2096,7 +1017,7 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
                 while ((tam = dir.filesize(file.c_str())) < 50000 && SDL_GetTicks() - before < 10000){
                     this->clearScr(cGrisOscuro);
                     tmpEvento = WaitForKey();
-                    procesarControles(ObjectsMenu[PANTALLAREPRODUCTOR], &tmpEvento, NULL);
+                    procesarControles(getMenu("PANTALLAREPRODUCTOR"), &tmpEvento, NULL);
                     this->flipScr();
                     SDL_Delay(20);
                 }
@@ -2108,8 +1029,8 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
             Traza::print("Finalizando reproduccion de ficheros local", W_DEBUG);
         }
 
-        UIButton * objButtonRandom = (UIButton *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnRandom");
-        UIButton * objButtonRepeat = (UIButton *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnRepeat");
+        UIButton * objButtonRandom = (UIButton *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnRandom");
+        UIButton * objButtonRepeat = (UIButton *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnRepeat");
 
         if (playList->getPosActualLista() >= playList->getSize() - 1 && objButtonRandom->getIcon() != btn_random){
             //Caso del fin de la lista de reproduccion. Comprobamos si esta activado el repeat,
@@ -2157,8 +1078,8 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
         }
     } while (!salir && player->getStatus() != STOPED && playList->getPosActualLista() < playList->getSize());
     
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setIcon(control_play);
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnPlay")->setImgDrawed(false);
+    getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnPlay")->setIcon(control_play);
+    getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnPlay")->setImgDrawed(false);
     
     return 0;
 }
@@ -2178,7 +1099,7 @@ bool Iofrontend::bucleReproductor(){
     ignoreButtonRepeats = true;
     tEvento askEvento;
     long lenSongSec = 0;
-    tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+    tmenu_gestor_objects *obj = getMenu("PANTALLAREPRODUCTOR");
     bool panelMediaVisible = true;
     player->setSongDownloaded(false);
 
@@ -2191,7 +1112,7 @@ bool Iofrontend::bucleReproductor(){
         Traza::print("cancion: " + cancion + " time: " + time, W_DEBUG);
 
         //Obtenemos el codigo del album y la cancion que esta reproduciendose actualmente
-        UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
+        UITreeListBox *albumList = ((UITreeListBox *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("albumList"));
         posAlbumSelected = albumList->getLastSelectedPos();
         posSongSelected = playList->getLastSelectedPos();
 
@@ -2214,8 +1135,8 @@ bool Iofrontend::bucleReproductor(){
         player->setScreen(screen);
         player->initAudio();
         player->setStatus(PLAYING);
-        player->setViewSpectrum(ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum")->isEnabled());
-        player->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
+        player->setViewSpectrum(getMenu("PANTALLAREPRODUCTOR")->getObjByName("spectrum")->isEnabled());
+        player->setObjectsMenu(getMenu("PANTALLAREPRODUCTOR"));
 
         Dirutil dir;
         
@@ -2365,8 +1286,8 @@ void Iofrontend::reloadSong(int posAlbumSelected, int posSongSelected){
 
     if (threadDownloader != NULL && player != NULL){
         Traza::print("Iofrontend::reloadSong", W_DEBUG);
-        tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
-        UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
+        tmenu_gestor_objects *obj = getMenu("PANTALLAREPRODUCTOR");
+        UITreeListBox *albumList = ((UITreeListBox *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("albumList"));
         //Cuando detectamos que se ha descargado el fichero totalmente, recargamos
         //el thread para que se pueda avanzar o retroceder. Esto es debido a limitaciones
         //en la libreria de SDL para Mix_LoadMUS_RW con un fichero a medio descargar
@@ -2428,7 +1349,7 @@ void Iofrontend::autenticateAndRefresh(){
 }
 
 void Iofrontend::refrescarAlbums(){
-    tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+    tmenu_gestor_objects *obj = getMenu("PANTALLAREPRODUCTOR");
     juke->setObjectsMenu(obj);
     Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshAlbumAndPlaylist);
     tEvento evento;
@@ -2466,8 +1387,8 @@ void Iofrontend::refrescarAlbums(){
 */
 int Iofrontend::selectAlbum(tEvento *evento){
     Traza::print("Iofrontend::selectAlbum", W_INFO);
-    UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
-    UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
+    UITreeListBox *albumList = ((UITreeListBox *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("albumList"));
+    UIListGroup *playList = ((UIListGroup *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("playLists"));
 
     string albumSelected = albumList->getValue(albumList->getLastSelectedPos());
     Dirutil dir;
@@ -2477,7 +1398,7 @@ int Iofrontend::selectAlbum(tEvento *evento){
     } else {
         Traza::print("Comprobando autorizacion selectAlbum...", W_DEBUG);
 
-        tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+        tmenu_gestor_objects *obj = getMenu("PANTALLAREPRODUCTOR");
 
         int idservidor = albumList->getDestino(albumList->getLastSelectedPos());
         juke->setObjectsMenu(obj);
@@ -2498,12 +1419,12 @@ int Iofrontend::selectAlbum(tEvento *evento){
             pintarIconoProcesando(false);
         }
 
-        UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
+        UITextElementsArea *textElems = (UITextElementsArea *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("LetrasBox");
 
         if (textElems->isVisible() && !playList->isVisible()){
             playList->setVisible(true);
             textElems->setVisible(false);
-            ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("NewWindowIco")->setVisible(false);
+            getMenu("PANTALLAREPRODUCTOR")->getObjByName("NewWindowIco")->setVisible(false);
         }
 
         playList->setPosActualLista(0);
@@ -2526,7 +1447,7 @@ int Iofrontend::selectAlbum(tEvento *evento){
 //    Dropbox *dropbox = new Dropbox();
 //    if (this->accessToken.empty()){
 //        Traza::print("Comprobando autorizacion autenticarDropbox...", W_DEBUG);
-//        tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+//        tmenu_gestor_objects *obj = getMenu("PANTALLAREPRODUCTOR");
 //        Thread<Dropbox> *thread = new Thread<Dropbox>(dropbox, &Dropbox::authenticate);
 //        tEvento evento;
 //
@@ -2591,23 +1512,22 @@ int Iofrontend::autenticarServicios(){
     if (thread->start())
         Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
     
-    tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+    tmenu_gestor_objects *obj = getMenu("PANTALLAREPRODUCTOR");
     tEvento evento;
     tEvento eventoNull;
     clearScr();
     procesarControles(obj, &eventoNull, NULL);
     drawTextCent("Conectando a servicios. Espere...", 0, -70,true,true, cBlanco);
     flipScr();
-
+    
     pintarIconoProcesando(true);
-    while (thread->isRunning() && evento.key != SDLK_ESCAPE && !evento.quit){
+    do{
         evento = WaitForKey();
         procesarControles(obj, &eventoNull, NULL);
         pintarIconoProcesando(false);
-    }
-
+    }while (thread->isRunning() && evento.key != SDLK_ESCAPE && !evento.quit);
     procesarControles(obj, &eventoNull, NULL);
-
+    
     if (evento.key == SDLK_ESCAPE || evento.quit){
         juke->abortServers();
         thread->join();
@@ -2636,7 +1556,7 @@ int Iofrontend::autenticarServicios(){
 */
 int Iofrontend::comprobarTokenServidores(){
     int someErrorToken = MAXSERVERS;
-    tmenu_gestor_objects *obj = ObjectsMenu[PANTALLALOGIN];
+    tmenu_gestor_objects *obj = getMenu("PANTALLALOGIN");
 
     for (int i=0; i < MAXSERVERS; i++){
         if (errorTokenServidor(i)){
@@ -2680,7 +1600,7 @@ int Iofrontend::accionUploadPopup(tEvento *evento){
     Traza::print("Iofrontend::accionUploadPopup", W_INFO);
     //Se obtiene el objeto menupopup que en principio esta seleccionado
     int menu = this->getSelMenu();
-    tmenu_gestor_objects *objsMenu = ObjectsMenu[menu];
+    tmenu_gestor_objects *objsMenu = getMenu(menu);
     Object *obj = objsMenu->getObjByPos(objsMenu->getFocus());
     //Comprobamos que efectivamente, el elemento es un popup
     if (obj->getObjectType() == GUIPOPUPMENU){
@@ -2723,7 +1643,7 @@ int Iofrontend::uploadToServer(tEvento *evento, int idServer){
         //Si se ha seleccionado algo, establecemos el texto en el objeto que hemos recibido por parametro
         if (!fichName.empty()){
             Traza::print("Comprobando autorizacion...", W_DEBUG);
-            juke->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
+            juke->setObjectsMenu(getMenu("PANTALLAREPRODUCTOR"));
             juke->setDirToUpload(fichName);
             juke->setServerSelected(idServer);
 
@@ -2769,7 +1689,7 @@ int Iofrontend::accionAlbumPopup(tEvento *evento){
     Traza::print("Iofrontend::accionAlbumPopup", W_INFO);
     //Se obtiene el objeto menupopup que en principio esta seleccionado
     int menu = this->getSelMenu();
-    tmenu_gestor_objects *objsMenu = ObjectsMenu[menu];
+    tmenu_gestor_objects *objsMenu = getMenu(menu);
     Object *obj = objsMenu->getObjByPos(objsMenu->getFocus());
     //Comprobamos que efectivamente, el elemento es un popup
     if (obj->getObjectType() == GUIPOPUPMENU){
@@ -2800,7 +1720,7 @@ int Iofrontend::accionAlbumPopup(tEvento *evento){
                         tEvento askEvento;
                         this->clearScr(cGrisOscuro);
                         clearEvento(&askEvento);
-                        procesarControles(ObjectsMenu[menu], &askEvento, NULL);
+                        procesarControles(getMenu(menu), &askEvento, NULL);
                         flipScr();
                         //autenticateAndRefresh();
                         refrescarAlbums();
@@ -2819,7 +1739,7 @@ int Iofrontend::accionAlbumPopup(tEvento *evento){
 */
 void Iofrontend::refreshSpectrum(AudioPlayer *player){
     Traza::print("Iofrontend::refreshSpectrum", W_PARANOIC);
-    UISpectrum *obj = ((UISpectrum *) ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("spectrum"));
+    UISpectrum *obj = ((UISpectrum *) getMenu("PANTALLAREPRODUCTOR")->getObjByName("spectrum"));
     AudioPlayer::TStreamMusicPlaying *streamData = player->getStreamMusicPlaying();
 
     if (obj->isEnabled() && player->getNeed_refresh() == 1){
@@ -2872,7 +1792,7 @@ void Iofrontend::actualizaciones(){
         clearEvento(&evento);
 
         while (threadUpdate->isRunning() && evento.key != SDLK_ESCAPE && !evento.quit ){
-            procesarControles(ObjectsMenu[PANTALLAREPRODUCTOR], &eventoNulo, NULL);
+            procesarControles(getMenu("PANTALLAREPRODUCTOR"), &eventoNulo, NULL);
             pintarIconoProcesando(false);
             evento = WaitForKey();
         }
@@ -2887,7 +1807,7 @@ void Iofrontend::actualizaciones(){
         cout << "salida del thread " << threadUpdate->getExitCode() << endl;
         delete threadUpdate;
         clearScr();
-        procesarControles(ObjectsMenu[PANTALLAREPRODUCTOR], &eventoNulo, NULL);
+        procesarControles(getMenu("PANTALLAREPRODUCTOR"), &eventoNulo, NULL);
         flipScr();
     }
     delete updater;
@@ -2898,7 +1818,7 @@ void Iofrontend::actualizaciones(){
 */
 void Iofrontend::bienvenida(){
     Traza::print("bienvenida: Inicio", W_INFO);
-    UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
+    UITreeListBox *albumList = ((UITreeListBox *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("albumList"));
 
     bool someAccesToken = false;
     for (int i=0; i < MAXSERVERS; i++){
@@ -2917,14 +1837,14 @@ void Iofrontend::bienvenida(){
 
         //Procesamos el menu antes de continuar para que obtengamos la captura
         //de pantalla que usaremos de fondo
-        procesarControles(ObjectsMenu[menuInicial], &askEvento, NULL);
+        procesarControles(getMenu(menuInicial), &askEvento, NULL);
         SDL_Rect iconRectFondo = {0, 0, this->getWidth(), this->getHeight()};
         SDL_Surface *mySurface = NULL;
         takeScreenShot(&mySurface, iconRectFondo);
 
         //Seguidamente cambiamos la pantalla a la de la confirmacion
-        setSelMenu(PANTALLABIENVENIDA);
-        tmenu_gestor_objects *objMenu = ObjectsMenu[PANTALLABIENVENIDA];
+        setSelMenu("PANTALLABIENVENIDA");
+        tmenu_gestor_objects *objMenu = getMenu("PANTALLABIENVENIDA");
         //objMenu->getObjByName("borde")->setLabel(titulo);
 
         string txtDetalle = "Que emocionante! Parece que es la primera vez que accedes a Onmusik!\n";
@@ -2968,7 +1888,7 @@ void Iofrontend::bienvenida(){
 *
 */
 void Iofrontend::addLocalAlbum(string ruta){
-    tmenu_gestor_objects *pantRepr = ObjectsMenu[PANTALLAREPRODUCTOR];
+    tmenu_gestor_objects *pantRepr = getMenu("PANTALLAREPRODUCTOR");
     Traza::print("Iofrontend::addLocalAlbum. Reproduciendo: " + ruta, W_INFO);
 
     try{
@@ -3024,15 +1944,15 @@ int Iofrontend::casoPANTALLALOGIN(string titulo, string txtDetalle, bool allButt
 
     //Procesamos el menu antes de continuar para que obtengamos la captura
     //de pantalla que usaremos de fondo
-    procesarControles(ObjectsMenu[menuInicial], &askEvento, NULL);
+    procesarControles(getMenu(menuInicial), &askEvento, NULL);
     SDL_Rect iconRectFondo = {0, 0, this->getWidth(), this->getHeight()};
     SDL_Surface *mySurface = NULL;
     drawRectAlpha(iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h , cNegro, ALPHABACKGROUND);
     takeScreenShot(&mySurface, iconRectFondo);
 
     //Seguidamente cambiamos la pantalla a la de la confirmacion
-    setSelMenu(PANTALLALOGIN);
-    tmenu_gestor_objects *objMenu = ObjectsMenu[PANTALLALOGIN];
+    setSelMenu("PANTALLALOGIN");
+    tmenu_gestor_objects *objMenu = getMenu("PANTALLALOGIN");
     objMenu->getObjByName("borde")->setLabel(titulo);
 
     UITextElementsArea *textElems = (UITextElementsArea *)objMenu->getObjByName("textosBox");
@@ -3098,15 +2018,15 @@ int Iofrontend::casoPANTALLALOGIN(string titulo, string txtDetalle, bool allButt
 */
 int Iofrontend::showPopupUploadCD(tEvento *evento){
 
-    loadComboUnidades("popupUploadCD", PANTALLAREPRODUCTOR, DRIVE_CDROM);
+    loadComboUnidades("popupUploadCD", getPosMenu("PANTALLAREPRODUCTOR"), DRIVE_CDROM);
 
 
-    UIList *combo = (UIList *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("popupUploadCD");
+    UIList *combo = (UIList *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("popupUploadCD");
     combo->addElemLista("Opciones CDDB", "cddbopt", bullet_wrench);
 
-    ObjectsMenu[PANTALLAREPRODUCTOR]->setFocus("btnAddCD");
-    ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("btnAddCD")->setPopup(true);
-    procesarPopups(ObjectsMenu[PANTALLAREPRODUCTOR], evento);
+    getMenu("PANTALLAREPRODUCTOR")->setFocus("btnAddCD");
+    getMenu("PANTALLAREPRODUCTOR")->getObjByName("btnAddCD")->setPopup(true);
+    procesarPopups(getMenu("PANTALLAREPRODUCTOR"), evento);
     return 0;
 }
 
@@ -3117,7 +2037,7 @@ int Iofrontend::accionUploadCDPopup(tEvento *evento){
     Traza::print("Iofrontend::accionUploadCDPopup", W_INFO);
     //Se obtiene el objeto menupopup que en principio esta seleccionado
     int menu = this->getSelMenu();
-    tmenu_gestor_objects *objsMenu = ObjectsMenu[menu];
+    tmenu_gestor_objects *objsMenu = getMenu(menu);
     Object *obj = objsMenu->getObjByPos(objsMenu->getFocus());
     //Comprobamos que efectivamente, el elemento es un popup
     if (obj->getObjectType() == GUIPOPUPMENU){
@@ -3138,7 +2058,7 @@ int Iofrontend::accionUploadCDPopup(tEvento *evento){
 
                 vector<CdTrackInfo *> cdTrackList;
                 FreedbQuery query;
-                tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+                tmenu_gestor_objects *obj = getMenu("PANTALLAREPRODUCTOR");
 
                 juke->setObjectsMenu(obj);
                 juke->setCdDrive(selected);
@@ -3148,20 +2068,20 @@ int Iofrontend::accionUploadCDPopup(tEvento *evento){
                 juke->setServerSelected(serverSelected);
 
                 Thread<Jukebox> *threadCD = new Thread<Jukebox>(juke, &Jukebox::searchCddbAlbums);
-                waitJukebox(threadCD, PANTALLAREPRODUCTOR);
+                waitJukebox(threadCD, getPosMenu("PANTALLAREPRODUCTOR"));
 
                 string categAlbum;
                 string idAlbum;
 
                 if (cdTrackList.size() == 0){
-                    setSelMenu(PANTALLAREPRODUCTOR);
+                    setSelMenu("PANTALLAREPRODUCTOR");
 //                    return 0;
                 } else if (cdTrackList.size() == 1){
                     categAlbum = cdTrackList.at(0)->genre;
                     idAlbum = cdTrackList.at(0)->discId;
                 } else {
 
-                    obj = ObjectsMenu[PANTALLACDDB];
+                    obj = getMenu("PANTALLACDDB");
                     UIListGroup *listAlbumsCddb = ((UIListGroup *)obj->getObjByName("listAlbumsCddb"));
 
                     for (int i=0; i < cdTrackList.size(); i++){
@@ -3173,20 +2093,20 @@ int Iofrontend::accionUploadCDPopup(tEvento *evento){
                         listAlbumsCddb->addElemLista(miFila);
                     }
 
-                    if (waitAceptCancel("aceptarCddb", "cancelarCddb", PANTALLACDDB)){
-                        setSelMenu(PANTALLAREPRODUCTOR);
+                    if (waitAceptCancel("aceptarCddb", "cancelarCddb", getPosMenu("PANTALLACDDB"))){
+                        setSelMenu("PANTALLAREPRODUCTOR");
                         categAlbum = listAlbumsCddb->getCol(listAlbumsCddb->getPosActualLista(), 2)->getValor();
                         idAlbum = listAlbumsCddb->getCol(listAlbumsCddb->getPosActualLista(), 3)->getValor();
                     } else {
-                        setSelMenu(PANTALLAREPRODUCTOR);
+                        setSelMenu("PANTALLAREPRODUCTOR");
                         return 0;
                     }
                 }
 
-                setSelMenu(PANTALLAREPRODUCTOR);
+                setSelMenu("PANTALLAREPRODUCTOR");
                 juke->setIdSelected(idAlbum);
                 juke->setCategSelected(categAlbum);
-                juke->setObjectsMenu(ObjectsMenu[PANTALLAREPRODUCTOR]);
+                juke->setObjectsMenu(getMenu("PANTALLAREPRODUCTOR"));
                 Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::extraerCD);
                 thread->start();
             }
@@ -3199,7 +2119,7 @@ int Iofrontend::accionUploadCDPopup(tEvento *evento){
 *
 */
 void Iofrontend::waitJukebox( Thread<Jukebox> *var, int pantalla){
-    tmenu_gestor_objects *obj = ObjectsMenu[pantalla];
+    tmenu_gestor_objects *obj = getMenu(pantalla);
     tEvento evento;
     tEvento eventoNull;
     clearScr();
@@ -3220,70 +2140,8 @@ void Iofrontend::waitJukebox( Thread<Jukebox> *var, int pantalla){
 /**
 *
 */
-bool Iofrontend::waitAceptCancel(string btnAceptar, string btnCancelar, int pantalla){
-    int menuInicial = getSelMenu();
-    tEvento askEvento;
-    clearEvento(&askEvento);
-
-    SDL_Rect iconRectFondo = {0, 0, this->getWidth(), this->getHeight()};
-    SDL_Surface *mySurface = NULL;
-    clearScr();
-
-    procesarControles(ObjectsMenu[menuInicial], &askEvento, NULL);
-    drawRectAlpha(iconRectFondo.x, iconRectFondo.y, iconRectFondo.w, iconRectFondo.h , cNegro, ALPHABACKGROUND);
-    takeScreenShot(&mySurface, iconRectFondo);
-
-    setSelMenu(pantalla);
-    tmenu_gestor_objects *obj = ObjectsMenu[pantalla];
-    long delay = 0;
-    unsigned long before = 0;
-    obj->setFocus(0);
-    bool salir = false;
-    bool salida = false;
-
-    for (int i=0; i < obj->getSize(); i++){
-        obj->getObjByPos(i)->setImgDrawed(false);
-    }
-    procesarControles(obj, &askEvento, NULL);
-    flipScr();
-
-
-    do{
-        before = SDL_GetTicks();
-        askEvento = WaitForKey();
-        printScreenShot(&mySurface, iconRectFondo);
-
-        procesarControles(obj, &askEvento, NULL);
-        flipScr();
-        salir = (askEvento.isJoy && askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_B)) ||
-        (askEvento.isKey && askEvento.key == SDLK_ESCAPE);
-
-        if (obj->getObjByName(btnAceptar)->getTag().compare("selected") == 0){
-            salir = true;
-            salida = true;
-            obj->getObjByName(btnAceptar)->setTag("");
-            Traza::print("Detectado SI pulsado", W_DEBUG);
-        } else if (obj->getObjByName(btnCancelar)->getTag().compare("selected") == 0){
-            salir = true;
-            salida = false;
-            obj->getObjByName(btnCancelar)->setTag("");
-            Traza::print("Detectado NO pulsado", W_DEBUG);
-        }
-
-        delay = before - SDL_GetTicks() + TIMETOLIMITFRAME;
-        if(delay > 0) SDL_Delay(delay);
-    } while (!salir);
-
-    setSelMenu(menuInicial);
-
-    return salida;
-}
-
-/**
-*
-*/
 int Iofrontend::accionesCddbCancelar(tEvento *evento){
-    setSelMenu(PANTALLAREPRODUCTOR);
+    setSelMenu("PANTALLAREPRODUCTOR");
     return 0;
 }
 
@@ -3291,7 +2149,7 @@ int Iofrontend::accionesCddbCancelar(tEvento *evento){
 *
 */
 int Iofrontend::accionesLetrasBox(tEvento *evento){
-    UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
+    UITextElementsArea *textElems = (UITextElementsArea *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("LetrasBox");
     Traza::print("Iofrontend::accionesLetrasBox", textElems->getSelectedPos(), W_DEBUG);
     if (textElems->getSelectedPos() >= 0){
         string tmpUrl = textElems->getTextVector()->at(textElems->getSelectedPos())->getUrl();
@@ -3332,7 +2190,7 @@ int Iofrontend::accionesCddbAceptar(tEvento *evento){
     Traza::print("Iofrontend::accionesCddbAceptar", W_INFO);
 
     string configIniFile = Constant::getAppDir() + Constant::getFileSep() + "config.ini";
-    tmenu_gestor_objects *obj = ObjectsMenu[PANTALLACDDBDATA];
+    tmenu_gestor_objects *obj = getMenu("PANTALLACDDBDATA");
 
     string user =     ((UIInput *)obj->getObjByName("inputUsuario"))->getText();
     string hostname = ((UIInput *)obj->getObjByName("inputHostname"))->getText();
@@ -3383,7 +2241,7 @@ int Iofrontend::accionesCddbAceptar(tEvento *evento){
 
         config->writeToFile(configIniFile);
         delete config;
-        setSelMenu(PANTALLAREPRODUCTOR);
+        setSelMenu("PANTALLAREPRODUCTOR");
     }
 
     return 0;
@@ -3393,9 +2251,9 @@ int Iofrontend::accionesCddbAceptar(tEvento *evento){
 *
 */
 void Iofrontend::showCDDBMenuData(){
-    setSelMenu(PANTALLACDDBDATA);
-    ObjectsMenu[PANTALLACDDBDATA]->findNextFocus();
-    tmenu_gestor_objects *obj = ObjectsMenu[PANTALLACDDBDATA];
+    setSelMenu("PANTALLACDDBDATA");
+    getMenu("PANTALLACDDBDATA")->findNextFocus();
+    tmenu_gestor_objects *obj = getMenu("PANTALLACDDBDATA");
 
     t_hostname structHostname;
     Constant::getHostname("localhost", &structHostname);
@@ -3436,7 +2294,7 @@ void Iofrontend::showCDDBMenuData(){
 
 int Iofrontend::accionesAlbumSelec(tEvento *evento){
     Traza::print("Iofrontend::accionesAlbumSelec", W_INFO);
-    UITreeListBox *treeList = ((UITreeListBox *)ObjectsMenu[PANTALLAFOO]->getObjByName("treeAlbumList"));
+    UITreeListBox *treeList = ((UITreeListBox *)getMenu("PANTALLAFOO")->getObjByName("treeAlbumList"));
     TreeNode node = treeList->get(treeList->getPosActualLista());
     Traza::print("Selected node: " + node.id + (node.show ? " S" : " N"), W_DEBUG);
 
@@ -3462,8 +2320,8 @@ int Iofrontend::accionesAlbumSelec(tEvento *evento){
  */
 int Iofrontend::selectTreeAlbum(tEvento *evento){
     Traza::print("Iofrontend::selectAlbum", W_INFO);
-    UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("albumList"));
-    UIListGroup *playList = ((UIListGroup *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("playLists"));
+    UITreeListBox *albumList = ((UITreeListBox *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("albumList"));
+    UIListGroup *playList = ((UIListGroup *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("playLists"));
 
     TreeNode node = albumList->get(albumList->getLastSelectedPos());
     string albumSelected = node.value;
@@ -3475,7 +2333,7 @@ int Iofrontend::selectTreeAlbum(tEvento *evento){
     } else if (node.estado != TREENODEOBTAINED){
         Traza::print("Comprobando autorizacion selectAlbum...", W_DEBUG);
 
-        tmenu_gestor_objects *obj = ObjectsMenu[PANTALLAREPRODUCTOR];
+        tmenu_gestor_objects *obj = getMenu("PANTALLAREPRODUCTOR");
 
         int idservidor = albumList->getDestino(albumList->getLastSelectedPos());
         juke->setObjectsMenu(obj);
@@ -3495,7 +2353,7 @@ int Iofrontend::selectTreeAlbum(tEvento *evento){
             pintarIconoProcesando(false);
         }
 
-        UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu[PANTALLAREPRODUCTOR]->getObjByName("LetrasBox");
+        UITextElementsArea *textElems = (UITextElementsArea *)getMenu("PANTALLAREPRODUCTOR")->getObjByName("LetrasBox");
 
         if (textElems->isVisible() && !playList->isVisible()){
             playList->setVisible(true);
