@@ -15,13 +15,13 @@
 #include "updater/updater.h"
 #include <chrono>
 #include <thread>
+#include "IofrontendDefines.h"
 
 
 const unsigned int MAXSONG_REPEAT_AVOID = 20;
 const int MAX_STOP_TIMEOUT = 8000;
 
 class SongsReproduced{
-
     public:
         SongsReproduced();
         ~SongsReproduced();
@@ -36,7 +36,15 @@ class SongsReproduced{
 };
 
 class Iofrontend : public BaseFrontend {
-
+    public :
+        Iofrontend();
+        ~Iofrontend();
+        
+        void autenticateAndRefresh();
+        void bienvenida();
+        void actualizaciones();
+        void addLocalAlbum(string ruta);
+        
      private :
         //Override from parent class BaseFrontend
         void setDinamicSizeObjects();
@@ -58,7 +66,6 @@ class Iofrontend : public BaseFrontend {
         void setPanelMediaVisible(bool );
         bool bucleReproductor();
         int calculaPosPanelMedia();
-        int accionesCargaPantalla(tEvento *);
         int accionesMediaAvanzar(tEvento *);
         int accionesMediaRetroceder(tEvento *);
         int accionesMediaPause(tEvento *);
@@ -95,12 +102,12 @@ class Iofrontend : public BaseFrontend {
         void refreshSpectrum(AudioPlayer *player);
         void reloadSong(int posAlbumSelected, int posSongSelected);
         void getLyricsFromActualSong();
-        int casoPANTALLALOGIN(string titulo, string txtDetalle, bool allButtonsOn);
+        int casoPANTALLALOGIN(string titulo, string txtDetalle, bool enableServersUp);
         int accionUploadPopup(tEvento *evento);
         int accionUploadCDPopup(tEvento *evento);
         int uploadToServer(tEvento *evento, int idServer);
         int comprobarTokenServidores();
-        void waitJukebox( Thread<Jukebox> *var, int pantalla);
+        void waitJukebox( Thread<Jukebox> *var, string pantalla);
         int accionesCddbAceptar(tEvento *evento);
         void showCDDBMenuData();
         int accionesLetrasBox(tEvento *evento);
@@ -114,13 +121,6 @@ class Iofrontend : public BaseFrontend {
         Jukebox * getJuke(){return juke;}
         int accionesCddbCancelar(tEvento *evento);
         
-    public :
-        Iofrontend();
-        ~Iofrontend();
-        
-        void autenticateAndRefresh();
-        void bienvenida();
-        void actualizaciones();
-        void addLocalAlbum(string ruta);
+    
 };
 #endif //Iofrontend_H

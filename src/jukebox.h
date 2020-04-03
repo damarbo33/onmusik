@@ -25,7 +25,7 @@ const char arrTags[9][20] = {{"album"},{"title"},
 
 typedef enum{tagAlbum, tagTitle, tagDuration,tagTrack,tagGenre,tagPublisher,tagComposer,tagArtist,tagDate,tagMAX} id3Pos;
 typedef enum{DROPBOXSERVER, GOOGLEDRIVESERVER, ONEDRIVESERVER, MAXSERVERS} cloudServers;
-const char arrNameServers[3][20] = {{"Drobox"},{"Google"},{"undefined"}};
+const char arrNameServers[3][20] = {{"Drobox"},{"Google"},{"One Drive"}};
 const char DIRCLOUD[] = "ONMUSIK";
 
 #define TREENODEINITIAL 0
