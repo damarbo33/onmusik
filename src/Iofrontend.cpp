@@ -793,7 +793,7 @@ int Iofrontend::AddServer(tEvento *evento){
         int serverSelected = casoPANTALLALOGIN("Autorizar aplicaci%C3%B3n", mensaje, false);
         if (serverSelected < MAXSERVERS){
             string tmpClient = juke->getServerCloud(serverSelected)->getClientid();
-            string tmpSecret = juke->getServerCloud(serverSelected)->getSecret();
+//            string tmpSecret = juke->getServerCloud(serverSelected)->getSecret();
             strNameServer = arrNameServers[serverSelected];
 
             juke->getServerCloud(serverSelected)->launchAuthorize(tmpClient);
@@ -803,7 +803,7 @@ int Iofrontend::AddServer(tEvento *evento){
             
             if (!code.empty()){
                 clearScr(cGrisOscuro);
-                juke->getServerCloud(serverSelected)->storeAccessToken(tmpClient, tmpSecret, code, false);
+                juke->getServerCloud(serverSelected)->storeAccessToken(code, false);
             }
             //Commented to force the refresh of the list
             //someErrorToken = comprobarTokenServidores();
@@ -947,10 +947,10 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
         string file = Constant::getAppDir() + tempFileSep + "temp.ogg";
         //Intentamos parar el thread del reproductor
         if (threadPlayer != NULL){
-            if (threadPlayer->isRunning()){
+            if (player->getStatus() != STOPED){
                 Traza::print("Iofrontend::startSongPlaylist. Terminando Thread de reproduccion...", W_DEBUG);;
                 player->stop();
-                waitFinishThread(threadPlayer, MAX_STOP_TIMEOUT);
+                waitFinishThreadPlayer(MAX_STOP_TIMEOUT);
                 Traza::print("Iofrontend::startSongPlaylist. Reproduccion terminada.", W_DEBUG);
             }
             delete threadPlayer;
@@ -959,11 +959,9 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
 
         Traza::print("Iofrontend::startSongPlaylist. Cancelando descarga", W_DEBUG);
         //Comprobamos que no haya ninguna descarga activa
-        if (threadDownloader != NULL){
-            if (threadDownloader->isRunning()){
-                juke->abortDownload();
-                waitFinishThread(threadDownloader, MAX_STOP_TIMEOUT);
-            }
+        if (!juke->isFileDownloaded()){
+            juke->abortDownload();
+            waitFinishThreadDownloader(MAX_STOP_TIMEOUT);
             delete threadDownloader;
             threadDownloader = NULL;
         }
@@ -990,7 +988,7 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
 
                 tEvento tmpEvento;
                 long before = SDL_GetTicks();
-                //Esperamos a que se carguen al menos 50K de la cancion
+                //Esperamos a que se carguen al menos 500K de la cancion
                 while ((tam = dir.filesize(file.c_str())) < 50000 && SDL_GetTicks() - before < 10000){
                     this->clearScr(cGrisOscuro);
                     tmpEvento = WaitForKey();
@@ -1163,8 +1161,7 @@ bool Iofrontend::bucleReproductor(){
             //Si pulsamos escape, paramos la ejecucion
             salir = player->getStatus() == STOPED || player->getStatus() == FINISHEDSONG;
 
-            if (salir && (player->getStatus() == STOPED
-                    || player->getStatus() == FINISHEDSONG))
+            if (salir)
                 Traza::print("Saliendo por fin de cancion",player->getStatus(), W_DEBUG);
 
             Traza::print("Estado Cancion 4", player->getStatus(), W_PARANOIC);
@@ -1177,7 +1174,7 @@ bool Iofrontend::bucleReproductor(){
                     player->stop();
                     player->setSongDownloaded(true);
                     Traza::print("Esperando a que termine el thread", player->getStatus(), W_DEBUG);
-                    waitFinishThread(threadPlayer, MAX_STOP_TIMEOUT);
+                    waitFinishThreadPlayer(MAX_STOP_TIMEOUT);
                     Traza::print("Thread Terminado", player->getStatus(), W_DEBUG);
                     salir = true;
                     salidaForzada = true;
@@ -1212,7 +1209,7 @@ bool Iofrontend::bucleReproductor(){
                 Traza::print("Estado Cancion 5.1 stop", player->getStatus(), W_DEBUG);
                 player->stop();
                 Traza::print("Esperando a que termine el thread", player->getStatus(), W_DEBUG);
-                waitFinishThread(threadPlayer, MAX_STOP_TIMEOUT);
+                waitFinishThreadPlayer(MAX_STOP_TIMEOUT);
                 Traza::print("Thread Terminado", player->getStatus(), W_DEBUG);
                 salir = true;
                 exit(0);
@@ -1221,13 +1218,12 @@ bool Iofrontend::bucleReproductor(){
             Traza::print("Estado Cancion 7", player->getStatus(), W_PARANOIC);
             //Recargamos la cancion si se ha terminado la descarga de la misma
             //y no se habia obtenido informacion del tiempo total de la cancion
-            if (threadDownloader != NULL){
-                //Comprobamos si se ha terminado la descarga en cualquier caso
-                if (!threadDownloader->isRunning()){
-                    reloadSong(posAlbumSelected, posSongSelected);
-                    player->setSongDownloaded(true);
-                    threadDownloader = NULL;
-                }
+            //Comprobamos si se ha terminado la descarga en cualquier caso
+            if (juke->isFileDownloaded()){
+                reloadSong(posAlbumSelected, posSongSelected);
+                player->setSongDownloaded(true);
+                delete threadDownloader;
+                threadDownloader = NULL;
             }
             delay = before - SDL_GetTicks() + TIMETOLIMITFRAME;
             if(delay > 0) SDL_Delay(delay);
@@ -1258,10 +1254,8 @@ bool Iofrontend::bucleReproductor(){
  * @param posSongSelected
  */
 void Iofrontend::reloadSong(int posAlbumSelected, int posSongSelected){
-    Traza::print("Iofrontend::reloadSong", W_INFO);
-
     if (threadDownloader != NULL && player != NULL){
-        Traza::print("Iofrontend::reloadSong", W_DEBUG);
+        Traza::print("Iofrontend::reloadSong", W_PARANOIC);
         tmenu_gestor_objects *obj = getMenu(PANTALLAREPRODUCTOR);
         UITreeListBox *objAlbumList = ((UITreeListBox *)getMenu(PANTALLAREPRODUCTOR)->getObjByName(albumList));
         //Cuando detectamos que se ha descargado el fichero totalmente, recargamos
@@ -1269,7 +1263,7 @@ void Iofrontend::reloadSong(int posAlbumSelected, int posSongSelected){
         //en la libreria de SDL para Mix_LoadMUS_RW con un fichero a medio descargar
         //por streaming. Solo lo hacemos si se ha terminado el thread de descarga, se esta
         //reproduciendo una cancion y no se ha seleccionado otro album que haya cambiado la lista
-        if (!threadDownloader->isRunning() && !player->isSongDownloaded() && player->getStatus() == PLAYING &&
+        if (juke->isFileDownloaded() && !player->isSongDownloaded() && player->getStatus() == PLAYING &&
             posAlbumSelected == objAlbumList->getLastSelectedPos()){
             UIListGroup *playList = ((UIListGroup *)obj->getObjByName(playLists));
             Traza::print("Descarga completada correctamente", W_DEBUG);
@@ -1290,6 +1284,7 @@ void Iofrontend::reloadSong(int posAlbumSelected, int posSongSelected){
                 Traza::print("Thread reproductor started with id: ", threadPlayer->getThreadID(), W_DEBUG);
 
             Traza::print("reloadSong player started", W_DEBUG);
+            delete threadDownloader;
             threadDownloader = NULL;
 
             //Una vez que el fichero esta descargado, ya podemos obtener los tags id3 que contienen
@@ -1328,6 +1323,7 @@ void Iofrontend::refrescarAlbums(){
     tmenu_gestor_objects *obj = getMenu(PANTALLAREPRODUCTOR);
     juke->setObjectsMenu(obj);
     Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshAlbumAndPlaylist);
+    
     tEvento evento;
     tEvento eventoNull;
 
@@ -1340,7 +1336,7 @@ void Iofrontend::refrescarAlbums(){
     clearEvento(&evento);
     clearEvento(&eventoNull);
 
-    while (thread->isRunning() && evento.key != SDLK_ESCAPE && !evento.quit){
+    while (!juke->isAlbumsAndPlaylistsObtained() && evento.key != SDLK_ESCAPE && !evento.quit){
         evento = WaitForKey();
         procesarControles(obj, &eventoNull, NULL);
         pintarIconoProcesando(false);
@@ -1389,7 +1385,7 @@ int Iofrontend::selectAlbum(tEvento *evento){
 
 
         tEvento evento;
-        while (thread->isRunning() && evento.key != SDLK_ESCAPE && !evento.quit){
+        while (!juke->isAlbumsAndPlaylistsObtained() && evento.key != SDLK_ESCAPE && !evento.quit){
             evento = WaitForKey();
             procesarControles(obj, &evento, NULL);
             pintarIconoProcesando(false);
@@ -1501,7 +1497,7 @@ int Iofrontend::autenticarServicios(){
         evento = WaitForKey();
         procesarControles(obj, &eventoNull, NULL);
         pintarIconoProcesando(false);
-    }while (thread->isRunning() && evento.key != SDLK_ESCAPE && !evento.quit);
+    }while (!juke->isServersAuthenticated() && evento.key != SDLK_ESCAPE && !evento.quit);
     procesarControles(obj, &eventoNull, NULL);
     
     if (evento.key == SDLK_ESCAPE || evento.quit){
@@ -2049,7 +2045,8 @@ int Iofrontend::accionUploadCDPopup(tEvento *evento){
                 juke->setServerSelected(serverSelected);
 
                 Thread<Jukebox> *threadCD = new Thread<Jukebox>(juke, &Jukebox::searchCddbAlbums);
-                waitJukebox(threadCD, PANTALLAREPRODUCTOR);
+                threadCD->start();
+                waitJukebox(PANTALLAREPRODUCTOR);
 
                 string categAlbum;
                 string idAlbum;
@@ -2099,7 +2096,7 @@ int Iofrontend::accionUploadCDPopup(tEvento *evento){
 /**
 *
 */
-void Iofrontend::waitJukebox( Thread<Jukebox> *var, string pantalla){
+void Iofrontend::waitJukebox(string pantalla){
     tmenu_gestor_objects *obj = getMenu(pantalla);
     tEvento evento;
     tEvento eventoNull;
@@ -2107,11 +2104,10 @@ void Iofrontend::waitJukebox( Thread<Jukebox> *var, string pantalla){
     procesarControles(obj, &eventoNull, NULL);
     flipScr();
     pintarIconoProcesando(true);
-    var->start();
     clearEvento(&evento);
     clearEvento(&eventoNull);
 
-    while (var->isRunning() && evento.key != SDLK_ESCAPE && !evento.quit){
+    while (!juke->isCddbObtained() && evento.key != SDLK_ESCAPE && !evento.quit){
         evento = WaitForKey();
         procesarControles(obj, &eventoNull, NULL);
         pintarIconoProcesando(false);
@@ -2303,7 +2299,6 @@ int Iofrontend::selectTreeAlbum(tEvento *evento){
     Traza::print("Iofrontend::selectAlbum", W_INFO);
     UITreeListBox *objAlbumList = ((UITreeListBox *)getMenu(PANTALLAREPRODUCTOR)->getObjByName(albumList));
     UIListGroup *playList = ((UIListGroup *)getMenu(PANTALLAREPRODUCTOR)->getObjByName(playLists));
-
     TreeNode node = objAlbumList->get(objAlbumList->getLastSelectedPos());
     string albumSelected = node.value;
     
@@ -2322,13 +2317,14 @@ int Iofrontend::selectTreeAlbum(tEvento *evento){
         juke->setAlbumSelected(objAlbumList->getValue(objAlbumList->getLastSelectedPos()));
 
         Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlaylist);
-
+        
         if (thread->start())
             Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
+        
         pintarIconoProcesando(true);
 
         tEvento evento;
-        while (thread->isRunning() && evento.key != SDLK_ESCAPE && !evento.quit){
+        while (!juke->isAlbumsAndPlaylistsObtained() && evento.key != SDLK_ESCAPE && !evento.quit){
             evento = WaitForKey();
             procesarControles(obj, &evento, NULL);
             pintarIconoProcesando(false);
@@ -2356,11 +2352,13 @@ int Iofrontend::selectTreeAlbum(tEvento *evento){
  * @param timeout
  * @return 
  */
-bool Iofrontend::waitFinishThread(Thread<AudioPlayer> *thread, int timeout){
+bool Iofrontend::waitFinishThreadPlayer(int timeout){
     bool ret = true;
     unsigned long before = SDL_GetTicks();
-    while (thread->isRunning() && ret){
-        std::this_thread::sleep_for(std::chrono::milliseconds(90));
+    if (threadPlayer != NULL)
+        threadPlayer->join();
+    while (player->getStatus() != STOPED && ret){
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
         ret = SDL_GetTicks() - before < timeout;
     }
     return ret;
@@ -2372,10 +2370,10 @@ bool Iofrontend::waitFinishThread(Thread<AudioPlayer> *thread, int timeout){
  * @param timeout
  * @return 
  */
-bool Iofrontend::waitFinishThread(Thread<Jukebox> *thread, int timeout){
+bool Iofrontend::waitFinishThreadDownloader(int timeout){
     bool ret = true;
     unsigned long before = SDL_GetTicks();
-    while (thread->isRunning() && ret){
+    while (!juke->isFileDownloaded() && ret){
         std::this_thread::sleep_for(std::chrono::milliseconds(90));
         ret = SDL_GetTicks() - before < timeout;
     }

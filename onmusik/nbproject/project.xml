@@ -6,12 +6,13 @@
             <name>onmusik</name>
             <c-extensions/>
             <cpp-extensions>cpp</cpp-extensions>
-            <header-extensions>h</header-extensions>
+            <header-extensions/>
             <sourceEncoding>UTF-8</sourceEncoding>
             <make-dep-projects/>
             <sourceRootList>
                 <sourceRootElem>../src</sourceRootElem>
                 <sourceRootElem>../../MP3Play/src</sourceRootElem>
+                <sourceRootElem>../../Galera/src/image</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>
@@ -23,15 +24,15 @@
                     <type>1</type>
                 </confElem>
                 <confElem>
-                    <name>Debug32</name>
-                    <type>1</type>
-                </confElem>
-                <confElem>
                     <name>Release32</name>
                     <type>1</type>
                 </confElem>
                 <confElem>
                     <name>Release64</name>
+                    <type>1</type>
+                </confElem>
+                <confElem>
+                    <name>Debug32</name>
                     <type>1</type>
                 </confElem>
             </confList>

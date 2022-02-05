@@ -1,6 +1,7 @@
 #ifndef JUKEBOX_H
 #define JUKEBOX_H
 
+#include "Constant.h"
 #include "Launcher.h"
 #include "Menuobject.h"
 #include "servers/dropbox.h"
@@ -102,6 +103,18 @@ class Jukebox{
             return filterUploadExt;
         }
         
+        bool isFileDownloaded(){return this->fileDownloaded;}
+        void setFileDownloaded(bool var){this->fileDownloaded = var;}
+        
+        bool isServersAuthenticated(){return this->serversAuthenticated;}
+        void setServersAuthenticated(bool var){this->serversAuthenticated = var;}
+        
+        bool isAlbumsAndPlaylistsObtained(){return this->albumsAndPlaylistsObtained;}
+        void setAlbumsAndPlaylistsObtained(bool var){this->albumsAndPlaylistsObtained = var;}
+        
+        bool isCddbObtained(){return this->cddbObtained;}
+        void setCddbObtained(bool var){this->cddbObtained = var;}
+        
     protected:
 
     private:
@@ -134,6 +147,10 @@ class Jukebox{
         bool existe(string ruta);
         bool borrarArchivo(string ruta);
         void generarMetadatos(string ruta);
+        bool fileDownloaded;
+        bool serversAuthenticated;
+        bool albumsAndPlaylistsObtained;
+        bool cddbObtained;
         
         
 

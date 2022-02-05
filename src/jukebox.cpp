@@ -31,6 +31,10 @@ Jukebox::Jukebox(){
     cdDrive = "";
     extractionPath = "";
     filterUploadExt = ".ogg";
+    fileDownloaded = true;
+    serversAuthenticated = false;
+    albumsAndPlaylistsObtained = false;
+    cddbObtained = false;
 }
 
 /**
@@ -131,15 +135,17 @@ uint32_t Jukebox::extraerCD(){
 */
 uint32_t Jukebox::refreshAlbumAndPlaylist(){
     aborted = false;
+    setAlbumsAndPlaylistsObtained(false);
     //Refresco de la lista de albumes
     refreshAlbum();
     
     UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu->getObjByName("albumList"));
     if (albumList->getSize() > 0){
         this->setAlbumSelected(albumList->get(0).value);
+        this->setServerSelected(Constant::strToTipo<int>(albumList->get(0).dest));
         refreshPlaylist();
     }
-
+    setAlbumsAndPlaylistsObtained(true);
     return 0;
 }
 
@@ -148,6 +154,7 @@ uint32_t Jukebox::refreshAlbumAndPlaylist(){
 */
 uint32_t Jukebox::refreshPlaylist(){
     Traza::print("Jukebox::refreshPlaylist", W_DEBUG);
+    setAlbumsAndPlaylistsObtained(false);
     Dirutil dir;
     CloudFiles files;
     string ruta = "";
@@ -166,6 +173,7 @@ uint32_t Jukebox::refreshPlaylist(){
     UITreeListBox *albumList = ((UITreeListBox *)ObjectsMenu->getObjByName("albumList"));
     
     TreeNode parentNode = albumList->get(albumList->getLastSelectedPos());
+    
     IOauth2 *server = this->getServerCloud(this->getServerSelected());
     bool needAlbumRefresh = false;
     bool needListRefresh = true;
@@ -262,7 +270,7 @@ uint32_t Jukebox::refreshPlaylist(){
         }
     }
     Traza::print("Jukebox::refreshPlaylist END", W_DEBUG);
-
+    setAlbumsAndPlaylistsObtained(true);
 
     return 0;
 }
@@ -504,6 +512,7 @@ uint32_t Jukebox::refreshPlayListMetadata(){
 */
 void Jukebox::downloadFile(string ruta){
     string tempFileDir = Constant::getAppDir() + FILE_SEPARATOR + "temp.ogg";
+    setFileDownloaded(false);
     Traza::print("Jukebox::downloadFile. Descargando fichero " + ruta, W_DEBUG);
 
     //Creamos el servidor de descarga y damos valor a sus propiedades
@@ -527,7 +536,7 @@ void Jukebox::downloadFile(string ruta){
         delete this->serverDownloader;
         this->serverDownloader = NULL;
     }
-
+    setFileDownloaded(true);
 }
 
 /**
@@ -654,19 +663,20 @@ uint32_t Jukebox::refreshPlayListMetadataFromId3Dir(){
 */
 uint32_t Jukebox::authenticateServers(){
     uint32_t salida = SINERROR;
+    setServersAuthenticated(false);
     for (int i=0; i < MAXSERVERS && !aborted; i++){
         try{
             int error = arrCloud[i]->authenticate();
             if (error == ERRORREFRESHTOKEN){
-                arrCloud[i]->storeAccessToken(arrCloud[i]->getClientid(), arrCloud[i]->getSecret(), arrCloud[i]->getRefreshToken(), true);
+                arrCloud[i]->storeAccessToken("", true);
             } else if (error != SINERROR){
                 salida = error;
             }
         } catch (Excepcion &e){
             Traza::print("Excepcion capturada", W_DEBUG);
         }
-
     }
+    setServersAuthenticated(true);
     return salida;
 }
 
@@ -682,6 +692,8 @@ uint32_t Jukebox::refreshAlbum(){
     string idRuta;
     int albumId = 0;
 
+    bool choosedSelectedServer = false;
+    
     for (int serverID=0; serverID < MAXSERVERS && !aborted; serverID++){
         IOauth2 *server = this->getServerCloud(serverID);
 
@@ -891,7 +903,7 @@ int Jukebox::extraerCD(string cdDrive, string extractionPath, CdTrackInfo *cdTra
             ULONG Time = audioCD.GetTrackTime( i );
 
             msg = Constant::toAnsiString("Track " + Constant::TipoToStr(i+1) + " Tiempo: " + Constant::TipoToStr(Time/60) + ":"
-                 + Constant::TipoToStr(Time%60) + " Tamaño: "
+                 + Constant::TipoToStr(Time%60) + " TamaÃ±o: "
                  + Constant::TipoToStr(ceil (audioCD.GetTrackSize(i) / double( pow(1024, 2)))) + " MB");
 
             ObjectsMenu->getObjByName("statusMessage")->setLabel(msg);
@@ -943,10 +955,12 @@ int Jukebox::getCddb(CAudioCD *audioCD, CdTrackInfo *cdTrack){
 *
 */
 uint32_t Jukebox::searchCddbAlbums(){
+    cddbObtained = false;
     if (this->cdTrackList != NULL && !this->cdDrive.empty()){
         this->cdTrackList->clear();
         searchCddbAlbums(this->cdDrive, this->cdTrackList);
     }
+    cddbObtained = true;    
     return 0;
 }
 
@@ -982,7 +996,7 @@ int Jukebox::searchCddbAlbums(string cdDrive, vector<CdTrackInfo *> *cdTrackList
 
 
 /**
-* Comprueba si existe el directorio o fichero pasado por parï¿½metro
+* Comprueba si existe el directorio o fichero pasado por parÃ¯Â¿Â½metro
 */
 bool Jukebox::existe(string ruta){
     Traza::print("Jukebox::existe " + ruta, W_DEBUG);

@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 #
 # Generated - do not edit!
@@ -59,6 +59,106 @@ rm -rf ${NBTMPDIR}
 mkdir -p ${NBTMPDIR}
 
 # Copy files and create directories and links
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/onmusik/bin"
+copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+
 cd "${TOP}"
 makeDirectory "${NBTMPDIR}/onmusik/bin"
 copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755

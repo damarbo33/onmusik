@@ -22,14 +22,6 @@ CND_ARTIFACT_PATH_Debug64=dist/Debug64/MinGW64-Windows/onmusik
 CND_PACKAGE_DIR_Debug64=dist/Debug64/MinGW64-Windows/package
 CND_PACKAGE_NAME_Debug64=onmusik.tar
 CND_PACKAGE_PATH_Debug64=dist/Debug64/MinGW64-Windows/package/onmusik.tar
-# Debug32 configuration
-CND_PLATFORM_Debug32=MinGW32-Windows
-CND_ARTIFACT_DIR_Debug32=dist/Debug32/MinGW32-Windows
-CND_ARTIFACT_NAME_Debug32=onmusik
-CND_ARTIFACT_PATH_Debug32=dist/Debug32/MinGW32-Windows/onmusik
-CND_PACKAGE_DIR_Debug32=dist/Debug32/MinGW32-Windows/package
-CND_PACKAGE_NAME_Debug32=onmusik.tar
-CND_PACKAGE_PATH_Debug32=dist/Debug32/MinGW32-Windows/package/onmusik.tar
 # Release32 configuration
 CND_PLATFORM_Release32=MinGW32-Windows
 CND_ARTIFACT_DIR_Release32=dist/Release32/MinGW32-Windows
@@ -46,6 +38,14 @@ CND_ARTIFACT_PATH_Release64=dist/Release64/MinGW64-Windows/onmusik
 CND_PACKAGE_DIR_Release64=dist/Release64/MinGW64-Windows/package
 CND_PACKAGE_NAME_Release64=onmusik.tar
 CND_PACKAGE_PATH_Release64=dist/Release64/MinGW64-Windows/package/onmusik.tar
+# Debug32 configuration
+CND_PLATFORM_Debug32=MinGW32-Windows
+CND_ARTIFACT_DIR_Debug32=dist/Debug32/MinGW32-Windows
+CND_ARTIFACT_NAME_Debug32=onmusik
+CND_ARTIFACT_PATH_Debug32=dist/Debug32/MinGW32-Windows/onmusik
+CND_PACKAGE_DIR_Debug32=dist/Debug32/MinGW32-Windows/package
+CND_PACKAGE_NAME_Debug32=onmusik.tar
+CND_PACKAGE_PATH_Debug32=dist/Debug32/MinGW32-Windows/package/onmusik.tar
 #
 # include compiler specific variables
 #

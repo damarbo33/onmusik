@@ -35,9 +35,6 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/5f719cc8/BaseFrontend.o \
-	${OBJECTDIR}/_ext/5f719cc8/Icogestor.o \
-	${OBJECTDIR}/_ext/5f719cc8/Ioutil.o \
 	${OBJECTDIR}/_ext/511e4115/Iofrontend.o \
 	${OBJECTDIR}/_ext/511e4115/Transcode.o \
 	${OBJECTDIR}/_ext/511e4115/jukebox.o \
@@ -60,7 +57,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../../../ExternalLibs/crosslib/crosslib/dist/Debug32/MinGW32-Windows -lcrosslib -mwindows -lmingw32 -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image -lavutil -lavformat -lavcodec -lswscale -lswresample -ljsoncpp -lsdl_gfx -lcurl -lws2_32 -lgumbo -ltinyxml -ltidy -lz -lminizip
+LDLIBSOPTIONS=-L../../../ExternalLibs/crosslib/crosslib/dist/Debug32/MinGW32-Windows -lcrosslib -mwindows -lmingw32 -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image -ljpeg -lavutil -lavformat -lavcodec -lswscale -lswresample -ljsoncpp -lsdl_gfx -lcurl -lws2_32 -lgumbo -ltinyxml -ltidy -lz -lminizip
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -70,54 +67,39 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/onmusik.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/onmusik ${OBJECTFILES} ${LDLIBSOPTIONS} resource32.res
 
-${OBJECTDIR}/_ext/5f719cc8/BaseFrontend.o: ../../../ExternalLibs/crosslib/src/uiobjects/common/BaseFrontend.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/5f719cc8
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/5f719cc8/BaseFrontend.o ../../../ExternalLibs/crosslib/src/uiobjects/common/BaseFrontend.cpp
-
-${OBJECTDIR}/_ext/5f719cc8/Icogestor.o: ../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/5f719cc8
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/5f719cc8/Icogestor.o ../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp
-
-${OBJECTDIR}/_ext/5f719cc8/Ioutil.o: ../../../ExternalLibs/crosslib/src/uiobjects/common/Ioutil.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/5f719cc8
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/5f719cc8/Ioutil.o ../../../ExternalLibs/crosslib/src/uiobjects/common/Ioutil.cpp
-
-: ../resource.rc
+: ../resource.rc nbproject/Makefile-${CND_CONF}.mk
 	@echo Performing Custom Build Step
 	windres resource.rc -O coff -o resource.res
 
-${OBJECTDIR}/_ext/511e4115/Iofrontend.o: ../src/Iofrontend.cpp
+${OBJECTDIR}/_ext/511e4115/Iofrontend.o: ../src/Iofrontend.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}/_ext/511e4115
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511e4115/Iofrontend.o ../src/Iofrontend.cpp
+	$(COMPILE.cc) -g -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511e4115/Iofrontend.o ../src/Iofrontend.cpp
 
-${OBJECTDIR}/_ext/511e4115/Transcode.o: ../src/Transcode.cpp
+${OBJECTDIR}/_ext/511e4115/Transcode.o: ../src/Transcode.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}/_ext/511e4115
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511e4115/Transcode.o ../src/Transcode.cpp
+	$(COMPILE.cc) -g -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511e4115/Transcode.o ../src/Transcode.cpp
 
-${OBJECTDIR}/_ext/511e4115/jukebox.o: ../src/jukebox.cpp
+${OBJECTDIR}/_ext/511e4115/jukebox.o: ../src/jukebox.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}/_ext/511e4115
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511e4115/jukebox.o ../src/jukebox.cpp
+	$(COMPILE.cc) -g -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511e4115/jukebox.o ../src/jukebox.cpp
 
-${OBJECTDIR}/_ext/511e4115/main.o: ../src/main.cpp
+${OBJECTDIR}/_ext/511e4115/main.o: ../src/main.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}/_ext/511e4115
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511e4115/main.o ../src/main.cpp
+	$(COMPILE.cc) -g -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511e4115/main.o ../src/main.cpp
 
-${OBJECTDIR}/_ext/e0359366/scrapper.o: ../src/scrapper/scrapper.cpp
+${OBJECTDIR}/_ext/e0359366/scrapper.o: ../src/scrapper/scrapper.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}/_ext/e0359366
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/e0359366/scrapper.o ../src/scrapper/scrapper.cpp
+	$(COMPILE.cc) -g -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/e0359366/scrapper.o ../src/scrapper/scrapper.cpp
 
-${OBJECTDIR}/_ext/e14879cf/updater.o: ../src/updater/updater.cpp
+${OBJECTDIR}/_ext/e14879cf/updater.o: ../src/updater/updater.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}/_ext/e14879cf
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/e14879cf/updater.o ../src/updater/updater.cpp
+	$(COMPILE.cc) -g -DWIN -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/rijndael -I../../../ExternalLibs/crosslib/src/audioplayer -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/e14879cf/updater.o ../src/updater/updater.cpp
 
 # Subprojects
 .build-subprojects:

@@ -5,8 +5,8 @@
 */
 Scrapper::Scrapper(){
     ObjectsMenu = NULL;
-    arr[0] = new LyricsWikia();
-    arr[1] = new Darklyrics();
+    arr[0] = new ChartLyrics();
+    arr[1] = new MusixMatch();
 }
 
 /**
@@ -29,7 +29,6 @@ uint32_t Scrapper::getLyrics(){
 *
 */
 uint32_t Scrapper::getLyricsSong(){
-    vector <TrackInfo *> info;
     int ret = NOTFOUND;
     UITextElementsArea *textElems = (UITextElementsArea *)ObjectsMenu->getObjByName("LetrasBox");
     textElems->setFieldText("LetraCancion", "Cargando...");
@@ -38,14 +37,14 @@ uint32_t Scrapper::getLyricsSong(){
 
     for (int i=0; i < 2 && ret != SINERROR && ObjectsMenu != NULL; i++){
         Traza::print("Buscando en: " + arr[i]->getServiceName(), W_DEBUG);
+        vector <unique_ptr<TrackInfo>> info;
         ret = arr[i]->trackSearch(track, artist, &info);
         if (ret == SINERROR){
             Traza::print("Url obtenida: " + info.at(0)->url, W_DEBUG);
             string googleInfo = "\"http://www.google.com/search?q=" + Constant::uencodeUTF8(artist)
             + Constant::uencodeUTF8(" " +  track) + "\"";
 
-            ret = arr[i]->trackLyrics(info.at(0));
-
+            ret = arr[i]->trackLyrics(info.at(0).get());
             if (ret == SINERROR){
                 Traza::print("Letra obtenida correctamente", W_DEBUG);
                 textElems->setFieldText("LetraCancion", info.at(0)->lyrics_body);
@@ -54,13 +53,12 @@ uint32_t Scrapper::getLyricsSong(){
                     ((TextElement *)textElems->getTextVector()->at(0))->setUrl(info.at(0)->urlInfo);
                 else
                     ((TextElement *)textElems->getTextVector()->at(0))->setUrl(googleInfo);
-                
-                ((TextElement *)textElems->getTextVector()->at(0))->setIco(new_window);
-                
             } else {
                 textElems->setFieldText("LetraCancion", "");
-				((TextElement *)textElems->getTextVector()->at(0))->setIco(-1);
+                ((TextElement *)textElems->getTextVector()->at(0))->setUrl(googleInfo);
             }
+            
+            ((TextElement *)textElems->getTextVector()->at(0))->setIco(new_window);
             textElems->setOffsetDesplazamiento(0);
             textElems->setImgDrawed(false);
         }

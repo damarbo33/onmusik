@@ -35,9 +35,6 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/5f719cc8/BaseFrontend.o \
-	${OBJECTDIR}/_ext/5f719cc8/Icogestor.o \
-	${OBJECTDIR}/_ext/5f719cc8/Ioutil.o \
 	${OBJECTDIR}/_ext/511e4115/Iofrontend.o \
 	${OBJECTDIR}/_ext/511e4115/Transcode.o \
 	${OBJECTDIR}/_ext/511e4115/jukebox.o \
@@ -60,7 +57,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../../../ExternalLibs/crosslib/crosslib/dist/Linux_Debug/GNU-Linux -lcrosslib -lSDL_gfx -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image -lcrypto -lcurl -lssh -lssl -lz -pthread -lX11
+LDLIBSOPTIONS=-L../../../ExternalLibs/crosslib/crosslib/dist/Linux_Debug/GNU-Linux -lcrosslib -lSDL_gfx -lSDLmain -lSDL -lSDL_mixer -lSDL_ttf -lSDL_image -lcrypto -lcurl -lssh -lssl -lz -ljpeg -pthread -lX11
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -69,21 +66,6 @@ LDLIBSOPTIONS=-L../../../ExternalLibs/crosslib/crosslib/dist/Linux_Debug/GNU-Lin
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/onmusik.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/onmusik ${OBJECTFILES} ${LDLIBSOPTIONS}
-
-${OBJECTDIR}/_ext/5f719cc8/BaseFrontend.o: ../../../ExternalLibs/crosslib/src/uiobjects/common/BaseFrontend.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/5f719cc8
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DUNIX -I../../../ExternalLibs/crosslib/src/ziputils/zlib -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/uiobjects/common -I../../../ExternalLibs/crosslib/src/sqllite -I../../../ExternalLibs/crosslib/src/libjpeg -I../../../ExternalLibs/crosslib/src/ziputils/unzip -I../../../ExternalLibs/crosslib/src/tidy/include -I../../../ExternalLibs/crosslib/src/tidy/src -I../../../ExternalLibs/crosslib/src/gumbo-parser-master/src -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include -I../../../ExternalLibs/crosslib/src/rijndael -I../../MP3Play/src -I../../BmpRLE -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/5f719cc8/BaseFrontend.o ../../../ExternalLibs/crosslib/src/uiobjects/common/BaseFrontend.cpp
-
-${OBJECTDIR}/_ext/5f719cc8/Icogestor.o: ../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/5f719cc8
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DUNIX -I../../../ExternalLibs/crosslib/src/ziputils/zlib -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/uiobjects/common -I../../../ExternalLibs/crosslib/src/sqllite -I../../../ExternalLibs/crosslib/src/libjpeg -I../../../ExternalLibs/crosslib/src/ziputils/unzip -I../../../ExternalLibs/crosslib/src/tidy/include -I../../../ExternalLibs/crosslib/src/tidy/src -I../../../ExternalLibs/crosslib/src/gumbo-parser-master/src -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include -I../../../ExternalLibs/crosslib/src/rijndael -I../../MP3Play/src -I../../BmpRLE -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/5f719cc8/Icogestor.o ../../../ExternalLibs/crosslib/src/uiobjects/common/Icogestor.cpp
-
-${OBJECTDIR}/_ext/5f719cc8/Ioutil.o: ../../../ExternalLibs/crosslib/src/uiobjects/common/Ioutil.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/5f719cc8
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -w -DUNIX -I../../../ExternalLibs/crosslib/src/ziputils/zlib -I../../../ExternalLibs/crosslib/src/uiobjects -I../../../ExternalLibs/crosslib/src/uiobjects/common -I../../../ExternalLibs/crosslib/src/sqllite -I../../../ExternalLibs/crosslib/src/libjpeg -I../../../ExternalLibs/crosslib/src/ziputils/unzip -I../../../ExternalLibs/crosslib/src/tidy/include -I../../../ExternalLibs/crosslib/src/tidy/src -I../../../ExternalLibs/crosslib/src/gumbo-parser-master/src -I../../../ExternalLibs/crosslib/src/httpcurl -I../../../ExternalLibs/crosslib/src/httpcurl/jsoncpp-0.10.5/include -I../../../ExternalLibs/crosslib/src/rijndael -I../../MP3Play/src -I../../BmpRLE -I../src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/5f719cc8/Ioutil.o ../../../ExternalLibs/crosslib/src/uiobjects/common/Ioutil.cpp
 
 ${OBJECTDIR}/_ext/511e4115/Iofrontend.o: ../src/Iofrontend.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/511e4115

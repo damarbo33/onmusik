@@ -107,14 +107,14 @@ class Iofrontend : public BaseFrontend {
         int accionUploadCDPopup(tEvento *evento);
         int uploadToServer(tEvento *evento, int idServer);
         int comprobarTokenServidores();
-        void waitJukebox( Thread<Jukebox> *var, string pantalla);
+        void waitJukebox(string pantalla);
         int accionesCddbAceptar(tEvento *evento);
         void showCDDBMenuData();
         int accionesLetrasBox(tEvento *evento);
         int accionesAlbumSelec(tEvento *evento);
         int selectTreeAlbum(tEvento *evento);
-        bool waitFinishThread(Thread<AudioPlayer> *thread, int timeout);
-        bool waitFinishThread(Thread<Jukebox> *thread, int timeout);
+        bool waitFinishThreadPlayer(int timeout);
+        bool waitFinishThreadDownloader(int timeout);
         bool isMenuLeftVisible();
         int autenticarServicios();
         int fillAlbumLocal(string ruta, bool updateId3tags);

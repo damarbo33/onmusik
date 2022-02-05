@@ -3,6 +3,8 @@
 
 #include "lyrics/lyricswikia.h"
 #include "lyrics/darklyrics.h"
+#include "lyrics/MusixMatch.h"
+#include "lyrics/chartLyrics.h"
 #include "Menuobject.h"
 
 class Scrapper
