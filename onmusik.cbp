@@ -31,6 +31,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add option="-Wno-narrowing" />
 			<Add option="-DWIN" />
 			<Add option="-D_WIN32" />
 			<Add directory="../../ExternalLibs/crosslib/src" />

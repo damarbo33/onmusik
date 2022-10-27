@@ -22,7 +22,7 @@ Iofrontend::Iofrontend(){
     Traza::print("Constructor de IoFrontend", W_INFO);
     initUIObjs();
     setSelMenu(PANTALLAREPRODUCTOR);
-    
+
     juke = new Jukebox();
     player = new AudioPlayer();
     scrapper = new Scrapper();
@@ -142,7 +142,7 @@ void Iofrontend::initUIObjs(){
     titleElement.setUseMaxLabelMargin(true);
     titleElement.setName(TituloLetraCancion);
     LetrasArea->addField(&titleElement);
-    
+
     TextElement lyricsArea;
     posLetras.y += 50;
     lyricsArea.setPos(posLetras);
@@ -151,12 +151,12 @@ void Iofrontend::initUIObjs(){
     lyricsArea.setUseMaxLabelMargin(true);
     lyricsArea.setName(LetraCancion);
     LetrasArea->addField(&lyricsArea);
-    
+
     LetrasArea->setTextColor(cBlanco);
     LetrasArea->setVisible(false);
     LetrasArea->setColor(cNegroClaro);
     LetrasArea->setIntervalDespl(Constant::getMENUSPACE()*2);
-    
+
     //obj->getObjByName(NewWindowIco)->setIcon(new_window) ;
 
 
@@ -189,7 +189,7 @@ void Iofrontend::initUIObjs(){
         popup2->addElemLista("Subir a Onedrive", onedrive, onedrive_png, Constant::TipoToStr(ONEDRIVESERVER));
     }
 
-    UIPopupMenu * popup3 = addPopup(PANTALLAREPRODUCTOR, popupUploadCD, btnAddCD);
+    addPopup(PANTALLAREPRODUCTOR, popupUploadCD, btnAddCD);
 
 
     vector <ListGroupCol *> miCabecera;
@@ -234,7 +234,7 @@ void Iofrontend::initUIObjs(){
     int desp = 110;
     string msgLabel = Constant::toAnsiString(string("Especifique los datos siguientes para poder hacer una llamada ") +
                      string("a la base de datos de cddb (freedb.org) mediante la que obtener los datos de los CD's que introduzca"));
-    
+
     obj = createMenu(PANTALLACDDBDATA);
     obj->add(lblDataCDDB,  GUITEXTELEMENTSAREA,  0, -220 * zoomText + desp, INPUTW, Constant::getINPUTH()*5, "asdasd", true)->setEnabled(false);
     obj->add(inputUsuario, GUIINPUTWIDE, 0, -140 * zoomText + desp, INPUTW, Constant::getINPUTH(), "Usuario:", true);
@@ -254,7 +254,7 @@ void Iofrontend::initUIObjs(){
     cddbElement.setUseMaxLabelMargin(true);
     cddbElement.setText(msgLabel);
     LetrasCDDB->addField(&cddbElement);
-    
+
     LetrasCDDB->setTextColor(cBlanco);
     LetrasCDDB->setVisible(true);
     LetrasCDDB->setColor(cNegroClaro);
@@ -289,7 +289,7 @@ void Iofrontend::initUIObjs(){
     addEvent(ImgVol, static_cast<typept2Func>(&Iofrontend::accionVolumenMute));
     addEvent(btnRepeat, static_cast<typept2Func>(&Iofrontend::accionRepeat));
     addEvent(btnRandom, static_cast<typept2Func>(&Iofrontend::accionRandom));
-    
+
     addEvent(btnEqualizer, static_cast<typept2Func>(&Iofrontend::accionesEqualizer));
     addEvent(filtroAudio0, static_cast<typept2Func>(&Iofrontend::accionesfiltroAudio0));
     addEvent(filtroAudio1, static_cast<typept2Func>(&Iofrontend::accionesfiltroAudio1));
@@ -344,7 +344,8 @@ void Iofrontend::setDinamicSizeObjects(){
         getMenu(PANTALLAREPRODUCTOR)->getObjByName(btnForward)->setTam(desp += FAMFAMICONW, bottom, FAMFAMICONW, FAMFAMICONH);
         getMenu(PANTALLAREPRODUCTOR)->getObjByName(btnRepeat)->setTam(desp += FAMFAMICONW, bottom, FAMFAMICONW, FAMFAMICONH);
         getMenu(PANTALLAREPRODUCTOR)->getObjByName(btnRandom)->setTam(desp += FAMFAMICONW, bottom, FAMFAMICONW, FAMFAMICONH);
-        getMenu(PANTALLAREPRODUCTOR)->getObjByName(statusMessage)->setTam(desp += FAMFAMICONW*2, bottom, this->getWidth() - desp, FAMFAMICONH);
+        desp += FAMFAMICONW*2;
+        getMenu(PANTALLAREPRODUCTOR)->getObjByName(statusMessage)->setTam(desp, bottom, this->getWidth() - desp, FAMFAMICONH);
         getMenu(PANTALLAREPRODUCTOR)->getObjByName(ImgVol)->setTam(TIMEW- FAMFAMICONW, bottom, FAMFAMICONW, FAMFAMICONH);
         getMenu(PANTALLAREPRODUCTOR)->getObjByName(progressBarVolumen)->setTam(TIMEW + SEPTIMER, bottom + 2, TIMEW, PROGRESSHEIGHT);
         getMenu(PANTALLAREPRODUCTOR)->getObjByName(labelVol)->setTam(2*(TIMEW + SEPTIMER), bottom +1 , TIMEW, PROGRESSHEIGHT);
@@ -357,12 +358,12 @@ void Iofrontend::setDinamicSizeObjects(){
         getMenu(PANTALLAREPRODUCTOR)->getObjByName(progressBarMedia)->setTam( TIMEW + SEPTIMER, bottom - PROGRESSSEPBOTTOM, this->getWidth() - TIMEW*2 - SEPTIMER*2, PROGRESSHEIGHT);
         getMenu(PANTALLAREPRODUCTOR)->getObjByName(mediaTimer)->setTam(SEPTIMER, bottom - PROGRESSSEPBOTTOM, TIMEW, FAMFAMICONH);
         getMenu(PANTALLAREPRODUCTOR)->getObjByName(mediaTimerTotal)->setTam(this->getWidth() - TIMEW, bottom - PROGRESSSEPBOTTOM, TIMEW, FAMFAMICONH);
-        
-        UITreeListBox *objAlbumList = getMenu(PANTALLAREPRODUCTOR)->getObjByName(albumList);
+
+        UITreeListBox *objAlbumList = (UITreeListBox *)getMenu(PANTALLAREPRODUCTOR)->getObjByName(albumList);
         objAlbumList->setTam(0, FAMFAMICONH + 2, ALBUMWIDTH, calculaPosPanelMedia() - FAMFAMICONH - 2 - ALBUMWIDTH);
         objAlbumList->calcularScrPos();
         objAlbumList->setImgDrawed(false);
-        
+
         getMenu(PANTALLAREPRODUCTOR)->getObjByName(spectrum)->setTam(0, FAMFAMICONH + 2 + calculaPosPanelMedia() - FAMFAMICONH - 2 - ALBUMWIDTH, ALBUMWIDTH, ALBUMWIDTH);
 
         int yFiltros = FAMFAMICONH + 2 + calculaPosPanelMedia() - FAMFAMICONH - 2 - ALBUMWIDTH;
@@ -380,7 +381,7 @@ void Iofrontend::setDinamicSizeObjects(){
         getMenu(PANTALLAREPRODUCTOR)->getObjByName(playLists)->setTam(ALBUMWIDTH, 0, this->getWidth() - ALBUMWIDTH, calculaPosPanelMedia());
         getMenu(PANTALLAREPRODUCTOR)->getObjByName(LetrasBox)->setTam(ALBUMWIDTH, 0, this->getWidth() - ALBUMWIDTH, calculaPosPanelMedia());
         getMenu(PANTALLAREPRODUCTOR)->getObjByName(NewWindowIco)->setTam(ALBUMWIDTH, 0, 45,45);
-        
+
     } catch (Excepcion &e){
         Traza::print("setDinamicSizeObjects: " + string(e.getMessage()), W_ERROR);
     }
@@ -401,7 +402,7 @@ SongsReproduced::~SongsReproduced(){
 *
 */
 void SongsReproduced::clear(){
-    for (int i=0; i < MAXSONG_REPEAT_AVOID; i++){
+    for (unsigned int i=0; i < MAXSONG_REPEAT_AVOID; i++){
         arraySongReproduced[i] = false;
     }
     nSongsReproduced = 0;
@@ -731,8 +732,8 @@ int Iofrontend::accionesPlaylist(tEvento *evento){
 */
 int Iofrontend::openLocalDisc(tEvento *evento){
     Traza::print("Iofrontend::openLocalDisc", W_INFO);
-    long delay = 0;
-    unsigned long before = 0;
+//    long delay = 0;
+//    unsigned long before = 0;
 
     try{
         Dirutil dir;
@@ -759,6 +760,7 @@ int Iofrontend::btnActionAddServer(tEvento *evento){
     if (AddServer(evento) != MAXSERVERS){
         autenticateAndRefresh();
     }
+    return 0;
 }
 
 /**
@@ -776,10 +778,10 @@ int Iofrontend::AddServer(tEvento *evento){
     juke->getServerCloud(DROPBOXSERVER)->setSecret(secret);
     juke->getServerCloud(ONEDRIVESERVER)->setClientid(onedriveClientId);
     juke->getServerCloud(ONEDRIVESERVER)->setSecret(onedriveSecret);
-    
+
 
     this->setSelMenu(PANTALLAREPRODUCTOR);
-    tmenu_gestor_objects *obj = getMenu(PANTALLAREPRODUCTOR);
+//    tmenu_gestor_objects *obj = getMenu(PANTALLAREPRODUCTOR);
 
     //Comprobamos si ha habido algun error en la obtencion del accesstoken
     someErrorToken = comprobarTokenServidores();
@@ -797,10 +799,10 @@ int Iofrontend::AddServer(tEvento *evento){
             strNameServer = arrNameServers[serverSelected];
 
             juke->getServerCloud(serverSelected)->launchAuthorize(tmpClient);
-            string code = casoPANTALLAPREGUNTA("Autorizar aplicaci%C3%B3n", 
+            string code = casoPANTALLAPREGUNTA("Autorizar aplicaci%C3%B3n",
                     "Introduce el campo obtenido de la p%C3%A1gina de "
                     + strNameServer + " (CTRL+V)");
-            
+
             if (!code.empty()){
                 clearScr(cGrisOscuro);
                 juke->getServerCloud(serverSelected)->storeAccessToken(code, false);
@@ -830,10 +832,10 @@ int Iofrontend::mediaClicked(tEvento *evento){
     Traza::print("Iofrontend::mediaClicked", W_INFO);
     UIProgressBar * objProg = (UIProgressBar *)getMenu(PANTALLAREPRODUCTOR)->getObjByName(progressBarMedia);
     Traza::print("Pos pulsada barra de tiempo", objProg->getProgressPos(), W_DEBUG);
-    
+
     if (player->isSongDownloaded() && objProg->getProgressMax() > 0 && player->getStatus() == PLAYING){
         //Comprobamos si se ha terminado la descarga y recargamos en ese caso
-        //reloadSong(posAlbumSelected, posSongSelected); 
+        //reloadSong(posAlbumSelected, posSongSelected);
         player->setPosicionCancion(objProg->getProgressPos() * 1000);
     }
     return 0;
@@ -1039,7 +1041,7 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
                         Traza::print("next", next, W_DEBUG);
                         contadorBucle++;
                     } while ( (next == latestRandomValue || mySongsReproduced.isReproduced(next))
-                             && playList->getSize() > 1 && contadorBucle < MAXSONG_REPEAT_AVOID * 2
+                             && playList->getSize() > 1 && contadorBucle < (int)MAXSONG_REPEAT_AVOID * 2
                              );
 
                     playList->setPosActualLista(next);
@@ -1052,10 +1054,10 @@ int Iofrontend::startSongPlaylist(tEvento *evento){
             }
         }
     } while (!salir && player->getStatus() != STOPED && playList->getPosActualLista() < playList->getSize());
-    
+
     getMenu(PANTALLAREPRODUCTOR)->getObjByName(btnPlay)->setIcon(control_play);
     getMenu(PANTALLAREPRODUCTOR)->getObjByName(btnPlay)->setImgDrawed(false);
-    
+
     return 0;
 }
 /**
@@ -1066,11 +1068,10 @@ bool Iofrontend::bucleReproductor(){
     bool salir = false; //Control del bucle unicamente
     //Solo forzamos la salida en el caso de bloqueos. Por ahora solo se pueden producir
     //cuando esperamos a cargar el buffer del streamming
-    bool salidaForzada = false; 
+    bool salidaForzada = false;
     long delay = 0;
     unsigned long before = 0;
     unsigned long timer1s = 0;
-    unsigned long timerPanelMedia = 0;
     ignoreButtonRepeats = true;
     tEvento askEvento;
     long lenSongSec = 0;
@@ -1101,7 +1102,6 @@ bool Iofrontend::bucleReproductor(){
 
         clearEvento(&askEvento);
         timer1s = SDL_GetTicks();
-        timerPanelMedia = timer1s;
         setPanelMediaVisible(true);
         tscreenobj screenEvents;
         screenEvents.drawComponents = true;
@@ -1114,7 +1114,7 @@ bool Iofrontend::bucleReproductor(){
         player->setObjectsMenu(getMenu(PANTALLAREPRODUCTOR));
 
         Dirutil dir;
-        
+
         if (dir.existe(cancion)){
             //Local file reproduction case
             player->setFilename(cancion);
@@ -1166,7 +1166,7 @@ bool Iofrontend::bucleReproductor(){
 
             Traza::print("Estado Cancion 4", player->getStatus(), W_PARANOIC);
 
-            //Si estamos esperando para cargar el buffer y pulsamos escape, 
+            //Si estamos esperando para cargar el buffer y pulsamos escape,
             //cancelamos el thread de descarga y salimos
             if (player->getStatus() == PAUSEDTOLOADBUFFER){
                 if ((askEvento.isKey && askEvento.key == SDLK_ESCAPE) || askEvento.quit){
@@ -1182,18 +1182,15 @@ bool Iofrontend::bucleReproductor(){
             } else {
                 if ((askEvento.isKey && askEvento.key == SDLK_SPACE) || askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_START)){
                     player->pause();
-                    timerPanelMedia = SDL_GetTicks();
                 } else if ((askEvento.isKey && askEvento.key == SDLK_RIGHT) || askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_RIGHT)){
                     if (player->isSongDownloaded() && objProg->getProgressPos() + 10 < objProg->getProgressMax()){
                         reloadSong(posAlbumSelected, posSongSelected);
                         player->forward(10000);
-                        timerPanelMedia = SDL_GetTicks();
                     }
                 } else if ((askEvento.isKey && askEvento.key == SDLK_LEFT) || askEvento.joy == JoyMapper::getJoyMapper(JOY_BUTTON_LEFT)){
                     if (player->isSongDownloaded()){
                         reloadSong(posAlbumSelected, posSongSelected);
                         player->rewind(10000);
-                        timerPanelMedia = SDL_GetTicks();
                     }
                 }
             }
@@ -1203,7 +1200,6 @@ bool Iofrontend::bucleReproductor(){
                 setDinamicSizeObjects();
             } else if (askEvento.isMouseMove){
                 if (askEvento.mouse_y > calculaPosPanelMedia()){
-                    timerPanelMedia = SDL_GetTicks();
                 }
             } else if (askEvento.quit){
                 Traza::print("Estado Cancion 5.1 stop", player->getStatus(), W_DEBUG);
@@ -1231,7 +1227,7 @@ bool Iofrontend::bucleReproductor(){
             refreshSpectrum(player);
             Traza::print("Estado Cancion 8", player->getStatus(), W_PARANOIC);
             flipScr();
-            
+
         } while (!salir);
 
         //Reseteamos la barra de progreso
@@ -1249,7 +1245,7 @@ bool Iofrontend::bucleReproductor(){
 }
 
 /**
- * 
+ *
  * @param posAlbumSelected
  * @param posSongSelected
  */
@@ -1264,7 +1260,7 @@ void Iofrontend::reloadSong(int posAlbumSelected, int posSongSelected){
         //por streaming. Solo lo hacemos si se ha terminado el thread de descarga, se esta
         //reproduciendo una cancion y no se ha seleccionado otro album que haya cambiado la lista
         if (juke->isFileDownloaded() && !player->isSongDownloaded() && player->getStatus() == PLAYING &&
-            posAlbumSelected == objAlbumList->getLastSelectedPos()){
+            posAlbumSelected == (int)objAlbumList->getLastSelectedPos()){
             UIListGroup *playList = ((UIListGroup *)obj->getObjByName(playLists));
             Traza::print("Descarga completada correctamente", W_DEBUG);
             //Indicamos que la cancion se ha terminado de descargar
@@ -1323,7 +1319,7 @@ void Iofrontend::refrescarAlbums(){
     tmenu_gestor_objects *obj = getMenu(PANTALLAREPRODUCTOR);
     juke->setObjectsMenu(obj);
     Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshAlbumAndPlaylist);
-    
+
     tEvento evento;
     tEvento eventoNull;
 
@@ -1483,7 +1479,7 @@ int Iofrontend::autenticarServicios(){
     //Realizamos la conexion de prueba a google y a dropbox
     if (thread->start())
         Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
-    
+
     tmenu_gestor_objects *obj = getMenu(PANTALLAREPRODUCTOR);
     tEvento evento;
     tEvento eventoNull;
@@ -1491,7 +1487,7 @@ int Iofrontend::autenticarServicios(){
     procesarControles(obj, &eventoNull, NULL);
     drawTextCent("Conectando a servicios. Espere...", 0, -70,true,true, cBlanco);
     flipScr();
-    
+
     pintarIconoProcesando(true);
     do{
         evento = WaitForKey();
@@ -1499,7 +1495,7 @@ int Iofrontend::autenticarServicios(){
         pintarIconoProcesando(false);
     }while (!juke->isServersAuthenticated() && evento.key != SDLK_ESCAPE && !evento.quit);
     procesarControles(obj, &eventoNull, NULL);
-    
+
     if (evento.key == SDLK_ESCAPE || evento.quit){
         juke->abortServers();
         thread->join();
@@ -1511,7 +1507,6 @@ int Iofrontend::autenticarServicios(){
         string rutaIni = Constant::getAppDir() + Constant::getFileSep() + TOKENFILENAME;
         Dirutil dir;
         if (!dir.existe(rutaIni)){
-            bool salir = false;
 //            do {
                 //En esta casuistica lanzamos el proceso hasta que tengamos todos los
                 //servidores configurados
@@ -1544,7 +1539,7 @@ int Iofrontend::comprobarTokenServidores(){
         } else if (i == ONEDRIVESERVER){
             obj->getObjByName(btnOnedrive)->setEnabled(strAccessToken.empty());
             obj->getObjByName(btnOnedrive)->setImgDrawed(false);
-        } 
+        }
     }
     return someErrorToken;
 }
@@ -1564,9 +1559,9 @@ bool Iofrontend::errorTokenServidor(int servidor){
 }
 
 /**
- * 
+ *
  * @param evento
- * @return 
+ * @return
  */
 int Iofrontend::accionUploadPopup(tEvento *evento){
     Traza::print("Iofrontend::accionUploadPopup", W_INFO);
@@ -1601,8 +1596,8 @@ int Iofrontend::accionUploadPopup(tEvento *evento){
 */
 int Iofrontend::uploadToServer(tEvento *evento, int idServer){
     Traza::print("Iofrontend::uploadToServer", W_INFO);
-    long delay = 0;
-    unsigned long before = 0;
+//    long delay = 0;
+//    unsigned long before = 0;
 
     try{
         Dirutil dir;
@@ -1633,7 +1628,7 @@ int Iofrontend::uploadToServer(tEvento *evento, int idServer){
             if (continuar){
                 string msg = "%C2%BFDeseas recodificar los ficheros en formato ogg (Ogg Vorbis)%3F";
                 bool recodificar = casoPANTALLACONFIRMAR("Advertencia", msg);
-                
+
                 Thread<Jukebox> *thread;
                 if (recodificar){
                     juke->setFilterUploadExt(".ogg");
@@ -1642,7 +1637,7 @@ int Iofrontend::uploadToServer(tEvento *evento, int idServer){
                     juke->setFilterUploadExt(".mp3");
                     thread = new Thread<Jukebox>(juke, &Jukebox::upload);
                 }
-                
+
                 if (thread->start())
                     Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
             }
@@ -1651,6 +1646,7 @@ int Iofrontend::uploadToServer(tEvento *evento, int idServer){
     } catch (Excepcion &e){
         Traza::print("uploadDiscToDropbox: " + string(e.getMessage()), W_ERROR);
     }
+    return 0;
 }
 
 /**
@@ -1673,7 +1669,7 @@ int Iofrontend::accionAlbumPopup(tEvento *evento){
             if (objPopup->getCallerPopup()->getObjectType() == GUITREELISTBOX){
                 UITreeListBox *objList = (UITreeListBox *)objPopup->getCallerPopup();
                 TreeNode node = objList->get(objList->getPosActualLista());
-                
+
                 string borrar = node.value;
                 string text = node.text;
                 int idservidor = Constant::strToTipo<int>(node.dest);
@@ -1773,9 +1769,9 @@ void Iofrontend::actualizaciones(){
             updater->abort();
             threadUpdate->join(); //Esperamos a la finalizacion del thread
             WaitForKey();
-            
+
         }
-        
+
         cout << "salida del thread " << threadUpdate->getExitCode() << endl;
         delete threadUpdate;
         clearScr();
@@ -1804,7 +1800,7 @@ void Iofrontend::bienvenida(){
         bool salir = false;
         tEvento askEvento;
         clearEvento(&askEvento);
-        bool salida = false;
+
         string menuInicial = getSelMenu();
 
         //Procesamos el menu antes de continuar para que obtengamos la captura
@@ -1843,7 +1839,6 @@ void Iofrontend::bienvenida(){
 
             if (objMenu->getObjByName(btnSiConfirma)->getTag().compare("selected") == 0){
                 salir = true;
-                salida = true;
                 objMenu->getObjByName(btnSiConfirma)->setTag("");
                 Traza::print("Detectado SI pulsado", W_DEBUG);
             }
@@ -1913,10 +1908,10 @@ int Iofrontend::casoPANTALLALOGIN(string titulo, string txtDetalle, bool enableS
     clearEvento(&askEvento);
     int salida = MAXSERVERS;
     string menuInicial = getSelMenu();
-    
+
     titulo = Constant::txtDisplay(titulo);
     txtDetalle = Constant::txtDisplay(txtDetalle);
-    
+
     //Procesamos el menu antes de continuar para que obtengamos la captura
     //de pantalla que usaremos de fondo
     procesarControles(getMenu(menuInicial), &askEvento, NULL);
@@ -2019,14 +2014,13 @@ int Iofrontend::accionUploadCDPopup(tEvento *evento){
         UIPopupMenu *objPopup = (UIPopupMenu *)obj;
         //Obtenemos el valor del elemento seleccionado en el popup
         string selected = objPopup->getListValues()->get(objPopup->getPosActualLista());
-        int servidor = Constant::strToTipo<int>(objPopup->getListDestinos()->get(objPopup->getPosActualLista()));
 
         if (selected.compare("cddbopt") == 0){
             showCDDBMenuData();
         } else if (objPopup->getCallerPopup() != NULL){
             objsMenu->setFirstFocus();
             Traza::print("Extrayendo cd de la unidad: " + selected, W_DEBUG);
-            
+
             //Comprobamos si ha habido algun error en la obtencion del accesstoken
             comprobarTokenServidores();
             string mensaje = "Selecciona si quieres subir el CD a una cuenta de Google o Dropbox. ";
@@ -2062,7 +2056,7 @@ int Iofrontend::accionUploadCDPopup(tEvento *evento){
                     obj = getMenu(PANTALLACDDB);
                     UIListGroup *objCddb = ((UIListGroup *)obj->getObjByName(listAlbumsCddb));
 
-                    for (int i=0; i < cdTrackList.size(); i++){
+                    for (unsigned int i=0; i < cdTrackList.size(); i++){
                         vector <ListGroupCol *> miFila;
                         miFila.push_back(new ListGroupCol(cdTrackList.at(i)->albumName, cdTrackList.at(i)->albumName));
                         miFila.push_back(new ListGroupCol(cdTrackList.at(i)->year, cdTrackList.at(i)->year));
@@ -2141,11 +2135,11 @@ int Iofrontend::accionesLetrasBox(tEvento *evento){
             emulInfo.rutaexe = infoBuf;
             emulInfo.fileexe = "explorer.exe";
             emulInfo.parmsexe = tmpUrl;
-            bool resultado = lanzador.lanzarProgramaUNIXFork(&emulInfo);
+            lanzador.lanzarProgramaUNIXFork(&emulInfo);
 #endif
 
 #ifdef UNIX
-            
+
 //            string cmd = CMD_LAUNCH_BROWSER + " \"" + tmpUrl + "\"";
 //            system(cmd.c_str());
             Launcher lanzador;
@@ -2154,7 +2148,7 @@ int Iofrontend::accionesLetrasBox(tEvento *evento){
             emulInfo.fileexe = CMD_LAUNCH_BROWSER;
             emulInfo.parmsexe = tmpUrl;
             bool resultado = lanzador.lanzarProgramaUNIXFork(&emulInfo);
-#endif            
+#endif
         }
     }
     return 0;
@@ -2291,9 +2285,9 @@ int Iofrontend::accionesAlbumSelec(tEvento *evento){
 }
 
 /**
- * 
+ *
  * @param evento
- * @return 
+ * @return
  */
 int Iofrontend::selectTreeAlbum(tEvento *evento){
     Traza::print("Iofrontend::selectAlbum", W_INFO);
@@ -2301,7 +2295,7 @@ int Iofrontend::selectTreeAlbum(tEvento *evento){
     UIListGroup *playList = ((UIListGroup *)getMenu(PANTALLAREPRODUCTOR)->getObjByName(playLists));
     TreeNode node = objAlbumList->get(objAlbumList->getLastSelectedPos());
     string albumSelected = node.value;
-    
+
     Dirutil dir;
 
     if (dir.existe(albumSelected)){
@@ -2317,10 +2311,10 @@ int Iofrontend::selectTreeAlbum(tEvento *evento){
         juke->setAlbumSelected(objAlbumList->getValue(objAlbumList->getLastSelectedPos()));
 
         Thread<Jukebox> *thread = new Thread<Jukebox>(juke, &Jukebox::refreshPlaylist);
-        
+
         if (thread->start())
             Traza::print("Thread started with id: ",thread->getThreadID(), W_DEBUG);
-        
+
         pintarIconoProcesando(true);
 
         tEvento evento;
@@ -2336,8 +2330,8 @@ int Iofrontend::selectTreeAlbum(tEvento *evento){
             playList->setVisible(true);
             textElems->setVisible(false);
         }
-        
-        
+
+
         procesarControles(obj, &evento, NULL);
         flipScr();
         delete thread;
@@ -2347,10 +2341,10 @@ int Iofrontend::selectTreeAlbum(tEvento *evento){
 }
 
 /**
- * 
+ *
  * @param thread
  * @param timeout
- * @return 
+ * @return
  */
 bool Iofrontend::waitFinishThreadPlayer(int timeout){
     bool ret = true;
@@ -2359,23 +2353,23 @@ bool Iofrontend::waitFinishThreadPlayer(int timeout){
         threadPlayer->join();
     while (player->getStatus() != STOPED && ret){
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        ret = SDL_GetTicks() - before < timeout;
+        ret = (int)(SDL_GetTicks() - before) < timeout;
     }
     return ret;
 }
 
 /**
- * 
+ *
  * @param thread
  * @param timeout
- * @return 
+ * @return
  */
 bool Iofrontend::waitFinishThreadDownloader(int timeout){
     bool ret = true;
     unsigned long before = SDL_GetTicks();
     while (!juke->isFileDownloaded() && ret){
         std::this_thread::sleep_for(std::chrono::milliseconds(90));
-        ret = SDL_GetTicks() - before < timeout;
+        ret = (int)(SDL_GetTicks() - before) < timeout;
     }
     return ret;
 }

@@ -14,7 +14,7 @@ bool procesarTeclado(tEvento *evento, Iofrontend *ioFront){
         salir = true;
         evento->quit = true;
     }
-        
+
     return salir;
 }
 
@@ -37,7 +37,7 @@ void Terminate(void)
 int main(int argc, char *argv[]){
     //#ifdef WIN
         string appDir = argv[0];
-        int pos = appDir.rfind(Constant::getFileSep());
+        size_t pos = appDir.rfind(Constant::getFileSep());
         if (pos == string::npos){
             FILE_SEPARATOR = FILE_SEPARATOR_UNIX;
             pos = appDir.rfind(FILE_SEPARATOR);
