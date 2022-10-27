@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="onmusik" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/onmusik" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/onmusik" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add option="-DWIN" />
+			<Add option="-D_WIN32" />
+			<Add directory="../../ExternalLibs/crosslib/src" />
+			<Add directory="../../ExternalLibs/crosslib/src/uiobjects" />
+			<Add directory="../../ExternalLibs/crosslib/src/rijndael" />
+			<Add directory="../../ExternalLibs/crosslib/src/httpcurl" />
+			<Add directory="../../ExternalLibs/crosslib/src/audioplayer" />
+			<Add directory="../../../msys2/mingw64/include/SDL" />
+		</Compiler>
+		<Linker>
+			<Add option="-lcrosslib" />
+			<Add option="-mwindows" />
+			<Add option="-lmingw32" />
+			<Add option="-lSDLmain" />
+			<Add option="-lSDL" />
+			<Add option="-lSDL_mixer" />
+			<Add option="-lSDL_ttf" />
+			<Add option="-lSDL_image" />
+			<Add option="-ljpeg" />
+			<Add option="-lavutil" />
+			<Add option="-lavformat" />
+			<Add option="-lavcodec" />
+			<Add option="-lswscale" />
+			<Add option="-lswresample" />
+			<Add option="-ljsoncpp" />
+			<Add option="-lsdl_gfx" />
+			<Add option="-lcurl" />
+			<Add option="-lws2_32" />
+			<Add option="-lgumbo" />
+			<Add option="-ltinyxml" />
+			<Add option="-ltidy" />
+			<Add option="-lz" />
+			<Add option="-lminizip" />
+			<Add directory="../../ExternalLibs/crosslib/bin/Debug" />
+		</Linker>
+		<Unit filename="src/9001.png.h" />
+		<Unit filename="src/Iofrontend.cpp" />
+		<Unit filename="src/Iofrontend.h" />
+		<Unit filename="src/IofrontendDefines.h" />
+		<Unit filename="src/Transcode.cpp" />
+		<Unit filename="src/Transcode.h" />
+		<Unit filename="src/icono_16.png.h" />
+		<Unit filename="src/jukebox.cpp" />
+		<Unit filename="src/jukebox.h" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src/main.h" />
+		<Unit filename="src/scrapper/scrapper.cpp" />
+		<Unit filename="src/scrapper/scrapper.h" />
+		<Unit filename="src/updater/updater.cpp" />
+		<Unit filename="src/updater/updater.h" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>
